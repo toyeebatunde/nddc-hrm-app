@@ -4,13 +4,15 @@ import {useState, useEffect} from 'react'
 import LayoutAuthed from '../components/LayoutAuthed'
 import {useRouter} from 'next/router'
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({passwordInput:"password"})
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({newPassword:"password", confirmPassword:"password"})
   const [token, setToken] = useState()
-  const [isModalOpen, setIsModalOpen] = useState(false)  
-  const [modals, setModals] = useState({isOpen: false, teamModal: false, rolesModal: false})
+  // const [isModalOpen, setIsModalOpen] = useState(false)  
+  const [modals, setModals] = useState({isOpen: false, teamModal: false, rolesModal: false, bankDelete: false})
   const router = useRouter()
+
+  const Layout = Component.Layout || EmptyLayout
 
   function setModalState(state, modalToSet) {
     setModals({...modals, isOpen:state, [modalToSet]:state})
@@ -49,11 +51,13 @@ function MyApp({ Component, pageProps }) {
     //   />
     // </Layout>
 
-    <LayoutAuthed modals={modals}>
+    <LayoutAuthed modals={modals} setModalState={setModalState}>
+      <Layout modals={modals}>
       <Component {...pageProps} modals={modals} setModals={setModals} setModalState={setModalState}/>
+      </Layout>
     </LayoutAuthed>
   )
 }
 
-export default MyApp
+const EmptyLayout = ({children}) => <>{children}</>
  

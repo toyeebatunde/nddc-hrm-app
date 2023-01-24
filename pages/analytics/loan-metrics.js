@@ -1,10 +1,10 @@
-import ImageHolder from "../components/ImageHolder"
-import directionDown from '../public/icons/direction-down.svg'
-import down from '../public/icons/down.svg'
-import arrowUpGreen from '../public/icons/arrow-up-green-circle.svg'
-import TheCalendar from "../components/calendar"
+import ImageHolder from '../../components/ImageHolder'
+import directionDown from '../../public/icons/direction-down.svg'
+import down from '../../public/icons/down.svg'
+import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
+import TheCalendar from "../../components/calendar"
 import { useState } from "react"
-import DateSelector from "../components/DateSelector"
+import DateSelector from "../../components/DateSelector"
 
 export default function LoanMetrics() {
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
@@ -56,7 +56,7 @@ export default function LoanMetrics() {
                         <p className="font-400 font-pushpennyBook text-[14px] leading-[22px] cursor-pointer underline underline-offset-1">View all</p>
                     </section>
                     <section className="w-[100%] rounded-[8px] h-[231px] bg-brand-light-yellow flex justify-between items-center px-4">
-                        <section className="flex flex-col justify-center items-center w-[180px] h-[180px]">
+                        <section className="flex flex-col relative justify-center items-center lg:w-[180px] h-[180px]">
                             <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">21841</p>
                             <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">Total</p>
                             <div id="first-chart" className="pie z-30 animate-two no-round" style={{ "--p": `${ninety}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>

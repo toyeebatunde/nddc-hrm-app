@@ -1,15 +1,16 @@
-import ImageHolder from "../components/ImageHolder"
-import directionDown from '../public/icons/direction-down.svg'
-import down from '../public/icons/down.svg'
-import arrowUpGreen from '../public/icons/arrow-up-green-circle.svg'
-import searchIcon from '../public/icons/search-icon.svg'
-import closeIcon from '../public/icons/close-modal.svg'
+import ImageHolder from '../../components/ImageHolder'
+import directionDown from '../../public/icons/direction-down.svg'
+import down from '../../public/icons/down.svg'
+import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
+import searchIcon from '../../public/icons/search-icon.svg'
+import closeIcon from '../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect } from "react"
-import tick from '../public/icons/tick.svg'
-import RadioToggle from "../components/radioToggle"
+import tick from '../../public/icons/tick.svg'
+import RadioToggle from "../../components/radioToggle"
+import ButtonTab from "../../components/ButtonTab"
 
 export default function UserManagement({ modals, setModalState }) {
-    const [activeTab, setActiveTab] = useState("team")
+    const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
     // ${modals.isOpen ? "blur-sm" : "blur-none"}
 
@@ -44,6 +45,11 @@ export default function UserManagement({ modals, setModalState }) {
     //     window.removeEventListener("click", windowListen)
     // },[])
 
+    const tabs = [
+        "Team",
+        "Roles and Privileges"
+    ]
+
 
     return (
         <div className={`flex relative flex-col items-start pt-[60px] overflow-hidden w-full`}>
@@ -54,13 +60,14 @@ export default function UserManagement({ modals, setModalState }) {
             </section>
             <section className={`h-[44px] flex flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex justify-between w-[345px] relative">
-                    <button onClick={() => { setTab("team") }} className={`font-400 ${activeTab == "team" ? "system-active" : ""} z-30 h-[44px] absolute font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Team</button>
-                    <button onClick={() => { setTab("rolesandprivileges") }} className={`font-400 ${activeTab == "rolesandprivileges" ? "system-active" : ""} z-30 h-[44px] absolute left-[182px] font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Roles and Privileges</button>
+                     {tabs.map((tab, index)=><ButtonTab key={index} name={tab} activeTab={activeTab} setTab={setTab} />)}
+                    {/* <button onClick={() => { setTab("Team") }} className={`font-400 ${activeTab == "Team" ? "system-active" : ""} z-30 h-[44px] absolute font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Team</button>
+                    <button onClick={() => { setTab("Roles and Privileges") }} className={`font-400 ${activeTab == "Roles and Privileges" ? "system-active" : ""} z-30 h-[44px] absolute left-[182px] font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Roles and Privileges</button> */}
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>
             <section className={`px-4 flex justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${activeTab == "team" ? "flex" : "hidden"} flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
+                <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${activeTab == "Team" ? "flex" : "hidden"} flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                     <section className="w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
                         <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
                         <div className="w-[28px] h-[28px] relative">
@@ -75,7 +82,7 @@ export default function UserManagement({ modals, setModalState }) {
                 </section>
             </section>
 
-            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "team" ? "" : "hidden"}`}>
+            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "Team" ? "" : "hidden"}`}>
                 <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
                     <div className=" w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px]">
 
@@ -90,7 +97,7 @@ export default function UserManagement({ modals, setModalState }) {
                             </thead>
                             <tbody className="mt-6">
                                 <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%]  font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
+                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
                                     <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
                                     <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
                                     <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
@@ -151,7 +158,7 @@ export default function UserManagement({ modals, setModalState }) {
                 </section>
             </section>
 
-            <section className={`px-4 w-full justify-center ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "rolesandprivileges" ? "flex" : "hidden"}`}>
+            <section className={`px-4 w-full justify-center ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "Roles and Privileges" ? "flex" : "hidden"}`}>
                 <section className={`px-[40px] w-fit md:w-full flex flex-col items-center mdxl:justify-between mdxl:flex-row mdxl:px-[10px] bg-[#F3F3F3] rounded-[48px] pt-2 pb-2 mt-8 h-fit lg:h-[61px]`}>
                     <section className=" w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
                         <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
@@ -227,7 +234,7 @@ export default function UserManagement({ modals, setModalState }) {
                 </form>
             </section>
 
-            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "rolesandprivileges" ? "flex" : "hidden"}`}>
+            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${activeTab == "Roles and Privileges" ? "flex" : "hidden"}`}>
                 <section className="h-[674px] w-full rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
                     <table className="table-fixed w-full flex flex-col">
                         <thead>

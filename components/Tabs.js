@@ -1,3 +1,4 @@
+
 import inactiveAgentMetrics from '../public/icons/agent-metrics-inactive.svg'
 import activeAgentMetrics from '../public/icons/agent-metrics.svg'
 import agentManagementActive from '../public/icons/agent-management.svg'
@@ -39,53 +40,45 @@ import userManagementActive from '../public/icons/user-management.svg'
 import userManagementInactive from '../public/icons/user-management-inactive.svg'
 import valueAddedInactive from '../public/icons/value-added-services-inactive.svg'
 import valueAddedActive from '../public/icons/value-added-services.svg'
-import configBank from '../public/icons/config-bank.svg'
-import configMenuHome from '../public/icons/config-menu-home.svg'
-import configNotes from '../public/icons/config-notes.svg'
-import configSecurity from '../public/icons/config-security.svg'
-import configSetting from '../public/icons/config-setting.svg'
-import configStudentCard from '../public/icons/config-student-card.svg'
-import configTimeForward from '../public/icons/config-time-forward.svg'
-import configUsers from '../public/icons/config-users.svg'
  
 export const configurationCards = [
     {
-        url: configSetting,
+        url: '../icons/config-setting.svg',
         title: "All settings",
         detail: "Explore all configuration settings on the dashboard"
     },
     {
-        url: configBank,
+        url: '../icons/config-bank.svg',
         title: "Transaction",
         detail: "Configure and mange all transaction activities on the platform"
     },
     {
-        url: configSecurity,
+        url: '../icons/config-security.svg',
         title: "Login & Password",
         detail: "Manage agents login and sign up passwords configurations"
     },
     {
-        url: configStudentCard,
+        url: '../icons/config-student-card.svg',
         title: "Airtime",
         detail: "Manage airtime configurations and activities"
     },
     {
-        url: configUsers,
+        url: '../icons/config-users.svg',
         title: "Commission",
         detail: "Configure how the agents and super agents  commission works "
     },
     {
-        url: configTimeForward,
+        url: '../icons/config-time-forward.svg',
         title: "Wallet",
         detail: "You get to Setup and manage all direct debits here"
     },
     {
-        url: configMenuHome,
+        url: '../icons/config-menu-home.svg',
         title: "Currency",
         detail: "Set your default language, currency, and timezone"
     },
     {
-        url: configNotes,
+        url: '../icons/config-notes.svg',
         title: "Others",
         detail: "You can always request for your account statement & report for each account"
     },
@@ -101,19 +94,20 @@ export const tabs = [
         subTexts: [
             {
                 text: "Agent Metrics",
-                active:activeAgentMetrics,
-                inactive: inactiveAgentMetrics,
+                active:'/icons/agent-metrics.svg',
+                inactive: '/icons/agent-metrics-inactive.svg',
                 data: "0",
-                link: "agentmetrics",
+                link: "/analytics/agent-metrics",
             },
             {
                 text: "Loan Metrics",
-                active:loanMetricsActive,
-                inactive: loanMetricsInactive,
+                active:'/icons/loan-metrics.svg',
+                inactive: '/icons/loan-metrics-inactive.svg',
                 data: "0",
-                link: "loanmetrics",
+                link: "/analytics/loan-metrics",
             },
-        ]
+        ],
+        height: "hover:h-[80px]"
     },
     {
         text: "System",
@@ -121,89 +115,92 @@ export const tabs = [
         subTexts: [
             {
                 text: "User Management",
-                active:userManagementActive,
-                inactive: userManagementInactive,
+                active:'/icons/user-management.svg',
+                inactive: '/icons/user-management-inactive.svg',
                 data: "1",
-                link: "usermanagement",
+                link: "/system/user-management",
             },
             {
                 text: "Configurations",
-                active:configActive,
-                inactive: configInactive,
+                active:'/icons/configurations.svg',
+                inactive: '/icons/configurations-inactive.svg',
                 data: "1",
-                link: "configuration",
+                link: "/system/configuration",
             },
             {
                 text: "Institutions",
-                active:institutionsActive,
-                inactive: institutionsInactive,
+                active:'/icons/institutions.svg',
+                inactive: '/icons/institutions-inactive.svg',
                 data: "1",
-                link: "institutions",
+                link: "/system/institutions",
             },
             {
                 text: "Approvals",
-                active:approvalsActive,
-                inactive: approvalsInactive,
+                active:'/icons/approvals.svg',
+                inactive: '/icons/approvals-inactive.svg',
                 data: "approvals",
+                link: "/system/approvals"
             },
-        ]
+        ],
+        height: "hover:h-[145px]"
     },
     {
         text: "Agency",
         data: "2",
+        height: "hover:h-[270px]",
         subTexts: [
             {
                 text: "Agent Management",
-                active:agentManagementActive,
-                inactive: agentManagementInactive,
+                active:'/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
                 data: "agentmanagement",
             },
             {
                 text: "Customer Management",
-                active:customerManagementActive,
-                inactive: customerManagementInactive,
+                active:'/icons/customer-management.svg',
+                inactive: '/icons/customer-management-inactive.svg',
                 data: "2",
                 link: "customermanagement",
             },
             {
                 text: "Fund Request",
-                active:fundReqActive,
-                inactive: fundReqInactive,
+                active:'/icons/fund-request.svg',
+                inactive: '/icons/fund-request-inactive.svg',
                 data: "2",
                 link: "fundrequest",
             },
             {
                 text: "Value Added Services",
-                active:valueAddedActive,
-                inactive: valueAddedInactive,
+                active:'/icons/value-added-services.svg',
+                inactive: '/icons/value-added-services-inactive.svg',
                 data: "2",
                 link: "valueaddedservices",
             },
             {
                 text: "Transactions",
-                active:transactionsActive,
-                inactive: transactionsInactive,
+                active:'/icons/transactions.svg',
+                inactive: '/icons/transactions-inactive.svg',
                 data: "2",
                 link: "transactions",
             },
             {
                 text: "Settlement",
-                active:settlementActive,
-                inactive: settlementInactive,
+                active:'/icons/settlement.svg',
+                inactive: '/icons/settlement-inactive.svg',
                 data: "2",
                 link: "settlement",
             },
             {
                 text: "Reconciliation",
-                active:reconActive,
-                inactive: reconInactive,
+                active:'/icons/reconciliation.svg',
+                inactive: '/icons/reconciliation-inactive.svg',
                 data: "2",
                 link: "reconciliation",
             },
             {
                 text: "POS Terminals",
-                active:posActive,
-                inactive: posInactive,
+                active:'/icons/pos-terminals.svg',
+                inactive: '/icons/pos-terminals-inactive.svg',
                 data: "2",
                 link: "pos",
             },
@@ -212,11 +209,12 @@ export const tabs = [
     {
         text: "Insights and Reports",
         data: "3",
+        height: "hover:h-[50px]",
         subTexts: [
             {
                 text: "Reports",
-                active:reportActive,
-                inactive: reportInactive,
+                active:'/icons/report.svg',
+                inactive: '/icons/reports-inactive.svg',
                 data: "3",
                 link: "reports",
             },
@@ -224,26 +222,27 @@ export const tabs = [
     },
     {
         text: "Support",
+        height: "hover:h-[120px]",
         data: "4",
         subTexts: [
             {
                 text: "Ticket Management",
-                active:TicketManagementActive,
-                inactive: TicketManagementInactive,
+                active:'/icons/ticket-management.svg',
+                inactive: '/icons/ticket-management-inactive.svg',
                 data: "4",
                 link: "ticketmanagement",
             },
             {
                 text: "Bulk Notification",
-                active:bulkNotificationActive,
-                inactive: bulkNotificationInactive,
+                active:'/icons/bulk-notification.svg',
+                inactive: '/icons/bulk-notification-inactive.svg',
                 data: "4",
                 link: "bulknotification",
             },
             {
                 text: "Audits",
-                active:auditsActive,
-                inactive: auditsInactive,
+                active:'/icons/audits.svg',
+                inactive: '/icons/audits-inactive.svg',
                 data: "4",
                 link: "audits",
             },
@@ -251,19 +250,20 @@ export const tabs = [
     },
     {
         text: "Loan",
+        height: "hover:h-[85px]",
         data: "5",
         subTexts: [
             {
                 text: "Loan Performance",
-                active:loanPerformanceActive,
-                inactive: loanPerformanceInactive,
+                active:'/icons/loan-performance.svg',
+                inactive: '/icons/loan-performance-inactive.svg',
                 data: "5",
                 link: "loanperformance",
             },
             {
                 text: "Credit Call",
-                active:creditCallActive,
-                inactive: creditCallInactive,
+                active:'/icons/credit-call.svg',
+                inactive: '/icons/credit-call-inactive.svg',
                 data: "5",
                 link: "creditcall",
             },

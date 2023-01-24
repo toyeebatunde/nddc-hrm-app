@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ImageHolder from "./ImageHolder";
 import Link from "next/link";
 
-export default function SingleTab({ text, index, dataSet, activeDashboard, setActiveDashboard, switchBoard, activeState, link, closeSideBar }) {
+export default function SingleTab({ text, index, dataSet, position, activeDashboard, setActiveDashboard, switchBoard, activeState, link, closeSideBar }) {
     const [hoverState, setHoverState] = useState(false)
     const activeClass = dataSet == activeState ? "active" : ""
 
@@ -33,8 +33,7 @@ export default function SingleTab({ text, index, dataSet, activeDashboard, setAc
     return (
         <>
             <Link href={`${link}`}>
-                <div id={index} onClick={(e) => {switchBoard(e, index, dataSet), closeSideBar() }} onMouseOver={manageHoverState} onMouseOut={manageHoverState} className={`flex absolute group tab-holder justify-start  w-full h-fit font-pushPennyMedium font-[500] text-[13px] leading-[24px] ${activeClass}`}>
-
+                <div id={index} onClick={(e) => {switchBoard(e, index, dataSet), closeSideBar() }} onMouseOver={manageHoverState} onMouseOut={manageHoverState} className={`flex relative group tab-holder justify-start ${position == 0 ?" " : "mt-[5px]"} w-full h-[25px] items-center font-pushPennyMedium font-[500] text-[13px] leading-[24px] `}>
                     <div className={`w-[24px] h-[24px] relative agent-metrics bg-cover`}>
                         <ImageHolder src={checkActive(activeDashboard) ? text.active : text.inactive} />
                     </div>

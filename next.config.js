@@ -4,8 +4,17 @@ const nextConfig = {
   swcMinify: true,
   images: {
     loader: 'akamai',
-    path: '',
-  }
+    path: '/',
+  },
+  async redirects() {
+    return [
+      {
+        source: '/system',
+        destination: '/system/usermanagement',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

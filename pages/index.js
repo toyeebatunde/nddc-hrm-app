@@ -10,7 +10,7 @@ export default function Home({ showPassword, token, passwordDisplay, setPassword
 
   
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col items-center">
       <section className='flex justify-center h-[61px] w-[307px] items-center box-border m-auto mt-[50px] rounded-[30.5px] bg-[#f9f9f9]'>
         <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] '>Log in</section>
       </section>
@@ -32,7 +32,7 @@ export default function Home({ showPassword, token, passwordDisplay, setPassword
           </button>
         </section>
       </section>
-      <section className='mt-[44px] px-14 flex items-center justify-between'>
+      <section className='mt-[44px] w-full lg:w-[425px] flex items-center justify-between'>
         <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span className='underline text-yellow'> Reset now </span></section>
         <button className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
       </section>
