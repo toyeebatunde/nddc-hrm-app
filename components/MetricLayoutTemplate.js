@@ -72,7 +72,7 @@ export default function MetricLayoutTemplate({ children, title, modals }) {
                     </div>
                 </section>
             </section>
-            <section className={`w-full relative mt-[10px] `}>
+            <section className={`w-full relative mt-[10px] px-5 `}>
                 {children}
             </section>
         </div>

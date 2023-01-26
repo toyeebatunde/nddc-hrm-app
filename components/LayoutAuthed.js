@@ -49,7 +49,7 @@ export default function Dashboard({ children, modals, setModalState }) {
     }
 
     function closeSideBar() {
-        if (window.innerWidth > 1024) {
+        if (window.innerWidth > 1023) {
             return
         }
 

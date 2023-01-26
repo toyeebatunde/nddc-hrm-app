@@ -7,7 +7,7 @@ export default function Agents({ modals }) {
     return (
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className="h-[674px] w-full border overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]">
+                <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]">
                     <div className="  w-[1170px] h-fit">
 
                         <table className="table-fixed w-full flex flex-col">
@@ -57,7 +57,7 @@ export default function Agents({ modals }) {
                                             Damesa
                                         </h2>
                                     </td>
-                                    <td className="font-pushpennyBook flex w-[173px]  flex items-start">
+                                    <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
                                         <div className="w-[80px] h-[36px]">
                                             <UserButton type="edit" />
                                         </div>
