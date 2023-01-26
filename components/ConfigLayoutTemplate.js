@@ -16,27 +16,27 @@ export default function SubLayoutTemplate({ modals, setModalState, children }) {
     const tabs = [
         {
             name: "Settings",
-            url: "settings",
+            url: "/system/configuration/settings",
         },
         {
             name: "Charges",
-            url: "charges",
+            url: "/system/configuration/charges",
         },
         {
             name: "Referrers",
-            url: "referrers",
+            url: "/system/configuration/referrers",
         },
         {
             name: "Authentication",
-            url: "authentication",
+            url: "/system/configuration/authentication",
         },
         {
             name: "Currency",
-            url: "currency",
+            url: "/system/configuration/currency",
         },
         {
             name: "FAQs",
-            url: "faqs",
+            url: "/system/configuration/faqs",
         },
               
     ]

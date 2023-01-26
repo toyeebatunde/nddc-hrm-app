@@ -63,6 +63,11 @@ export default function Institutions({ modals, setModalState }) {
         "Roles and Privileges"
     ]
 
+    function forButton (e) {
+        e.preventDefault()
+        console.log(formFields.institutionName)
+    }
+
 
     return (
         <div className={`flex relative flex-col items-start pt-[60px] overflow-hidden w-full`}>
@@ -83,15 +88,15 @@ export default function Institutions({ modals, setModalState }) {
                         </div>
                     </section>
                     <section className="flex w-[250px] md:w-[354px] mt-4 mdxl:mt-0 justify-between">
-                        <button ref={getModalButtonRef} onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
-                            + Add New Bank
-                        </button>
+                        <div className='grow lg:w-[216px] h-[35px]'>
+                        <UserButton type="gradient" text="+ Add New Bank" />
+                        </div>
                     </section>
 
                 </section>
             </section>
 
-            {/* <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
                     <div className=" w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px]">
 
@@ -110,25 +115,17 @@ export default function Institutions({ modals, setModalState }) {
                                     <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
                                     
                                     <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button className="w-[fit] h-[36px] flex justify-between px-[20px] items-center text-white rounded-[24px] bg-black flex">
-                                            <h2 className="font-[400] font-pushPenny text-[18px]">Edit</h2>
-                                            <div className="w-[20px] h-[20px] relative">
-                                            <ImageHolder src= '/icons/arrow.svg' />
-                                            </div>
-                                        </button>
-                                        <button className="w-[117px] h-[36px] flex justify-between px-[20px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
-                                            <h2 className="font-[400] font-pushPenny text-[18px]">Delete</h2>
-                                            <div className="w-[20px] h-[20px] relative">
-                                            <ImageHolder src= '/icons/delete.svg' />
-                                            </div>
-                                        </button>
+                                        
+                                        <UserButton type="edit" />
+                                        <UserButton type="delete" />
+                                        
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </section>
-            </section> */}
+            </section>
 
             <section className='w-[98%] mt-[30px] h-fit rounded-[10px] bg-[#FBF4EB]'>
             
@@ -141,8 +138,12 @@ export default function Institutions({ modals, setModalState }) {
                     )
                 })}
                 <div className='w-full mt-[30px]  w-[330px] flex justify-between py-2 px-4'>
-                <UserButton text="Cancel" type={1} />
-                <UserButton text="Save" type={2} />
+                <div className='w-[126px] h-[46px]'>
+                <UserButton text="Cancel" onClick={forButton} />
+                </div>
+                <div className='w-[126px] h-[46px]'>
+                <UserButton text="Save" type="gradient" />
+                </div>
                 </div>
             </form>
             

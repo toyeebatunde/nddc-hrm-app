@@ -153,7 +153,8 @@ export const tabs = [
                 text: "Agent Management",
                 active:'/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
-                data: "agentmanagement",
+                data: "2",
+                link: "/agency/agent-management/agents"
             },
             {
                 text: "Customer Management",
