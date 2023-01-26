@@ -354,6 +354,13 @@ input {
 } */
 
 
+.approvals-tab:hover > :hover {
+  border-bottom: 3px solid black;
+}
+
+.approvals-tab {
+  gap: 50px;
+}
 
 
 #first-chart {

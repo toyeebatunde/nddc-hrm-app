@@ -1,7 +1,7 @@
 
 import UserButton from "./ButtonMaker"
 import ImageHolder from "./ImageHolder"
-export default function Modal({ modal, closeModal }) {
+export default function Modal({ modal, closeModal, type }) {
     return (
         <div id="modal" className="w-[350px] lg:rounded-[48px] lg:w-[529px] lg:h-[533px] flex flex-col justify-around items-center h-[500px] bg-white rounded-[15px]">
             <div className="w-[133px] h-[133px] flex justify-center items-center rounded-[50%] bg-[#F5F5F5]">
@@ -17,9 +17,13 @@ export default function Modal({ modal, closeModal }) {
                 <h2 className="absolute font-pushpennyMedium ml-[15px] text-[10px] top-[-7px] h-[13px] bg-[#F3F3F3] px-[3px]">Reason for action</h2>
                 <textarea className="h-full w-full rounded-[15px] bg-[#F3F3F3] outline-none px-[10px] py-[10px] w-full"></textarea>
             </div>
-            <div className="w-full mt-[30px] w-[330px] flex justify-between">
-                <UserButton text="Cancel" type={1} />
-                <UserButton text="Delete" type={2} />
+            <div className="w-full mt-[30px] w-[330px] flex justify-between">                
+                <div className='w-[126px] h-[46px]'>
+                <UserButton text="Cancel" />
+                </div>
+                <div className='w-[126px] h-[46px]'>
+                <UserButton text="Save" type="gradient" />
+                </div>
             </div>
         </div>
     )
