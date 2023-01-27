@@ -9,6 +9,9 @@
 // import RadioToggle from "../../components/radioToggle"
 // import ButtonTab from "../../components/ButtonTab"
 
+import UserButton from "../../../../components/ButtonMaker"
+import ImageHolder from "../../../../components/ImageHolder"
+
 export default function Agent({ modals, setModalState }) {
     function setTab(tab) {
         setActiveTab(tab)
@@ -23,9 +26,35 @@ export default function Agent({ modals, setModalState }) {
                 </h4>
             </section>
             <h2 className="mt-[40px] ml-4 font-pushpennyBook">Agent Management</h2>
-            <section className="flex px-4 flex-col gap-[3%] lg:flex-row w-full">
-                <div className="flex flex-col w-full border lg:w-[47%]">
-                    <div className="border w-full h-[566px]"></div>
+            <section className="flex px-4 flex-col mt-[35px] gap-[3%] lg:flex-row w-full">
+                <div className="flex flex-col w-full lg:w-[47%]">
+                    <div className="w-full gap-[7px] h-[566px] flex flex-col">
+                        <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                            <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Mike Ola wallet details</h2>
+                            <div className="w-[134px] h-[35px]">
+                                <UserButton type="gradient" text="System split"/>
+                            </div>
+                        </div>
+                        <div className=" grow flex border flex-col rounded-[10px]">
+                            <div className="px-4 flex py-4 flex-col">
+                                <div className="flex justify-between">
+                                    <h2 className="font-pushpennyBook font-[400] text-[#161616] text-[11px] lg:text-[12px]">TRADING BALANCE</h2>
+                                    <div className="flex relative">
+                                        <div className="relative w-[24px] h-[24px]">
+                                            <ImageHolder src="/icons/configurations.svg" />
+                                        </div>
+                                        <h2 className="font-pushpennyMedium text-[11px] lg:text-[13px] font-[500] leading-[24px]">Commission Configurations</h2>
+                                    </div>
+                                </div>
+                                <div className="font-[500] text-[40px] font-pushpennyMedium leading-[52px]"> ₦10,078,092.00</div>
+                                <div className="w-[210px] h-[50px] pl-4 justify-center border border-[#E8E8E8] rounded-[10px] flex flex-col">
+                                    <h2 className="font-pushpennyBook text-[8px] text-[#6E7883] font-[400] leading-[10px]">commission balance</h2>
+                                    <h2 className="text-[20px] font-pushpennyMedium text-[#6E7883] font-[500] ">₦70,092.00</h2>
+                                </div>
+                            </div>
+                            <div>Bank Account Details</div>
+                        </div>
+                    </div>
                     <div className="border w-full h-[513px]"></div>
                     <div className="border w-full h-[705px] overflow-y-auto"></div>
                 </div>
