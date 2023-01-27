@@ -12,7 +12,6 @@ import ButtonTab from "../../components/ButtonTab"
 export default function UserManagement({ modals, setModalState }) {
     const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
-    // ${modals.isOpen ? "blur-sm" : "blur-none"}
 
     function setTab(tab) {
         setActiveTab(tab)
@@ -22,28 +21,6 @@ export default function UserManagement({ modals, setModalState }) {
 
     const getModalRef = useRef()
     const getModalButtonRef = useRef()
-
-
-
-    // useEffect(()=>{
-    //     function windowListen(){
-    //         window.addEventListener('click', (event)=>{
-    //             if((event.target !== getModalRef) && (event.target !== getModalButtonRef)) {
-    //                 setModalState(false)
-    //                 return
-    //             }
-
-    //             if(event.target === getModalButtonRef) {
-    //                 setModalState(true)
-    //                 console.log(event.target)
-    //                 return
-    //             }
-    //         })
-    //     }
-
-    //     windowListen()
-    //     window.removeEventListener("click", windowListen)
-    // },[])
 
     const tabs = [
         "Team",
@@ -58,11 +35,10 @@ export default function UserManagement({ modals, setModalState }) {
                     System
                 </h4>
             </section>
-            <section className={`h-[44px] flex flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <section className={`h-[44px]  flex flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex justify-between w-[345px] relative">
-                     {tabs.map((tab, index)=><ButtonTab key={index} name={tab} activeTab={activeTab} setTab={setTab} />)}
-                    {/* <button onClick={() => { setTab("Team") }} className={`font-400 ${activeTab == "Team" ? "system-active" : ""} z-30 h-[44px] absolute font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Team</button>
-                    <button onClick={() => { setTab("Roles and Privileges") }} className={`font-400 ${activeTab == "Roles and Privileges" ? "system-active" : ""} z-30 h-[44px] absolute left-[182px] font-pushpennyBook text-gray leading-[23.44px] text-[18px] flex items-start`}>Roles and Privileges</button> */}
+                    {tabs.map((tab, index) => <ButtonTab key={index} name={tab} activeTab={activeTab} setTab={setTab} />)}
+
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>
@@ -76,7 +52,7 @@ export default function UserManagement({ modals, setModalState }) {
                     </section>
                     <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
                         <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · 0</p>
-                        <button ref={getModalButtonRef} onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
+                        <button onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
                     </section>
 
                 </section>
@@ -260,7 +236,7 @@ export default function UserManagement({ modals, setModalState }) {
                 </section>
             </section>
 
-            <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.teamModal ? "block" : "hidden"}`}>
+            {/* <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.teamModal ? "block" : "hidden"}`}>
                 <section className={`absolute bg-[#F9F9F9] z-50 top-[20%] left-[30%] flex-col px-8 py-8 w-[600px] h-[579px] rounded-[48px] bg-[#FFFFFF] flex`}>
                     <section className="flex justify-between">
                         <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
@@ -279,7 +255,7 @@ export default function UserManagement({ modals, setModalState }) {
                             </div>
                             <div className="flex items-center justify-start pl-2 w-[232px] h-[62px] relative rounded-[28.5px] bg-[#F3F3F3]">
                                 <label className="z-40 top-[-7px] absolute left-[30px] w-[59px] h-[14px] flex flex-col items-center justify-center" for="lastname">
-                                    {/* <section className="w-full h-[50%] top-0 absolute bg-[#F3F3F3]"></section> */}
+                                    
                                     <p className="z-30 font-400 text-[10px] leading-[13px] font-pushpennyBook">Last Name</p>
                                 </label>
                                 <input id="lastname" name="firstname" className="bg-[#F3F3F3] h-[60%] rounded-[40px]" type="text" />
@@ -315,7 +291,7 @@ export default function UserManagement({ modals, setModalState }) {
                     </form>
                 </section>
 
-            </section>
+            </section> */}
 
 
             <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.rolesModal ? "block" : "hidden"}`}>

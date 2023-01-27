@@ -1,0 +1,53 @@
+.toggleLabel {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 25px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSpan {
+  position: absolute;
+  cursor: pointer;
+  top: 3px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #D8D8D8;
+  transition: 0.3s;
+  border-radius: 30px;
+}
+
+.toggleStrong {
+  position: relative;
+  width: max-content;
+  height: 100%;
+  line-height: 30px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.toggleSpan:before {
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  left: -1px;
+  bottom: -2px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: 0.5s;
+}
+
+.toggleInput:checked + .toggleSpan {
+   background-image: linear-gradient(to right, #EF6B25 , #F6BC18);
+}
+
+.toggleInput:checked + .toggleSpan:before {
+  transform: translateX(25px);
+}
