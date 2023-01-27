@@ -7,9 +7,7 @@ import {useRouter} from 'next/router'
 export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({passwordInput:"password"})
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({newPassword:"password", confirmPassword:"password"})
-  const [token, setToken] = useState()
-  // const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
-  // const [isModalOpen, setIsModalOpen] = useState(false)  
+  const [token, setToken] = useState()  
   const [modals, setModals] = useState({isOpen: false, teamModal: false, rolesModal: false, bankDelete: false})
   const router = useRouter()
 
@@ -19,17 +17,20 @@ export default function MyApp({ Component, pageProps }) {
     setModals({...modals, isOpen:state, [modalToSet]:state})
   }
 
-  // localStorage.setItem('token', true)
+  function closeModals() {
+    setModals({isOpen: false, teamModal: false, rolesModal: false, bankDelete: false})
+  }
+
+ 
 
   useEffect(()=>{
-    // let isLoggedIn = localStorage.getItem('token')
     if(localStorage.getItem('token')) {
       setToken("token")
     }
   },[])
 
   function showPassword(e, field, shower, showState) {
-    // e.preventDefault()
+    
     console.log(field)
     if (field.current.type === "password") {
       let a = {...showState, [field.current.id]:"updated"}
@@ -52,7 +53,7 @@ export default function MyApp({ Component, pageProps }) {
     //   />
     // </Layout>
 
-    <LayoutAuthed modals={modals} setModalState={setModalState}>
+    <LayoutAuthed modals={modals} setModalState={setModalState} closeModals={closeModals}>
       <Layout  modals={modals}>
       <Component {...pageProps} modals={modals} setModals={setModals} setModalState={setModalState}/>
       </Layout>

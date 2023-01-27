@@ -9,10 +9,11 @@ import SideTabs from "../components/SideTabs"
 import { useEffect, useState, useRef } from "react"
 import chevronRight from "../public/icons/chevron-right-2.svg"
 import Modal from "./modal"
+import Textfield from "./TextField"
 
 
 
-export default function Dashboard({ children, modals, setModalState }) {
+export default function Dashboard({ children, modals, setModalState, closeModals }) {
     const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
     const [activeState, setActiveState] = useState("0")
     const [isFull, setIsFull] = useState()
@@ -57,20 +58,58 @@ export default function Dashboard({ children, modals, setModalState }) {
     }
 
     function closeModal(e) {
-        if(e.target.id == "modalLayer"){
-        setModalState(false)
-        return
+        if (e.target.id == "modalLayer") {
+            closeModals()
+            return
         }
     }
 
-    
+    // ${modals.isOpen ? "flex" : "hidden"}
     return (
         <div className={`w-full h-screen flex justify-between overflow-auto`}>
-            <div id="modalLayer" onClick={(e)=>{closeModal(e)}} className={`w-full h-full bg-[#000000] opacity-[0.8] fixed justify-center ${modals.isOpen ? "flex" : "hidden"} items-center top-0 z-[150]`}>
-                <Modal closeModal={closeModal} />
-            </div>            
+            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.8] fixed justify-center  items-center top-0 z-[150]`}>
+                {/* <Modal modal={modals} /> */}
+                <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] py-[20px] lg:h-[500px] flex flex-col items-center h-[500px] bg-white rounded-[15px]`}>
+                    <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
+                        <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
+                        <div className="w-[40px] h-[40px] relative cursor-pointer">
+                            <ImageHolder src="/icons/close-modal.svg" />
+                        </div>
+                    </section>
+                    <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">Send an invitation to join your company’s Payrail account</p>
+                    <form className="flex flex-col border justify-between w-full mt-[10px] min-h-[333px]">
+                        <section className="flex border flex-col lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="First Name" />
+                            </div>
+                            <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Last Name" />
+                            </div>
+                        </section>
+                        <section className="flex border flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Email" />
+                            </div>
+                        </section>
+                        <section className="flex border flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Assign Role" />
+                            </div>
+                        </section>
 
-            
+                        <section className="flex justify-between mt-[10px] relative w-full">
+                            <div className="flex items-center font-pushpennyBook text-[14px] border border-[#F3F3F3] leading-[18px] font-400] justify-center pl-2 w-[186px] h-[57px] relative rounded-[28.5px]">
+                                Cancel
+                            </div>
+                            <div className="flex items-center font-pushpennyBook text-[14px] leading-[18px] font-400] justify-center pl-2 w-[186px] h-[57px] relative rounded-[28.5px] bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
+                                Send Invitations
+                            </div>
+                        </section>
+                    </form>
+                </section>
+            </div>
+
+
             <div onClick={openSideBar} className="fixed left-[10px] cursor-pointer lg:left-[50px] z-[95]">
                 <div className="relative side-bar mt-[46px] w-[40px] h-[40px] lg:w-[66.32px] lg:h-[66.32px]">
                     <ImageHolder src="/icons/payrail-logo-circle.svg" />
@@ -101,7 +140,7 @@ export default function Dashboard({ children, modals, setModalState }) {
             </div>
             <div className=" grow h-[fit] overflow-auto pb-[50px]">
                 {children}
-               
+
             </div>
         </div>
     )

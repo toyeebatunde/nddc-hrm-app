@@ -11,9 +11,19 @@ export default function UserButton({ type, text, onClick }) {
     if (type == "edit") {
         return (
             <button className="w-full h-full flex justify-between px-[10px] items-center text-white rounded-[24px] bg-black flex">
-                <h2 className="font-[400] font-pushPenny text-[18px]">Edit</h2>
+                <h2 className="font-[400] font-pushPenny text-[18px]">{text || "Edit"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/arrow.svg' />
+                </div>
+            </button>
+        )
+    }
+    if (type == "transaction") {
+        return (
+            <button className="w-full h-full flex justify-center gap-[10px] px-[10px] items-center text-white rounded-[24px] bg-black flex">
+                <h2 className="font-[400] font-pushPenny text-[18px]">{text || "Transaction History"}</h2>
+                <div className="w-[20px] h-[20px] relative">
+                    <ImageHolder src='/icons/chart.svg' />
                 </div>
             </button>
         )
