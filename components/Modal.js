@@ -1,7 +1,14 @@
 
 import UserButton from "./ButtonMaker"
 import ImageHolder from "./ImageHolder"
+import Textfield from "./TextField"
+import { useRef } from "react"
+
+
 export default function Modal({ modal, closeModal }) {
+    const modalCloser = useRef()
+
+
     if (modal.bankDelete) {
         return (
             <div id="modal" className="w-[350px] lg:rounded-[48px] lg:w-[529px] lg:h-[533px] flex flex-col justify-around items-center h-[500px] bg-white rounded-[15px]">
@@ -32,58 +39,44 @@ export default function Modal({ modal, closeModal }) {
 
     if (modal.teamModal) {
         return (
-            <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] lg:h-[533px] flex flex-col justify-around items-center h-[500px] bg-white rounded-[15px]`}>
-                <section className="flex justify-between">
-                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
-                    <div className="w-[40px] h-[40px] relative cursor-pointer">
-                    </div>
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] py-[20px] lg:h-[500px] flex flex-col items-center h-[500px] bg-white rounded-[15px]`}>
+                    <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
+                        <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
+                        <button  className="w-[40px] h-[40px] relative cursor-pointer">
+                            <ImageHolder id="closer" onClick={(e)=>{closeModal(e)}} src="/icons/close-modal.svg" />
+                        </button>
+                    </section>
+                    <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">Send an invitation to join your company’s Payrail account</p>
+                    <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
+                        <section className="flex  flex-col lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="First Name" />
+                            </div>
+                            <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Last Name" />
+                            </div>
+                        </section>
+                        <section className="flex  flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Email" />
+                            </div>
+                        </section>
+                        <section className="flex flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                            <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                                <Textfield type="text" title="Assign Role" />
+                            </div>
+                        </section>
+
+                        <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                            <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                                <UserButton text="Cancel" />                                
+                            </div>
+                            <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                                <UserButton text="Send Invitations" type="gradient" />                                
+                            </div>
+                        </section>
+                    </form>
                 </section>
-                <p className="font-pushpennyBook text-[18px] leading-[26px] mt-4">Send an invitation to join your company’s Payrail account</p>
-                <form className="flex flex-col mt-10 justify-between w-full h-[333px]">
-                    <section className="flex justify-between relative w-full">
-                        <div className="flex items-center justify-start pl-2 w-[232px] h-[62px] relative rounded-[28.5px] bg-[#F3F3F3]">
-                            <label className="z-40 absolute top-[-7px] left-[30px] w-[59px] h-[14px] flex flex-col items-center justify-center" for="firstname">
-                                <p className="z-30 font-400 text-[10px] leading-[13px] font-pushpennyBook">First Name</p>
-                            </label>
-                            <input id="firstname" name="firstname" className="bg-[#F3F3F3] h-[60%] rounded-[40px]" type="text" />
-                        </div>
-                        <div className="flex items-center justify-start pl-2 w-[232px] h-[62px] relative rounded-[28.5px] bg-[#F3F3F3]">
-                            <label className="z-40 top-[-7px] absolute left-[30px] w-[59px] h-[14px] flex flex-col items-center justify-center" for="lastname">
-
-                                <p className="z-30 font-400 text-[10px] leading-[13px] font-pushpennyBook">Last Name</p>
-                            </label>
-                            <input id="lastname" name="firstname" className="bg-[#F3F3F3] h-[60%] rounded-[40px]" type="text" />
-                        </div>
-                    </section>
-                    <section>
-                        <div className="flex items-center justify-start pl-2 w-full h-[62px] relative rounded-[28.5px] bg-[#F3F3F3]">
-                            <label className="z-40 top-[-7px] absolute left-[30px] w-[59px] h-[14px] flex flex-col items-center justify-center" for="email">
-                                <section className="w-full h-[50%] top-0 absolute bg-[#F3F3F3]"></section>
-                                <p className="z-30 font-400 text-[10px] leading-[13px] font-pushpennyBook">email</p>
-                            </label>
-                            <input id="email" name="email" className="bg-[#F3F3F3] h-[60%] w-[90%] rounded-[40px]" type="text" />
-                        </div>
-                    </section>
-                    <section>
-                        <div className="flex items-center justify-start pl-2 w-full h-[62px] relative rounded-[28.5px] bg-[#F3F3F3]">
-                            <label className="z-40 top-[-7px] absolute left-[30px] w-[59px] h-[14px] flex flex-col items-center justify-center" for="assign">
-                                <section className="w-full h-[50%] top-0 absolute bg-[#F3F3F3]"></section>
-                                <p className="z-30 font-400 text-[10px] leading-[13px] font-pushpennyBook">Assign role</p>
-                            </label>
-                            <input id="assign" name="assign" className="bg-[#F3F3F3] h-[60%] w-[90%] rounded-[40px]" type="text" />
-                        </div>
-                    </section>
-
-                    <section className="flex justify-between relative w-full">
-                        <div className="flex items-center font-pushpennyBook text-[14px] border border-[#F3F3F3] leading-[18px] font-400] justify-center pl-2 w-[186px] h-[57px] relative rounded-[28.5px]">
-                            Cancel
-                        </div>
-                        <div className="flex items-center font-pushpennyBook text-[14px] leading-[18px] font-400] justify-center pl-2 w-[186px] h-[57px] relative rounded-[28.5px] bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
-                            Send Invitations
-                        </div>
-                    </section>
-                </form>
-            </section>
         )
     }
 }
