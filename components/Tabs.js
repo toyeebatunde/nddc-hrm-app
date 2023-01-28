@@ -107,7 +107,8 @@ export const tabs = [
                 link: "/analytics/loan-metrics",
             },
         ],
-        height: "hover:h-[80px]"
+        height: "hover:h-[80px]",
+        full: "h-[80px]"
     },
     {
         text: "System",
@@ -142,12 +143,14 @@ export const tabs = [
                 link: "/system/approvals"
             },
         ],
-        height: "hover:h-[145px]"
+        height: "hover:h-[145px]",
+        full: "h-[145px]"
     },
     {
         text: "Agency",
         data: "2",
         height: "hover:h-[270px]",
+        full: "h-[270px]",
         subTexts: [
             {
                 text: "Agent Management",
@@ -211,6 +214,7 @@ export const tabs = [
         text: "Insights and Reports",
         data: "3",
         height: "hover:h-[50px]",
+        full: "h-[50px]",
         subTexts: [
             {
                 text: "Reports",
@@ -224,6 +228,7 @@ export const tabs = [
     {
         text: "Support",
         height: "hover:h-[120px]",
+        full: "h-[120px]",
         data: "4",
         subTexts: [
             {
@@ -252,6 +257,7 @@ export const tabs = [
     {
         text: "Loan",
         height: "hover:h-[85px]",
+        full: "h-[85px]",
         data: "5",
         subTexts: [
             {

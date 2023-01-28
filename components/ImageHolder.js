@@ -8,6 +8,7 @@ export default function ImageHolder({src, alt="image", priority=true}) {
         alt={alt}
         layout="fill"
         priority={priority}
+        id="img"
         >            
         </Image>
         </>

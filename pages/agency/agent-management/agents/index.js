@@ -8,7 +8,7 @@ export default function Agents({ modals }) {
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]">
-                    <div className="  w-[1170px] h-fit">
+                    <div className="  w-[1135px] h-fit">
 
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
