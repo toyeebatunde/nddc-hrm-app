@@ -30,7 +30,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "delete") {
         return (
-            <button className="w-full h-full flex justify-between px-[20px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
+            <button onClick={onClick} className="w-full h-full flex justify-between px-[20px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
                 <h2 className={`font-[400] font-pushPenny ${small ? "text-[15px]":"text-[18px]"}`}>Delete</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/delete.svg' />

@@ -1,17 +1,23 @@
-import ImageHolder from '../../components/ImageHolder'
-import directionDown from '../../public/icons/direction-down.svg'
-import down from '../../public/icons/down.svg'
-import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
-import searchIcon from '../../public/icons/search-icon.svg'
-import closeIcon from '../../public/icons/close-modal.svg'
+import ImageHolder from '../../../components/ImageHolder'
+// import directionDown from '../../public/icons/direction-down.svg'
+// import down from '../../public/icons/down.svg'
+// import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
+import searchIcon from '../../../public/icons/search-icon.svg'
+// import closeIcon from '../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect } from "react"
-import tick from '../../public/icons/tick.svg'
-import RadioToggle from "../../components/radioToggle"
-import ButtonTab from "../../components/ButtonTab"
-import UserButton from '../../components/ButtonMaker'
-import Textfield from '../../components/TextField'
+// import tick from '../../public/icons/tick.svg'
+// import RadioToggle from "../../components/radioToggle"
+// import ButtonTab from "../../components/ButtonTab"
+import UserButton from '../../../components/ButtonMaker'
+import Textfield from '../../../components/TextField'
 
-export default function Institutions({ modals, setModalState }) {
+export default function Institutions({ modals, setModalState, setToken }) {
+
+    useEffect(()=>{
+        setToken()
+    },[])
+
+
     const textFieldList = [
             {
                 title: "Institution Code",
@@ -57,11 +63,6 @@ export default function Institutions({ modals, setModalState }) {
 
     const getModalRef = useRef()
     const getModalButtonRef = useRef()
-
-    const tabs = [
-        "Team",
-        "Roles and Privileges"
-    ]
 
     function forButton (e) {
         e.preventDefault()
@@ -117,7 +118,7 @@ export default function Institutions({ modals, setModalState }) {
                                     <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                         
                                         <UserButton type="edit" />
-                                        <UserButton type="delete" />
+                                        <UserButton type="delete" onClick={()=>{setModalState(true, "bankDelete")}} />
                                         
                                     </td>
                                 </tr>
