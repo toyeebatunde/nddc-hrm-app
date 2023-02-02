@@ -1,12 +1,13 @@
-import Image from "next/image"
 
+import Image from "next/image"
 export default function ImageHolder({src, alt="image", priority=true}) {
     return (
         <>
         <Image
         src={src}
         alt={alt}
-        layout="fill"
+        // layout="fill"
+        fill
         priority={priority}
         id="img"
         >            

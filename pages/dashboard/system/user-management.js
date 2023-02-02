@@ -1,21 +1,27 @@
-import ImageHolder from '../../components/ImageHolder'
-import directionDown from '../../public/icons/direction-down.svg'
-import down from '../../public/icons/down.svg'
-import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
-import searchIcon from '../../public/icons/search-icon.svg'
-import closeIcon from '../../public/icons/close-modal.svg'
-import { useState, useRef, useEffect } from "react"
-import tick from '../../public/icons/tick.svg'
-import RadioToggle from "../../components/radioToggle"
-import ButtonTab from "../../components/ButtonTab"
 
-export default function UserManagement({ modals, setModalState }) {
+import ImageHolder from '../../../components/ImageHolder'
+// import directionDown from '../../../public/icons/direction-down.svg'
+// import down from '../../../public/icons/down.svg'
+// import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
+import searchIcon from '../../../public/icons/search-icon.svg'
+import closeIcon from '../../../public/icons/close-modal.svg'
+import { useState, useRef, useEffect } from "react"
+// import tick from '../../../public/icons/tick.svg'
+import RadioToggle from "../../../components/radioToggle"
+import ButtonTab from "../../../components/ButtonTab"
+import nookies from 'nookies'
+
+export default function UserManagement({ users, modals, setModalState, setToken }) {
     const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
 
     function setTab(tab) {
         setActiveTab(tab)
     }
+
+    useEffect(() => {
+        setToken()
+    }, [])
 
 
 
@@ -51,7 +57,7 @@ export default function UserManagement({ modals, setModalState }) {
                         </div>
                     </section>
                     <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                        <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · 0</p>
+                        <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · {users.pendingInvite}</p>
                         <button onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
                     </section>
 
@@ -72,78 +78,18 @@ export default function UserManagement({ modals, setModalState }) {
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Olamide Olagunju</td>
-                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">mideola@angalafintech.com</td>
-                                    <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">Super Admin</td>
-                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                        <button>Change Privileges</button>
-                                    </td>
-                                </tr>
-                                
+                                {users.data.map((item, index) => {
+                                    return (
+                                        <tr key={index} className="flex justify-around h-[50px]">
+                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
+                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
+                                            <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
+                                            <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                <button>Change Privileges</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -370,4 +316,22 @@ export default function UserManagement({ modals, setModalState }) {
 
         </div>
     )
+}
+
+export const getServerSideProps = async (context) => {
+    const cookies = nookies.get(context)
+    const response = await fetch(`https://3695-41-138-165-100.eu.ngrok.io/v1/user/all?pageNo=1&pageSize=5`,
+        {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${cookies.token}`
+            }
+        }
+    )
+    const users = await response.json();
+    return {
+        props: {
+            users
+        }
+    }
 }
