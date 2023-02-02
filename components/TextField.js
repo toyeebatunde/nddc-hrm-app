@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import ImageHolder from "./ImageHolder"
 
 
-export default function Textfield({ title, type = "text", value, name, formFields, setFormFields }) {
+export default function Textfield({ title, type = "text", value, name, formFields, setFormFields, bg="bg-[#F3F3F3]" }) {
     const [focusState, setFocusState] = useState(false)
     const [dropDown, setDropDown] = useState("Transporter")
 
@@ -33,7 +33,7 @@ export default function Textfield({ title, type = "text", value, name, formField
         return (
             <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
                 <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#F3F3F3] px-[4px]">{title}</label>
-                <input name={name} onChange={onChange} value={value} className=" h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] bg-[#F3F3F3] w-[95%] rounded-[inherit]" />
+                <input name={name} onChange={onChange} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
             </div>
         )
     }

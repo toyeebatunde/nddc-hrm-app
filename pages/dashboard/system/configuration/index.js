@@ -51,8 +51,8 @@ export default function Configuration({ modals, setModalState, setToken }) {
         //     </div>
         // </div>
         <section className="p-4 mt-5 w-full grid grid-cols-1 sm:grid-cols-2 xlg:grid-cols-3 gap-4 min-h-[400px]">
-            {configurationCards.map(card => {
-                return <ConfigCards url={card.url} title={card.title} detail={card.detail} />
+            {configurationCards.map((card, index) => {
+                return <ConfigCards key={index} nodeKey={index} url={card.url} title={card.title} detail={card.detail} />
             })}
         </section>
     )

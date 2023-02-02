@@ -70,10 +70,13 @@ export default function Dashboard({ children, modals, setModalState,setActiveDas
     }
 
     
+
+    
     return (
         <div className={`w-full h-screen flex justify-between overflow-auto`}>
             <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.8] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
-                <Modal modal={modals} closeModal={closeModal} />
+                {/* <Modal modal={modals} closeModal={closeModal} /> */}
+                
             </div>
 
 

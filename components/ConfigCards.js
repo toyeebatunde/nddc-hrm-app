@@ -1,9 +1,9 @@
 import ImageHolder from "./ImageHolder"
 import configSettingIcon from "../public/icons/config-setting.svg"
 
-export default function ConfigCards({url, title, detail}) {
+export default function ConfigCards({url, nodeKey, title, detail}) {
     return(
-        <div className="px-2 shadow-md hover:shadow-xl bg-white hover:border-gray hover:border w-[250px] h-[150px] xl:w-[318px] xl:h-[180px] flex flex-col rounded-[10px]">
+        <div key={nodeKey} className="px-2 shadow-md hover:shadow-xl bg-white hover:border-gray hover:border w-[250px] h-[150px] xl:w-[318px] xl:h-[180px] flex flex-col rounded-[10px]">
             <section className="relative">
                 <div className="relative w-[40px] h-[40px]">
                 <ImageHolder src={url} />
