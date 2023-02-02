@@ -14,7 +14,7 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, charges: false })
   const router = useRouter()
 
   const Layout = Component.Layout || EmptyLayout
