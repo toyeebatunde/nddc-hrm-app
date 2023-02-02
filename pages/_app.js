@@ -22,14 +22,19 @@ export default function MyApp({ Component, pageProps }) {
   function switchBoard(e, board, active) {
     setActiveDashboard(board)
     setActiveState(active)
-}
+  }
 
-function switchActive(e, active) {
+  function switchActive(e, active) {
     setActiveState(active)
-}
+  }
 
-  function setModalState(state, modalToSet) {
-    setModals({ ...modals, isOpen: state, [modalToSet]: state })
+  function setModalState(state, modalToSet="") {
+    if (state) {
+      setModals({ ...modals, isOpen: state, [modalToSet]: state })
+      return
+    }
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
+
   }
 
   function closeModals() {
@@ -88,7 +93,22 @@ function switchActive(e, active) {
 
     <LayoutAuthed modals={modals} token={token} setModalState={setModalState} setActiveDashboard={setActiveDashboard} activeDashboard={activeDashboard} activeState={activeState} switchBoard={switchBoard} switchActive={switchActive} closeModals={closeModals}>
       <Layout modals={modals}>
-        <Component login={login} setActiveDashboard={setActiveDashboard} activeDashboard={activeDashboard} setActiveState={setActiveState} activeState={activeState} setToken={tokenTrue} setPasswordDisplay={setPasswordDisplay} showPassword={showPassword} passwordDisplay={passwordDisplay} changeForm={changeForm} loginDetails={loginDetails} setLoginDetails={setLoginDetails} {...pageProps} modals={modals} setModals={setModals} setModalState={setModalState} />
+        <Component
+          login={login}
+          setActiveDashboard={setActiveDashboard}
+          activeDashboard={activeDashboard}
+          setActiveState={setActiveState}
+          activeState={activeState}
+          setToken={tokenTrue}
+          setPasswordDisplay={setPasswordDisplay}
+          showPassword={showPassword}
+          passwordDisplay={passwordDisplay}
+          changeForm={changeForm}
+          loginDetails={loginDetails}
+          setLoginDetails={setLoginDetails}
+          {...pageProps} modals={modals}
+          setModals={setModals}
+          setModalState={setModalState} />
       </Layout>
     </LayoutAuthed>
   )
