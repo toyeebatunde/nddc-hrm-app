@@ -1,47 +1,80 @@
 import Layout from '../components/Layout'
 import '../styles/globals.css'
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import LayoutAuthed from '../components/LayoutAuthed'
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+
 
 export default function MyApp({ Component, pageProps }) {
-  const [passwordDisplay, setPasswordDisplay] = useState({passwordInput:"password"})
-  const [resetPasswordDisplay, setResetPasswordDisplay] = useState({newPassword:"password", confirmPassword:"password"})
-  const [token, setToken] = useState()  
-  const [modals, setModals] = useState({isOpen: false, teamModal: false, rolesModal: false, bankDelete: false})
+  const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
+  const [activeState, setActiveState] = useState("0")
+  const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
+  const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
+  const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
+  const [token, setToken] = useState(false)
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
   const router = useRouter()
 
   const Layout = Component.Layout || EmptyLayout
 
+  function switchBoard(e, board, active) {
+    setActiveDashboard(board)
+    setActiveState(active)
+}
+
+function switchActive(e, active) {
+    setActiveState(active)
+}
+
   function setModalState(state, modalToSet) {
-    setModals({...modals, isOpen:state, [modalToSet]:state})
+    setModals({ ...modals, isOpen: state, [modalToSet]: state })
   }
 
   function closeModals() {
-    setModals({isOpen: false, teamModal: false, rolesModal: false, bankDelete: false})
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
   }
 
- 
+  function changeForm(e, form, setter) {
+    setter({ ...form, [e.target.id]: e.target.value })
+  }
 
-  useEffect(()=>{
-    if(localStorage.getItem('token')) {
+  function login(details) {
+    // https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login
+    axios.post("https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login", {
+      password: details.password,
+      username: details.username
+    })
+      .then(response => {
+        // debugger
+        // console.log(response.data)
+        setToken(true)
+        Cookies.set("token", response.data.token)
+        router.push("/dashboard/analytics")
+      })
+      .catch(response => console.log(response.response.status))
+  }
+
+  function tokenTrue() {
+    setToken(true)
+  }
+
+
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
       setToken("token")
     }
-  },[])
+  }, [])
 
-  function showPassword(e, field, shower, showState) {
-    
-    console.log(field)
+
+  function showPassword(field, shower, showState) {
     if (field.current.type === "password") {
-      let a = {...showState, [field.current.id]:"updated"}
-      console.log(a)
-      shower({...showState, [field.current.id]:"text"})
-    } else if (field.current.type === "text") {      
-      shower({...showState, [field.current.id]:"password"})
+      shower({ ...showState, [field.current.id]: "text" })
+    } else if (field.current.type === "text") {
+      shower({ ...showState, [field.current.id]: "password" })
     }
-
-    // useEffect(()=>{},[passwordDisplay])
-
   }
   return (
     // <Layout token={token}>
@@ -53,13 +86,12 @@ export default function MyApp({ Component, pageProps }) {
     //   />
     // </Layout>
 
-    <LayoutAuthed modals={modals} setModalState={setModalState} closeModals={closeModals}>
-      <Layout  modals={modals}>
-      <Component {...pageProps} modals={modals} setModals={setModals} setModalState={setModalState}/>
+    <LayoutAuthed modals={modals} token={token} setModalState={setModalState} setActiveDashboard={setActiveDashboard} activeDashboard={activeDashboard} activeState={activeState} switchBoard={switchBoard} switchActive={switchActive} closeModals={closeModals}>
+      <Layout modals={modals}>
+        <Component login={login} setActiveDashboard={setActiveDashboard} activeDashboard={activeDashboard} setActiveState={setActiveState} activeState={activeState} setToken={tokenTrue} setPasswordDisplay={setPasswordDisplay} showPassword={showPassword} passwordDisplay={passwordDisplay} changeForm={changeForm} loginDetails={loginDetails} setLoginDetails={setLoginDetails} {...pageProps} modals={modals} setModals={setModals} setModalState={setModalState} />
       </Layout>
     </LayoutAuthed>
   )
 }
 
-const EmptyLayout = ({children}) => <>{children}</>
- 
+const EmptyLayout = ({ children }) => <>{children}</>

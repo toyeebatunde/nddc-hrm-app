@@ -1,84 +1,43 @@
 
-import inactiveAgentMetrics from '../public/icons/agent-metrics-inactive.svg'
-import activeAgentMetrics from '../public/icons/agent-metrics.svg'
-import agentManagementActive from '../public/icons/agent-management.svg'
-import agentManagementInactive from '../public/icons/agent-management-inactive.svg'
-import approvalsActive from '../public/icons/approvals.svg'
-import approvalsInactive from '../public/icons/approvals-inactive.svg'
-import auditsActive from '../public/icons/audits.svg'
-import auditsInactive from '../public/icons/audits-inactive.svg'
-import bulkNotificationActive from '../public/icons/bulk-notification.svg'
-import bulkNotificationInactive from '../public/icons/bulk-notification-inactive.svg'
-import configInactive from '../public/icons/configurations-inactive.svg'
-import configActive from '../public/icons/configurations.svg'
-import creditCallActive from '../public/icons/credit-call.svg'
-import creditCallInactive from '../public/icons/credit-call-inactive.svg'
-import customerManagementActive from '../public/icons/customer-management.svg'
-import customerManagementInactive from '../public/icons/customer-management-inactive.svg'
-import fundReqActive from '../public/icons/fund-request.svg'
-import fundReqInactive from '../public/icons/fund-request-inactive.svg'
-import institutionsActive from '../public/icons/institutions.svg'
-import institutionsInactive from '../public/icons/institutions-inactive.svg'
-import loanMetricsActive from '../public/icons/loan-metrics.svg'
-import loanMetricsInactive from '../public/icons/loan-metrics-inactive.svg'
-import loanPerformanceInactive from '../public/icons/loan-performance-inactive.svg'
-import loanPerformanceActive from '../public/icons/loan-performance.svg'
-import posActive from '../public/icons/pos-terminals.svg'
-import posInactive from '../public/icons/pos-terminals-inactive.svg'
-import reconActive from '../public/icons/reconciliation.svg'
-import reconInactive from '../public/icons/reconciliation-inactive.svg'
-import reportsInactive from '../public/icons/reports-inactive.svg'
-import reportActive from '../public/icons/report.svg'
-import reportInactive from '../public/icons/reports-inactive.svg'
-import settlementInactive from '../public/icons/settlement-inactive.svg'
-import settlementActive from '../public/icons/settlement.svg'
-import TicketManagementInactive from '../public/icons/ticket-management-inactive.svg'
-import TicketManagementActive from '../public/icons/ticket-management.svg'
-import transactionsInactive from '../public/icons/transactions-inactive.svg'
-import transactionsActive from '../public/icons/transactions.svg'
-import userManagementActive from '../public/icons/user-management.svg'
-import userManagementInactive from '../public/icons/user-management-inactive.svg'
-import valueAddedInactive from '../public/icons/value-added-services-inactive.svg'
-import valueAddedActive from '../public/icons/value-added-services.svg'
  
 export const configurationCards = [
     {
-        url: '../icons/config-setting.svg',
+        url: '/icons/config-setting.svg',
         title: "All settings",
         detail: "Explore all configuration settings on the dashboard"
     },
     {
-        url: '../icons/config-bank.svg',
+        url: '/icons/config-bank.svg',
         title: "Transaction",
         detail: "Configure and mange all transaction activities on the platform"
     },
     {
-        url: '../icons/config-security.svg',
+        url: '/icons/config-security.svg',
         title: "Login & Password",
         detail: "Manage agents login and sign up passwords configurations"
     },
     {
-        url: '../icons/config-student-card.svg',
+        url: '/icons/config-student-card.svg',
         title: "Airtime",
         detail: "Manage airtime configurations and activities"
     },
     {
-        url: '../icons/config-users.svg',
+        url: '/icons/config-users.svg',
         title: "Commission",
         detail: "Configure how the agents and super agents  commission works "
     },
     {
-        url: '../icons/config-time-forward.svg',
+        url: '/icons/config-time-forward.svg',
         title: "Wallet",
         detail: "You get to Setup and manage all direct debits here"
     },
     {
-        url: '../icons/config-menu-home.svg',
+        url: '/icons/config-menu-home.svg',
         title: "Currency",
         detail: "Set your default language, currency, and timezone"
     },
     {
-        url: '../icons/config-notes.svg',
+        url: '/icons/config-notes.svg',
         title: "Others",
         detail: "You can always request for your account statement & report for each account"
     },
@@ -97,14 +56,14 @@ export const tabs = [
                 active:'/icons/agent-metrics.svg',
                 inactive: '/icons/agent-metrics-inactive.svg',
                 data: "0",
-                link: "/analytics/agent-metrics",
+                link: "/dashboard/analytics/agent-metrics",
             },
             {
                 text: "Loan Metrics",
                 active:'/icons/loan-metrics.svg',
                 inactive: '/icons/loan-metrics-inactive.svg',
                 data: "0",
-                link: "/analytics/loan-metrics",
+                link: "/dashboard/analytics/loan-metrics",
             },
         ],
         height: "hover:h-[80px]",
@@ -119,28 +78,28 @@ export const tabs = [
                 active:'/icons/user-management.svg',
                 inactive: '/icons/user-management-inactive.svg',
                 data: "1",
-                link: "/system/user-management",
+                link: "/dashboard/system/user-management",
             },
             {
                 text: "Configurations",
                 active:'/icons/configurations.svg',
                 inactive: '/icons/configurations-inactive.svg',
                 data: "1",
-                link: "/system/configuration",
+                link: "/dashboard/system/configuration",
             },
             {
                 text: "Institutions",
                 active:'/icons/institutions.svg',
                 inactive: '/icons/institutions-inactive.svg',
                 data: "1",
-                link: "/system/institutions",
+                link: "/dashboard/system/institutions",
             },
             {
                 text: "Approvals",
                 active:'/icons/approvals.svg',
                 inactive: '/icons/approvals-inactive.svg',
                 data: "approvals",
-                link: "/system/approvals"
+                link: "/dashboard/system/approvals"
             },
         ],
         height: "hover:h-[145px]",
@@ -157,7 +116,7 @@ export const tabs = [
                 active:'/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "/agency/agent-management/agents"
+                link: "/dashboard/agency/agent-management/agents"
             },
             {
                 text: "Customer Management",

@@ -9,21 +9,25 @@ import UserButton from "./ButtonMaker"
 
 
 
-export default function Dashboard({ children, modals, setModalState, closeModals }) {
-    const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
-    const [activeState, setActiveState] = useState("0")
+export default function Dashboard({ children, modals, setModalState,setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token }) {
+    // const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
+    // const [activeState, setActiveState] = useState("0")
     const [isFull, setIsFull] = useState()
     const bodyRef = useRef()
     const sideBarMargin = isFull ? "-ml-[255px]" : "ml-[0]"
 
-    function switchBoard(e, board, active) {
-        setActiveDashboard(board)
-        setActiveState(active)
-    }
+    // function switchBoard(e, board, active) {
+    //     setActiveDashboard(board)
+    //     setActiveState(active)
+    // }
 
-    function switchActive(e, active) {
-        setActiveState(active)
-    }
+    // function switchActive(e, active) {
+    //     setActiveState(active)
+    // }
+
+    useEffect(()=>{
+        if(localStorage.getItem("token")) {}
+    },[])
 
 
     useEffect(() => {
@@ -73,19 +77,19 @@ export default function Dashboard({ children, modals, setModalState, closeModals
             </div>
 
 
-            <div onClick={openSideBar} className="fixed left-[10px] cursor-pointer lg:left-[50px] z-[95]">
+            <div onClick={openSideBar} className={`${token ? "fixed" : "hidden"} left-[10px] cursor-pointer lg:left-[50px] z-[95]`}>
                 <div className="relative side-bar mt-[46px] w-[40px] h-[40px] lg:w-[66.32px] lg:h-[66.32px]">
                     <ImageHolder src="/icons/payrail-logo-circle.svg" />
                 </div>
             </div>
-            <div onClick={openSideBar} className={`w-[45px] ${isFull ? "ml-0" : "-ml-[46px]"} h-screen sticky top-0 bg-[#FAFBFC] block z-[90] pl-[10px] relative`}>
+            <div onClick={openSideBar} className={`w-[45px] ${token ? "fixed" : "hidden"} ${isFull ? "ml-0" : "-ml-[46px]"} h-screen sticky top-0 bg-[#FAFBFC] block z-[90] pl-[10px] relative`}>
                 <div className="mt-[150px] w-fit sticky top-[140px]">
                     <div className={`${isFull ? "block" : "hidden"} relative w-[24px] h-[24px]`}>
                         <ImageHolder src="/icons/chevron-right-2.svg" />
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] h-screen bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] h-screen bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px] min-h-fit pb-2">
                     {tabs.map((tab, idx) => {
                         return <SideTabs key={idx} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
@@ -103,7 +107,6 @@ export default function Dashboard({ children, modals, setModalState, closeModals
             </div>
             <div className=" grow h-[fit] overflow-auto pb-[50px]">
                 {children}
-
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 
 import ImageHolder from "./ImageHolder"
-export default function UserButton({ type, text, onClick }) {
+export default function UserButton({ type, text, onClick, small=false }) {
     if (type == "gradient") {
         return (
             <button onClick={onClick} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-[18px] font-pushpennyMedium font-500 text-white w-full h-full font-[400] text-[#ffffff] rounded-[23px]'>
@@ -31,7 +31,7 @@ export default function UserButton({ type, text, onClick }) {
     if (type == "delete") {
         return (
             <button className="w-full h-full flex justify-between px-[20px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
-                <h2 className="font-[400] font-pushPenny text-[18px]">Delete</h2>
+                <h2 className={`font-[400] font-pushPenny ${small ? "text-[15px]":"text-[18px]"}`}>Delete</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/delete.svg' />
                 </div>

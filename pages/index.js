@@ -1,17 +1,22 @@
+
 import Head from 'next/head'
 import ImageHolder from '../components/ImageHolder'
 import logoIcon from '../public/icons/logo-icon-gradient.svg'
 import payrailIcon from '../public/icons/payrail-logo-black.svg'
 import { useRef, useState, useEffect } from 'react'
 import splash from '../public/icons/splash.svg'
+import { useRouter } from 'next/router'
+import Cookies from 'js-cookie'
 
-export default function Home({ showPassword, token, passwordDisplay, setPasswordDisplay }) {
+export default function Home({ showPassword, login, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails }) {
   const passwordField = useRef()
+  const router = useRouter()
 
+  useEffect(()=>{},[passwordDisplay])
   
   return (
     <div className="w-full flex flex-col items-center">
-      <section className='flex justify-center h-[61px] w-[307px] items-center box-border m-auto mt-[50px] rounded-[30.5px] bg-[#f9f9f9]'>
+      <section className='flex justify-center h-[61px] w-full w-[90%] lg:w-[307px] items-center box-border m-auto mt-[50px] rounded-[30.5px] bg-[#f9f9f9]'>
         <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] '>Log in</section>
       </section>
       <section className='flex mt-[25px] flex-col'>
@@ -22,19 +27,19 @@ export default function Home({ showPassword, token, passwordDisplay, setPassword
           Please, check your browser’s address bar to be sure you’re on
           https://agencyadm.payrail.co
         </section>
-        <section className='w-[427px] h-[57px] mt-[30px] border m-auto border-border-gray bg-[#f9f9f9] rounded-[28.5px] flex items-center'>
-          <input className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
+        <section className='lg:w-[427px] h-[57px] mt-[30px] border m-auto border-border-gray bg-[#f9f9f9] rounded-[28.5px] flex items-center'>
+          <input value={loginDetails.username} onChange={(e)=>{changeForm(e, loginDetails, setLoginDetails)}} id='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
         </section>
-        <section className='w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
-          <input id='passwordInput' ref={passwordField} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={passwordDisplay} placeholder='Password' />
-          <button onClick={(e) => { showPassword(e, passwordField, setPasswordDisplay, passwordDisplay) }} className='bg-input-gray z-30 px-3 ml-auto rounded-[10px]'>
+        <section className='w-[260px] lg:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
+          <input value={loginDetails.password} onChange={(e)=>{changeForm(e, loginDetails, setLoginDetails)}} id='password' ref={passwordField} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={passwordDisplay.password} placeholder='Password' />
+          <button onClick={() => { showPassword(passwordField, setPasswordDisplay, passwordDisplay) }} className='bg-input-gray z-30 px-3 ml-auto cursor-pointer rounded-[10px]'>
             show
           </button>
         </section>
       </section>
-      <section className='mt-[44px] w-full lg:w-[425px] flex items-center justify-between'>
+      <section className='mt-[44px] gap-[20px] lg:gap-0 lg:w-[425px] flex items-center justify-between'>
         <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span className='underline text-yellow'> Reset now </span></section>
-        <button className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
+        <button onClick={()=>{login(loginDetails)}} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
       </section>
 
 

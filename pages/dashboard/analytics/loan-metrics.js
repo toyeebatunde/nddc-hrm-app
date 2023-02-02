@@ -1,12 +1,12 @@
-import ImageHolder from '../../components/ImageHolder'
-import directionDown from '../../public/icons/direction-down.svg'
-import down from '../../public/icons/down.svg'
-import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
-import TheCalendar from "../../components/calendar"
-import { useState } from "react"
-import DateSelector from "../../components/DateSelector"
 
-export default function LoanMetrics() {
+// import ImageHolder from '../../components/ImageHolder'
+import directionDown from '../../../public/icons/direction-down.svg'
+// import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
+// import TheCalendar from "../../components/calendar"
+import { useState, useEffect, use } from "react"
+import DateSelector from "../../../components/DateSelector"
+
+export default function LoanMetrics({setToken}) {
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
 
     function getPreviousDay(date = new Date()) {
@@ -16,6 +16,10 @@ export default function LoanMetrics() {
         return previous;
     }
 
+    useEffect(()=>{
+        setToken()
+    },[])
+
     const ninety = "90"
 
     return (
@@ -24,7 +28,7 @@ export default function LoanMetrics() {
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     Metrics
                 </h4>
-                <DateSelector dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
+                <DateSelector dateRange={dateRange} setDateRange={setDateRange} directionDown="/icons/direction-down.svg" />
             </section>
             <section className="flex flex-col items-center w-full xl:flex-row justify-between px-4 py-2">
                 <section className="w-full lg:grow h-[375px] px-2 pt-2 flex flex-col items-start border border-[#dddddd] rounded-[8px]">

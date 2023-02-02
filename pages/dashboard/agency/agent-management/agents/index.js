@@ -1,10 +1,15 @@
 
+import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
+// import ImageHolder from "../../../../components/ImageHolder";
+import UserButton from "../../../../../components/ButtonMaker";
+import { useEffect } from "react";
 
-import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
-import ImageHolder from "../../../../components/ImageHolder";
-import UserButton from "../../../../components/ButtonMaker";
+export default function Agents({ modals, setToken }) {
 
-export default function Agents({ modals }) {
+    useEffect(()=>{
+        setToken()
+    },[])
+
     return (
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>

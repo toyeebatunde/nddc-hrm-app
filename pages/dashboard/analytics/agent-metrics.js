@@ -1,14 +1,19 @@
-import ImageHolder from "../../components/ImageHolder"
-import directionDown from '../../public/icons/direction-down.svg'
-import down from '../../public/icons/down.svg'
-import arrowUpGreen from '../../public/icons/arrow-up-green-circle.svg'
-import TheCalendar from "../../components/calendar"
-import { useState } from "react"
-import DateSelector from "../../components/DateSelector"
+import ImageHolder from "../../../components/ImageHolder"
+import directionDown from '../../../public/icons/direction-down.svg'
+import down from '../../../public/icons/down.svg'
+import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
+// import TheCalendar from "../../components/calendar"
+import { useState, useEffect } from "react"
+import DateSelector from "../../../components/DateSelector"
 
-export default function AgentMetrics() {
+export default function AgentMetrics({setToken}) {
     const [isCalendar, setIsCalendar] = useState(false)
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
+
+    useEffect(()=>{
+        setToken()
+    },[])
+
 
     function getPreviousDay(date = new Date()) {
         const previous = new Date(date.getTime());
