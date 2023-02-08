@@ -69,7 +69,7 @@ Settings.Layout = SubLayoutTemplate
 
 export const getServerSideProps = async(context) => {
     const cookies = nookies.get(context)
-    const response = await fetch(`https://3695-41-138-165-100.eu.ngrok.io/v1/setting/all?pageNo=1&pageSize=5`,
+    const response = await fetch(`https://8bf6-102-219-152-17.eu.ngrok.io/v1/setting/all?pageNo=1&pageSize=5`,
     {
         method: 'GET',
         headers: {

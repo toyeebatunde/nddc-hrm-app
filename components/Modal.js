@@ -2,13 +2,69 @@
 import UserButton from "./ButtonMaker"
 import ImageHolder from "./ImageHolder"
 import Textfield from "./TextField"
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
+import { editApi } from "./Endpoints"
+import apiToken from "./Token"
+import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal }) {
-    const modalCloser = useRef()
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify }) {
+    const router = useRouter()
+
+    const chargeSelectOptions= [
+        "TRANSFER", 
+        "WITHDRAWAL", 
+        "DEPOSIT",
+        "BILL_PAYMENT",
+        "ACCOUNT_OPENING",
+        "CABLE_TV",
+        "DATA_RECHARGE",
+        "ELECTRICITY_RECHARGE",
+        "AIRTIME_RECHARGE",
+        "PAYRAIL_DEPOSIT",
+        "PAYRAIL_WITHDRAWAL",
+        "VALUE_ADDED_SERVICES"
+    ]
 
 
+
+    if (modal.addSplit) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] py-[40px] flex flex-col items-center h-[472px] bg-white rounded-[15px]`}>
+                <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Add Split</p>
+                    <button className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
+                    </button>
+                </section>
+                <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">
+                    All splits are in percentage and within the range of 100
+                </p>
+                <form className="flex flex-col justify-around w-full mt-[10px] min-h-[333px]">
+
+                    <section className="flex  flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="text" title="Value" />
+                        </div>
+                    </section>
+                    <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="text" title="Actor Type" />
+                        </div>
+                    </section>
+
+                    <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                        <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton text="Cancel" />
+                        </div>
+                        <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton text="Save" type="gradient" />
+                        </div>
+                    </section>
+                </form>
+            </section>
+        )
+    }
     if (modal.bankDelete) {
         return (
             <div id="modal" className="w-[350px] lg:rounded-[48px] lg:w-[529px] lg:h-[533px] flex flex-col justify-around items-center h-[500px] bg-white rounded-[15px]">
@@ -80,11 +136,11 @@ export default function Modal({ modal, closeModal }) {
         )
     }
 
-    if (modal.charges) {
+    if (modal.editCharges) {
         return (
-            <section className={`w-[350px] lg:rounded-[48px] lg:w-[534px] py-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
-                <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
-                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883]">Airtime</span></p>
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[544px] py-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
+                <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883] text-[26px] font-[500]">{values.values.transactionType || ""}</span></p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">
                         <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
                     </button>
@@ -94,36 +150,51 @@ export default function Modal({ modal, closeModal }) {
 
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Lower Bound" bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Lower Bound" name="lowerBound" formEdit={formEdit} value={values.values.lowerBound || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Upper Bound" bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Upper Bound" name="upperBound" formEdit={formEdit} value={values.values.upperBound || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Transaction Type" bg="bg-[#FBF4EB]" />
+                            <Textfield type="select" selectOptions={chargeSelectOptions} title="Transaction Type" name="transactionType" formEdit={formEdit} value={values.values.transactionType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Charge Type" bg="bg-[#FBF4EB]" />
+                            <Textfield type="text" title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Fee" bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Fee" name="value" formEdit={formEdit} value={values.values.value || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" />
+                            <UserButton text="Cancel" textColor="text-black" />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Save" type="gradient" />
+                            <UserButton onClick={(e)=>{editApi(
+                                e,
+                                `http://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
+                                {
+                                    "amount": values.values.value,
+                                    "chargeType": values.values.chargeType,
+                                    "lowerBound": values.values.lowerBound,
+                                    "transactionType": values.values.transactionType,
+                                    "upperBound": values.values.upperBound
+                                  },
+                                  localStorage.getItem('token'),
+                                  router,
+                                  modalSuccessNotify,
+                                  closeModal
+                                )}} 
+                                text="Save" type="gradient" />
                         </div>
                     </section>
                 </form>
