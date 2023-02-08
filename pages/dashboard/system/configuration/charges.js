@@ -5,16 +5,30 @@ import { useEffect, useState } from "react"
 import nookies from 'nookies'
 import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
+import apiToken from "../../../../components/Token"
+import axios from 'axios'
+import useSWR from 'swr'
 
-export default function Charges({ charges, modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editChargeState }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
+    const [callToken, setCallToken] = useState()
+    const[chargeData, setChargeData] = useState()
+    const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
+    const {data, error} = useSWR("http://admapis-staging.payrail.co/v1/charge/all?pageNo=1&pageSize=10", fetching)
+
+
+    
 
     useEffect(() => {
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
-    }, [])
+        if(data) {
+            setChargeData(data)
+            
+        }
+    }, [data])
 
     function changeView(id) {
         if (view) {
@@ -22,8 +36,13 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
             return
         }
         setView(true)
-        const currentView = charges.data.filter(charge => charge.id === id)
+        const currentView = chargeData.data.filter(charge => charge.id === id)
         setChargeView(currentView[0])
+    }
+
+    function chargeEdit(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editChargeState(fields, id)
     }
 
 
@@ -57,7 +76,7 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {charges.data.map((item, index) => {
+                                {chargeData?.data.map((item, index) => {
                                     return (
                                         <tr key={index} className="flex justify-around h-[50px]">
                                             <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
@@ -67,10 +86,10 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
                                             <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
                                             <td className="font-pushpennyBook  flex w-[373px] justify-between">
                                                 <div className="w-[115px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
+                                                    <UserButton type="view" text="View" onClick={()=>{changeView(item.id)}} />
                                                 </div>
                                                 <div className="w-[107px] h-[36px]">
-                                                    <UserButton type="edit" />
+                                                    <UserButton type="edit" onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
                                                 </div>
                                                 <div className="w-[130px] h-[36px]">
                                                     <UserButton type="delete" />
@@ -79,6 +98,11 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
                                         </tr>
                                     )
                                 })}
+
+                                {/* {chargeData ? 
+                                    <tr> <td>data</td> </tr>
+                                 : <tr><td>Loading</td></tr>
+                            } */}
 
                             </tbody>
                         </table>
@@ -97,34 +121,29 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
 
                         <form className="flex bg-brand-light-yellow py-4 rounded-[10px] flex-col justify-between w-full mt-[10px] min-h-[333px]">
 
-                            <div className="flex h-[62px] rounded-[10px] bg-white items-center relative h-full group justify-center w-[95%]  rounded-[inherit]">
-                                <div className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#F3F3F3] px-[4px]">stuff</div>
-                                <div  className={` pl-[25px] font-interegular text-[14px] font-[400] bg-white w-[95%] rounded-[inherit]`}></div>
-                            </div>
-
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Lower Bound" bg="bg-white" />
+                                    <Textfield type="text" title="Lower Bound" bg="bg-white" value={chargeView.lowerBound} />
                                 </div>
                             </section>
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Upper Bound" bg="bg-white" />
+                                    <Textfield type="text" title="Upper Bound" bg="bg-white" value={chargeView.upperBound} />
                                 </div>
                             </section>
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Transaction Type" bg="bg-white" />
+                                    <Textfield type="text" title="Transaction Type" bg="bg-white" value={chargeView.transactionType} />
                                 </div>
                             </section>
                             <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Charge Type" bg="bg-white" />
+                                    <Textfield type="text" title="Charge Type" bg="bg-white" value={chargeView.chargeType} />
                                 </div>
                             </section>
                             <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Fee" bg="bg-white" />
+                                    <Textfield type="text" title="Fee" bg="bg-white" value={chargeView.fee || "N/A"} />
                                 </div>
                             </section>
 
@@ -181,20 +200,20 @@ export default function Charges({ charges, modals, setToken, setActiveDashboard,
 
 Charges.Layout = SubLayoutTemplate
 
-export const getServerSideProps = async (context) => {
-    const cookies = nookies.get(context)
-    const response = await fetch(`https://3695-41-138-165-100.eu.ngrok.io/v1/charge/all?pageNo=1&pageSize=5`,
-        {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${cookies.token}`
-            }
-        }
-    )
-    const charges = await response.json()
-    return {
-        props: {
-            charges
-        }
-    }
-}
+// export const getServerSideProps = async (context) => {
+//     const cookies = nookies.get(context)
+//     const response = await fetch(`http://admapis-staging.payrail.co/v1/charge/all?pageNo=1&pageSize=10`,
+//         {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${apiToken.token}`
+//             }
+//         }
+//     )
+//     const charges = await response.json()
+//     return {
+//         props: {
+//             charges
+//         }
+//     }
+// }

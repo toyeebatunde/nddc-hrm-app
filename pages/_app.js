@@ -14,26 +14,35 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, charges: false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, editCharges: false, addSplit: false })
+  const [editForm, setEditForm] = useState()
+  const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
 
   const Layout = Component.Layout || EmptyLayout
+
+
+
 
   function switchBoard(e, board, active) {
     setActiveDashboard(board)
     setActiveState(active)
   }
 
+  function modalSuccessNotify (state) {
+    setModalSuccess(state)
+  }
+
   function switchActive(e, active) {
     setActiveState(active)
   }
 
-  function setModalState(state, modalToSet="") {
+  function setModalState(state, modalToSet = "") {
     if (state) {
       setModals({ ...modals, isOpen: state, [modalToSet]: state })
       return
     }
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, editCharges: false, addSplit: false })
 
   }
 
@@ -45,9 +54,21 @@ export default function MyApp({ Component, pageProps }) {
     setter({ ...form, [e.target.id]: e.target.value })
   }
 
+  function editChargeState(formState, id) {
+    setEditForm({ id: id, values: formState })
+  }
+
+  function formEdit(e) {
+    setEditForm({...editForm, values: {...editForm.values, [e.target.name]:e.target.value}})
+    // console.log(e.target.value)
+    // console.log(e.target.name)
+    // console.log(editForm.values[e.target.name])
+  }
+
   function login(details) {
     // https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login
-    axios.post("https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login", {
+    // https://aa63-102-219-152-17.eu.ngrok.io 
+    axios.post("http://admapis-staging.payrail.co/v1/auth/login", {
       password: details.password,
       username: details.username
     })
@@ -56,9 +77,10 @@ export default function MyApp({ Component, pageProps }) {
         // console.log(response.data)
         setToken(true)
         Cookies.set("token", response.data.token)
+        localStorage.setItem('token', response.data.token)
         router.push("/dashboard/analytics")
       })
-      .catch(response => console.log(response.response.status))
+      .catch(response => console.log(response))
   }
 
   function tokenTrue() {
@@ -91,7 +113,21 @@ export default function MyApp({ Component, pageProps }) {
     //   />
     // </Layout>
 
-    <LayoutAuthed modals={modals} token={token} setModalState={setModalState} setActiveDashboard={setActiveDashboard} activeDashboard={activeDashboard} activeState={activeState} switchBoard={switchBoard} switchActive={switchActive} closeModals={closeModals}>
+    <LayoutAuthed
+      modals={modals}
+      editForm={editForm}
+      setEditForm={setEditForm}
+      token={token}
+      setModalState={setModalState}
+      setActiveDashboard={setActiveDashboard}
+      activeDashboard={activeDashboard}
+      activeState={activeState}
+      switchBoard={switchBoard}
+      switchActive={switchActive}
+      closeModals={closeModals}
+      formEdit={formEdit}
+      modalSuccessNotify={modalSuccessNotify}
+      >
       <Layout modals={modals}>
         <Component
           login={login}
@@ -108,7 +144,10 @@ export default function MyApp({ Component, pageProps }) {
           setLoginDetails={setLoginDetails}
           {...pageProps} modals={modals}
           setModals={setModals}
-          setModalState={setModalState} />
+          setModalState={setModalState}
+          editChargeState={editChargeState}
+          modalSuccessNotify={modalSuccessNotify}
+        />
       </Layout>
     </LayoutAuthed>
   )

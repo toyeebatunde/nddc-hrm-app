@@ -9,7 +9,8 @@ import UserButton from "./ButtonMaker"
 
 
 
-export default function Dashboard({ children, modals, setModalState,setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token }) {
+
+export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify}) {
     // const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
     // const [activeState, setActiveState] = useState("0")
     const [isFull, setIsFull] = useState()
@@ -25,9 +26,7 @@ export default function Dashboard({ children, modals, setModalState,setActiveDas
     //     setActiveState(active)
     // }
 
-    useEffect(()=>{
-        if(localStorage.getItem("token")) {}
-    },[])
+    
 
 
     useEffect(() => {
@@ -66,17 +65,23 @@ export default function Dashboard({ children, modals, setModalState,setActiveDas
             closeModals()
             return
         }
-        
+
     }
 
-    
 
-    
+
     return (
         <div className={`w-full h-screen flex justify-between overflow-auto`}>
-            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.8] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
-                <Modal modal={modals} closeModal={closeModal} />
-                
+            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.9] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
+                <Modal
+                    modal={modals}
+                    closeModal={closeModal}
+                    values={editForm}
+                    setFormFields={setEditForm}
+                    formEdit={formEdit}
+                    modalSuccessNotify={modalSuccessNotify}                    
+                />
+
             </div>
 
 

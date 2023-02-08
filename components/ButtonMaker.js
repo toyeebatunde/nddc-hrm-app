@@ -10,7 +10,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "edit") {
         return (
-            <button className="w-full h-full flex justify-center gap-[15%] px-[10px] items-center text-white rounded-[24px] bg-black flex">
+            <button onClick={onClick} className="w-full h-full flex justify-center gap-[15%] px-[10px] items-center text-white rounded-[24px] bg-black flex">
                 <h2 className="font-[400] font-pushPenny text-[18px]">{text || "Edit"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/arrow.svg' />
@@ -89,7 +89,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
         )
     }
     return (
-        <button onClick={(e) => { onClick(e) }} className={` ${textColor} ${bg} border-[#777777]  w-full h-full font-[400] text-[#ffffff] rounded-[23px]`}>
+        <button onClick={(e) => { onClick(e) }} className={` ${textColor} ${bg} border-[#777777] border w-full h-full font-[400] rounded-[23px]`}>
             {text}
         </button>
     )

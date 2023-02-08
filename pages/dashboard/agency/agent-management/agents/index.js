@@ -3,6 +3,7 @@ import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../../../components/ButtonMaker";
 import { useEffect } from "react";
+import nookies from 'nookies'
 
 export default function Agents({ modals, setToken }) {
 
@@ -82,3 +83,21 @@ export default function Agents({ modals, setToken }) {
 }
 
 Agents.Layout = MetricLayoutTemplate
+
+export const getServerSideProps = async (context) => {
+    const cookies = nookies.get(context)
+    const response = await fetch(`http://admapis-staging.payrail.co/v1/referrer/all?pageNo=1&pageSize=5`,
+        {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${cookies.token}`
+            }
+        }
+    )
+    const referrers = await response.json()
+    return {
+        props: {
+            referrers
+        }
+    }
+}
