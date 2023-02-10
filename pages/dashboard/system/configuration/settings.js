@@ -1,15 +1,36 @@
 
 import SubLayoutTemplate from "../../../../components/ConfigLayoutTemplate"
 import ImageHolder from "../../../../components/ImageHolder"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import nookies from 'nookies'
-export default function Settings({ modals, setActiveState, setActiveDashboard, settings, activeTab, setToken, setModalState, getModalButtonRef }) {
+import axios from "axios"
+import useSWR from 'swr'
+import { testEnv } from "../../../../components/Endpoints"
+import UserButton from "../../../../components/ButtonMaker"
+export default function Settings({ modals, setActiveState, setActiveDashboard, activeTab, setToken, setModalState, getModalButtonRef, editFormState }) {
 
-    useEffect(()=>{
+    const [settingsData, setSettingsData] = useState()
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data, error } = useSWR(`${testEnv}v1/setting/all?pageNo=0&pageSize=10`, fetching)
+    // const router = useRouter()
+
+    useEffect(() => {
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
-    }, [])
+        if (data) {
+            setSettingsData(data)
+        }
+        if (error) {
+            console.log(error)
+        }
+    }, [data])
+
+    function settingEdit(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
+
     return (
         <div className="">
             <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
@@ -31,31 +52,28 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
                                 <tr className="flex justify-around">
-                                    <th className="font-400  flex w-[20%]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
+                                    <th className="font-400  flex w-[40%]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
                                     <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">DESCRIPTION</th>
                                     <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
                                     <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {settings.data.map((item,index)=> {
+                                {settingsData?.data.map((item, index) => {
                                     return (
                                         <tr key={index} className="flex justify-around h-[50px]">
-                                        <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.name}</td>
-                                        <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description}</td>
-                                        <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
-                                        <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                            <button className="w-[107px] h-[36px] flex justify-between px-[20px] items-center text-white rounded-[24px] bg-black flex">
-                                                <h2 className="font-[400] font-pushPenny text-[18px]">Edit</h2>
-                                                <div className="w-[24px] h-[24px] relative">
-                                                <ImageHolder src= '/icons/arrow.svg' />
+                                            <td className="font-pushpennyBook flex w-[40%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.name}</td>
+                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description ? item.description : "n/a"}</td>
+                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
+                                            <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                <div className="w-[107px] h-[36px]">
+                                                    <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", {name: item.name, description: item.description, value: item.value, type: item.type}, item.id) }} />
                                                 </div>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     )
                                 })}
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -65,22 +83,22 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
     )
 }
 
-Settings.Layout = SubLayoutTemplate 
+Settings.Layout = SubLayoutTemplate
 
-export const getServerSideProps = async(context) => {
-    const cookies = nookies.get(context)
-    const response = await fetch(`https://8bf6-102-219-152-17.eu.ngrok.io/v1/setting/all?pageNo=1&pageSize=5`,
-    {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${cookies.token}`
-        }
-    }
-    )
-    const settings = await response.json()
-    return {
-        props: {
-            settings
-        }
-    }
-}
+// export const getServerSideProps = async(context) => {
+//     const cookies = nookies.get(context)
+//     const response = await fetch(`https://8bf6-102-219-152-17.eu.ngrok.io/v1/setting/all?pageNo=1&pageSize=5`,
+//     {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${cookies.token}`
+//         }
+//     }
+//     )
+//     const settings = await response.json()
+//     return {
+//         props: {
+//             settings
+//         }
+//     }
+// }

@@ -10,7 +10,7 @@ import UserButton from "./ButtonMaker"
 
 
 
-export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify}) {
+export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify }) {
     // const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
     // const [activeState, setActiveState] = useState("0")
     const [isFull, setIsFull] = useState()
@@ -26,7 +26,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
     //     setActiveState(active)
     // }
 
-    
+
 
 
     useEffect(() => {
@@ -68,20 +68,29 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
 
     }
 
-
+    // 
 
     return (
         <div className={`w-full h-screen flex justify-between overflow-auto`}>
-            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.9] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
-                <Modal
+            <div className={`bg-[#ffffff] ${modals.isOpen ? "flex" : "hidden"} top-[50px] lg:top-[120px] rounded-[15px] lg:rounded-[48px] left-[30px] lg:left-[150px] xl:left-[400px] z-[200] fixed w-fit h-fit`}>
+            <Modal
                     modal={modals}
                     closeModal={closeModal}
                     values={editForm}
                     setFormFields={setEditForm}
                     formEdit={formEdit}
-                    modalSuccessNotify={modalSuccessNotify}                    
+                    modalSuccessNotify={modalSuccessNotify}
                 />
-
+            </div>
+            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : "hidden"}  fixed justify-center  items-center top-0 z-[150]`}>
+                {/* <Modal
+                    modal={modals}
+                    closeModal={closeModal}
+                    values={editForm}
+                    setFormFields={setEditForm}
+                    formEdit={formEdit}
+                    modalSuccessNotify={modalSuccessNotify}
+                /> */}
             </div>
 
 

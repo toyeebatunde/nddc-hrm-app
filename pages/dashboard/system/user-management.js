@@ -14,7 +14,7 @@ import useSWR from 'swr'
 import axios from 'axios'
 import { testEnv } from '../../../components/Endpoints'
 
-export default function UserManagement({ modals, setModalState, setToken }) {
+export default function UserManagement({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
     const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
     const [usersData, setUsersData] = useState()
@@ -24,8 +24,8 @@ export default function UserManagement({ modals, setModalState, setToken }) {
 
     useEffect(() => {
         setToken()
-        // setActiveDashboard("Agent Management")
-        // setActiveState("2")
+        setActiveDashboard("User Management")
+        setActiveState("1")
         if (data) {
             setUsersData(data)
         }

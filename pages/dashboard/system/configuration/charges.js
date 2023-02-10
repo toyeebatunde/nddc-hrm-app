@@ -10,7 +10,7 @@ import axios from 'axios'
 import useSWR from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editChargeState }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [callToken, setCallToken] = useState()
@@ -43,7 +43,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
     function chargeEdit(modalState, modal, fields, id) {
         setModalState(modalState, modal)
-        editChargeState(fields, id)
+        editFormState(fields, id)
     }
 
 
@@ -173,19 +173,14 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                 All Splits are in percentage
                             </h2>
                             <ul className="flex justify-between border-b border-[#FBF4EB] w-full xl:w-[90%]">
-                                <li className="font-pushpennyBook  text-[12px] font-[400] leading-[15px]">STATUS</li>
-                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">CREATED ON</li>
-                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">LAST LOGIN</li>
-                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">LIEN STATUS</li>
+                                <li className="font-pushpennyBook  text-[12px] font-[400] leading-[15px]">ACTOR</li>
+                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">VALUE</li>
+                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">ACTIONS</li>
+
                             </ul>
                             <div className="flex justify-between w-full">
-                                <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">A</div>
-                                <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                    27-12-2021 06:48 PM
-                                </div>
-                                <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                    27-12-2021 06:48 PM
-                                </div>
+                                <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">A</div>                                
+                                <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">NO</div>
                                 <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">NO</div>
                             </div>
                         </div>

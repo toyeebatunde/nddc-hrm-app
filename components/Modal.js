@@ -11,9 +11,9 @@ import { useRouter } from "next/router"
 export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify }) {
     const router = useRouter()
 
-    const chargeSelectOptions= [
-        "TRANSFER", 
-        "WITHDRAWAL", 
+    const chargeSelectOptions = [
+        "TRANSFER",
+        "WITHDRAWAL",
         "DEPOSIT",
         "BILL_PAYMENT",
         "ACCOUNT_OPENING",
@@ -179,22 +179,89 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                             <UserButton text="Cancel" textColor="text-black" />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton onClick={(e)=>{editApi(
-                                e,
-                                `http://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
-                                {
-                                    "amount": values.values.value,
-                                    "chargeType": values.values.chargeType,
-                                    "lowerBound": values.values.lowerBound,
-                                    "transactionType": values.values.transactionType,
-                                    "upperBound": values.values.upperBound
-                                  },
-                                  localStorage.getItem('token'),
-                                  router,
-                                  modalSuccessNotify,
-                                  closeModal
-                                )}} 
+                            <UserButton onClick={(e) => {
+                                editApi(
+                                    e,
+                                    `http://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
+                                    {
+                                        "amount": values.values.value,
+                                        "chargeType": values.values.chargeType,
+                                        "lowerBound": values.values.lowerBound,
+                                        "transactionType": values.values.transactionType,
+                                        "upperBound": values.values.upperBound
+                                    },
+                                    localStorage.getItem('token'),
+                                    router,
+                                    modalSuccessNotify,
+                                    closeModal
+                                )
+                            }}
                                 text="Save" type="gradient" />
+                        </div>
+                    </section>
+                </form>
+            </section>
+        )
+    }
+
+    if (modal.editSetting) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
+                <section className="flex w-[90%] lg:w-[95%] justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
+                    <button className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
+                    </button>
+                </section>
+                <p className="font-pushpennyBook font-[700] text-[12px] w-[95%] text-[#6E7883] md:text-[18px] leading-[26px]">Make your changes, note that the changes you make will be subject to approval</p>
+                <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
+
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="text" type="text" formEdit={formEdit} title="Name" value={values.values.name} name="name" bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="text" type="text" formEdit={formEdit} title="Description" value={values.values.description} name="description" bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="select" title="Type of setting" selectOptions={["n/a"]} name="type" bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="number" type="text" formEdit={formEdit} title="Value" name="value" value={values.values.value} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+
+                    <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                        <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton onClick={(e) => {
+                                e.preventDefault()
+                                closeModal(e)
+                            }
+                            } text="Cancel" textColor="text-black" />
+                        </div>
+                        <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton onClick={(e) => {
+                                editApi(
+                                    e,
+                                    `http://admapis-staging.payrail.co/v1/setting/${values.id}/update`,
+                                    {
+                                        "value": values.values.value || "n/a",
+                                        "type": values.values.type || "n/a",
+                                        "description": values.values.description || "n/a",
+                                        "name": values.values.name || "n/a"
+                                    },
+                                    localStorage.getItem('token'),
+                                    router,
+                                    modalSuccessNotify,
+                                    closeModal
+                                )
+                            }} text="Save" type="gradient" />
                         </div>
                     </section>
                 </form>
