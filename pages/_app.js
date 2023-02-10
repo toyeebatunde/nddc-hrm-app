@@ -5,6 +5,7 @@ import LayoutAuthed from '../components/LayoutAuthed'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { ngrok, testEnv } from '../components/Endpoints'
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -68,7 +69,7 @@ export default function MyApp({ Component, pageProps }) {
   function login(details) {
     // https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login
     // https://aa63-102-219-152-17.eu.ngrok.io 
-    axios.post("http://admapis-staging.payrail.co/v1/auth/login", {
+    axios.post(`${testEnv}v1/auth/login`, {
       password: details.password,
       username: details.username
     })

@@ -8,6 +8,7 @@ import Textfield from "../../../../components/TextField"
 import apiToken from "../../../../components/Token"
 import axios from 'axios'
 import useSWR from 'swr'
+import { ngrok, testEnv } from "../../../../components/Endpoints"
 
 export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editChargeState }) {
     const [chargeView, setChargeView] = useState({})
@@ -15,7 +16,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
     const [callToken, setCallToken] = useState()
     const[chargeData, setChargeData] = useState()
     const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
-    const {data, error} = useSWR("http://admapis-staging.payrail.co/v1/charge/all?pageNo=1&pageSize=10", fetching)
+    const {data, error} = useSWR(`${testEnv}v1/charge/all?pageNo=1&pageSize=10`, fetching)
 
 
     

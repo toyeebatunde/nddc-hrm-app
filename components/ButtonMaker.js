@@ -1,4 +1,5 @@
 
+import { title } from "process"
 import ImageHolder from "./ImageHolder"
 export default function UserButton({ type, text, onClick, small=false, bg="bg-[white]", textColor }) {
     if (type == "gradient") {
@@ -10,8 +11,8 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "edit") {
         return (
-            <button onClick={onClick} className="w-full h-full flex justify-center gap-[15%] px-[10px] items-center text-white rounded-[24px] bg-black flex">
-                <h2 className="font-[400] font-pushPenny text-[18px]">{text || "Edit"}</h2>
+            <button onClick={onClick} className="w-full h-full flex justify-center gap-[15%] px-[5px] items-center text-white rounded-[24px] bg-black flex">
+                <h2 className={`font-[400] font-pushPenny ${text == "Approve" ? "text-[17px]" : "text-[18px]"} `}>{text || "Edit"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/arrow.svg' />
                 </div>
