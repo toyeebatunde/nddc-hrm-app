@@ -85,20 +85,4 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, a
 
 Settings.Layout = SubLayoutTemplate
 
-// export const getServerSideProps = async(context) => {
-//     const cookies = nookies.get(context)
-//     const response = await fetch(`https://8bf6-102-219-152-17.eu.ngrok.io/v1/setting/all?pageNo=1&pageSize=5`,
-//     {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${cookies.token}`
-//         }
-//     }
-//     )
-//     const settings = await response.json()
-//     return {
-//         props: {
-//             settings
-//         }
-//     }
-// }
+

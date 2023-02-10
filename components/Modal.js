@@ -30,11 +30,11 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
     if (modal.addSplit) {
         return (
-            <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] py-[40px] flex flex-col items-center h-[472px] bg-white rounded-[15px]`}>
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Add Split</p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
+                        <ImageHolder id="closer" onClick={(e) => {closeModal(e) }} src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">
@@ -67,7 +67,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
     }
     if (modal.bankDelete) {
         return (
-            <div id="modal" className="w-[350px] lg:rounded-[48px] lg:w-[529px] lg:h-[533px] flex flex-col justify-around items-center h-[500px] bg-white rounded-[15px]">
+            <div id="modal" className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <div className="w-[133px] h-[133px] flex justify-center items-center rounded-[50%] bg-[#F5F5F5]">
                     <div className="w-[60px] h-[60px] relative">
                         <ImageHolder src="/icons/bin.svg" />
@@ -95,7 +95,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
     if (modal.teamModal) {
         return (
-            <section className={`w-[350px] lg:rounded-[48px] lg:w-[529px] py-[20px] lg:h-[500px] flex flex-col items-center h-[500px] bg-white rounded-[15px]`}>
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">
@@ -138,7 +138,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
     if (modal.editCharges) {
         return (
-            <section className={`w-[350px] lg:rounded-[48px] lg:w-[544px] py-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883] text-[26px] font-[500]">{values.values.transactionType || ""}</span></p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">

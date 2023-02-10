@@ -100,11 +100,6 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                     )
                                 })}
 
-                                {/* {chargeData ? 
-                                    <tr> <td>data</td> </tr>
-                                 : <tr><td>Loading</td></tr>
-                            } */}
-
                             </tbody>
                         </table>
                     </div>
@@ -164,25 +159,33 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Charge Splits</h2>
                             <div className="w-[134px] h-[35px]">
-                                <UserButton type="gradient" text="+Add Split" />
+                                <UserButton type="gradient" text="+Add Split" onClick={()=>{setModalState(true, "addSplit")}} />
                             </div>
                         </div>
 
-                        <div className="grow w-full justify-around bg-brand-light-yellow rounded-[10px] p-4 flex flex-col">
+                        <div className="grow w-full justify-around bg-brand-light-yellow rounded-[10px] p-2 flex flex-col">
                             <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[14px] text-[#6E7883]">
                                 All Splits are in percentage
                             </h2>
-                            <ul className="flex justify-between border-b border-[#FBF4EB] w-full xl:w-[90%]">
-                                <li className="font-pushpennyBook  text-[12px] font-[400] leading-[15px]">ACTOR</li>
-                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">VALUE</li>
-                                <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">ACTIONS</li>
-
-                            </ul>
-                            <div className="flex justify-between w-full">
-                                <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">A</div>                                
-                                <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">NO</div>
-                                <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">NO</div>
-                            </div>
+                            
+                            <table className="table-fixed mt-[20px] w-full flex flex-col">
+                            <thead>
+                                <tr className="flex justify-between">
+                                    <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTOR</th>
+                                    <th className="font-400    flex w-[33%] text-[12px]  leading-[15.62px] font-pushpennyBook">VALUE</th>
+                                    <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] justify-center font-pushpennyBook">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody className="mt-[10px]">
+                            <tr className="flex justify-around h-[50px]">
+                                <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">ACTOR</td>
+                                <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">VALUE</td>
+                                <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                    <UserButton type="delete"  />
+                                </td>
+                                </tr>
+                            </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -195,21 +198,3 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
 
 Charges.Layout = SubLayoutTemplate
-
-// export const getServerSideProps = async (context) => {
-//     const cookies = nookies.get(context)
-//     const response = await fetch(`http://admapis-staging.payrail.co/v1/charge/all?pageNo=1&pageSize=10`,
-//         {
-//             method: 'GET',
-//             headers: {
-//                 'Authorization': `Bearer ${apiToken.token}`
-//             }
-//         }
-//     )
-//     const charges = await response.json()
-//     return {
-//         props: {
-//             charges
-//         }
-//     }
-// }
