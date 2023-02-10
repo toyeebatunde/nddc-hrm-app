@@ -90,7 +90,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
         )
     }
     return (
-        <button onClick={(e) => { onClick(e) }} className={` ${textColor} ${bg} border-[#777777] border w-full h-full font-[400] rounded-[23px]`}>
+        <button onClick={(e) => { onClick(e) }} className={` ${textColor} ${bg}  w-full h-full font-[400] rounded-[23px]`}>
             {text}
         </button>
     )
