@@ -10,10 +10,29 @@ import { useState, useRef, useEffect } from "react"
 import RadioToggle from "../../../components/radioToggle"
 import ButtonTab from "../../../components/ButtonTab"
 import nookies from 'nookies'
+import useSWR from 'swr'
+import axios from 'axios'
+import { testEnv } from '../../../components/Endpoints'
 
-export default function UserManagement({ users, modals, setModalState, setToken }) {
+export default function UserManagement({ modals, setModalState, setToken }) {
     const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
+    const [usersData, setUsersData] = useState()
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data, error } = useSWR(`${testEnv}v1/user/all?pageNo=0&pageSize=10`, fetching)
+    // const router = useRouter()
+
+    useEffect(() => {
+        setToken()
+        // setActiveDashboard("Agent Management")
+        // setActiveState("2")
+        if (data) {
+            setUsersData(data)
+        }
+        if (error) {
+            console.log(error)
+        }
+    }, [data])
 
     function setTab(tab) {
         setActiveTab(tab)
@@ -57,7 +76,7 @@ export default function UserManagement({ users, modals, setModalState, setToken 
                         </div>
                     </section>
                     <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                        <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · {users.pendingInvite}</p>
+                        <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · 0</p>
                         <button onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
                     </section>
 
@@ -78,7 +97,7 @@ export default function UserManagement({ users, modals, setModalState, setToken 
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {users.data.map((item, index) => {
+                                {usersData?.data.map((item, index) => {
                                     return (
                                         <tr key={index} className="flex justify-around h-[50px]">
                                             <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
@@ -318,20 +337,20 @@ export default function UserManagement({ users, modals, setModalState, setToken 
     )
 }
 
-export const getServerSideProps = async (context) => {
-    const cookies = nookies.get(context)
-    const response = await fetch(`https://3695-41-138-165-100.eu.ngrok.io/v1/user/all?pageNo=1&pageSize=5`,
-        {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${cookies.token}`
-            }
-        }
-    )
-    const users = await response.json();
-    return {
-        props: {
-            users
-        }
-    }
-}
+// export const getServerSideProps = async (context) => {
+//     const cookies = nookies.get(context)
+//     const response = await fetch(`https://3695-41-138-165-100.eu.ngrok.io/v1/user/all?pageNo=1&pageSize=5`,
+//         {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${cookies.token}`
+//             }
+//         }
+//     )
+//     const users = await response.json();
+//     return {
+//         props: {
+//             users
+//         }
+//     }
+// }

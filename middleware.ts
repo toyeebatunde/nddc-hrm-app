@@ -33,23 +33,23 @@ export async function middleware(request: NextRequest) {
       })
   }
 
-  if (request.nextUrl.pathname === '/dashboard' && token) {
-    url.pathname = "/dashboard/analytics/agent-metrics"
-    const status = ""
-    axios.get('https://3695-41-138-165-100.eu.ngrok.io/v1/user/all', {
-      headers: {
-        Authorization: `bearer ${token}`
-      }
-    })
-      .then(response => {
-        return NextResponse.redirect(url)
-      })
-      .catch(error => {
-        url.pathname = "/"
-        console.log(error)
-        return NextResponse.redirect(url)
-      })    
-  }
+  // if (request.nextUrl.pathname === '/dashboard' && token) {
+  //   url.pathname = "/dashboard/analytics/agent-metrics"
+  //   const status = ""
+  //   axios.get('https://3695-41-138-165-100.eu.ngrok.io/v1/user/all', {
+  //     headers: {
+  //       Authorization: `bearer ${token}`
+  //     }
+  //   })
+  //     .then(response => {
+  //       return NextResponse.redirect(url)
+  //     })
+  //     .catch(error => {
+  //       url.pathname = "/"
+  //       console.log(error)
+  //       return NextResponse.redirect(url)
+  //     })    
+  // }
 
  
 

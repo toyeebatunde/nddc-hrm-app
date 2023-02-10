@@ -1,19 +1,55 @@
 
 
-import UserButton from "../../../../../components/ButtonMaker"
-import ImageHolder from "../../../../../components/ImageHolder"
-import RadioToggle from "../../../../../components/radioToggle"
-import { useState } from "react"
-import Toggler from "../../../../../components/Toggle"
+import UserButton from "../../../../../../components/ButtonMaker"
+import ImageHolder from "../../../../../../components/ImageHolder"
+import RadioToggle from "../../../../../../components/radioToggle"
+import { useState, useEffect } from "react"
+import Toggler from "../../../../../../components/Toggle"
+import axios from "axios"
+import useSWR from 'swr'
+import { useRouter } from "next/router"
+import { testEnv } from "../../../../../../components/Endpoints"
 
-export default function Agent({ modals, setModalState }) {
+export default function Agent({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
+    const router = useRouter()
     const [toggleStateOne, setToggleStateOne] = useState(false)
     const [toggleStateTwo, setToggleStateTwo] = useState(true)
+    const [tranDetails, setTranDetails] = useState(false)
+
+    const[agentData, setAgentData] = useState()
+    const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
+    const {data, error} = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
+
+    useEffect(()=>{
+        console.log(router.query)
+        setToken()
+        setActiveDashboard("Agent Management")
+        setActiveState("2")
+        if(data) {
+            setAgentData(data)            
+        }
+        if(error) {
+            console.log(error)
+        }
+    },[data])
+
+    const dateFormatter = (stamp) => {
+        const date = new Date(stamp)
+        return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
+    }
 
     const toggle = (e, toggler) => {
         // console.log(e.target.checked)
         toggler(e.target.checked)
     };
+
+    const dataFormat=(data)=>{
+        const value = data.toString()
+        if(value.includes(".00")){
+            return `₦${value}`
+        }        
+        return `₦${value}.00`
+    }
 
 
 
@@ -34,7 +70,7 @@ export default function Agent({ modals, setModalState }) {
                 <div className="flex flex-col w-full lg:w-[47%]">
                     <div className="w-full gap-[7px] h-[520px] flex flex-col">
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
-                            <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Mike Ola wallet details</h2>
+                            <h2 className="font-pushpennyBook text-[14px] lg:text-[18px] font-[400] leading-[14px]">{agentData?.agent.firstName} {agentData?.agent.lastName}'s wallet details</h2>
                             <div className="w-[134px] h-[35px]">
                                 <UserButton type="gradient" text="System split" />
                             </div>
@@ -50,25 +86,25 @@ export default function Agent({ modals, setModalState }) {
                                         <h2 className="font-pushpennyMedium text-[11px] lg:text-[13px] font-[500] leading-[24px]">Commission Configurations</h2>
                                     </div>
                                 </div>
-                                <div className="font-[500] text-[40px] font-pushpennyMedium leading-[52px]"> ₦10,078,092.00</div>
+                                <div className="font-[500] text-[40px] font-pushpennyMedium leading-[52px]"> {agentData ? dataFormat(agentData.wallet.balance) : "₦0.00"}</div>
                                 <div className="w-[210px] h-[50px] pl-4 justify-center border border-[#E8E8E8] rounded-[10px] flex flex-col">
                                     <h2 className="font-pushpennyBook text-[8px] text-[#6E7883] font-[400] leading-[10px]">commission balance</h2>
-                                    <h2 className="text-[20px] font-pushpennyMedium text-[#6E7883] font-[500] ">₦70,092.00</h2>
+                                    <h2 className="text-[20px] font-pushpennyMedium text-[#6E7883] font-[500] ">{agentData ? dataFormat(agentData.wallet.commission.balance) : "₦0.00"}</h2>
                                 </div>
                             </div>
                             <div className="w-full justify-between p-4 h-[258px] bg-[#FBF4EB] flex flex-col rounded-[10px]">
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] text-[#6E7883] leading-[15px]">BANK ACCOUNT DETAILS</h2>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">ACCOUNT NUMBER</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">091027637183</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.agent.bankAccountNumber}</h2>
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">ACCOUNT NAME</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">MIKE OLA</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.customerAccount.externalAccountName}</h2>
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">BANK NAME</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">PROVIDUS BANK</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.customerAccount.externalBankName}</h2>
                                 </div>
                                 <div className="w-[95%] flex self-center h-[36px]">
                                     <UserButton type="transaction" />
@@ -78,7 +114,7 @@ export default function Agent({ modals, setModalState }) {
                     </div>
                     <div className="w-full h-[513px] gap-[7px] flex flex-col">
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
-                            <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Mike Ola wallet details</h2>
+                            <h2 className="font-pushpennyBook text-[14px] lg:text-[18px] font-[400] leading-[14px]">{`${agentData?.agent.firstName} ${agentData?.agent.lastName}'s wallet details`}</h2>
                         </div>
                         <div className=" flex border grow border-[#E8E8E8] flex-col rounded-[10px]">
                             <div className="grow w-full justify-around p-4 flex flex-col">
@@ -92,14 +128,14 @@ export default function Agent({ modals, setModalState }) {
                                     <li className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">LIEN STATUS</li>
                                 </ul>
                                 <div className="flex justify-between w-full">
-                                    <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">A</div>
+                                    <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">{agentData?.agent.status}</div>
                                     <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                        27-12-2021 06:48 PM
+                                    {agentData?.agent.dateCreated == null ? "n/a" : dateFormatter(agentData?.agent.dateCreated)}
                                     </div>
                                     <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                        27-12-2021 06:48 PM
+                                    {agentData?.agent.lastLoginDate == null ? "n/a" : dateFormatter(agentData?.agent.lastLoginDate)}
                                     </div>
-                                    <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">NO</div>
+                                    <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">{agentData?.agent.onLien ? "YES" : "NO"}</div>
                                 </div>
                             </div>
                             <div className="w-full relative justify-between p-4 lg:h-[270px] bg-[#FBF4EB] flex flex-col rounded-[10px]">
@@ -165,51 +201,51 @@ export default function Agent({ modals, setModalState }) {
                                 <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">AGL0000002</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]"></h2>
+                                    </div>
+                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent Type</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.agentType}</h2>
+                                    </div>
+                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Username</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.userName}</h2>
+                                    </div>
+                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Name</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.firstName} {agentData?.agent.lastName}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.email}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Phone</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.phoneNumber}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Address</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.address}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">City</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.city}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">LGA</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.lga}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">State</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.state}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Referrer</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]"></h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
-                                    </div>
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
-                                    </div>
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
-                                    </div>
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">KYC</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.agent.kycComplete ? "Completed" : "Pending"}</h2>
                                     </div>
                                 </div>
                             </div>
@@ -222,15 +258,15 @@ export default function Agent({ modals, setModalState }) {
                                 <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">AGL0000002</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[0] ? agentData?.subAgents[0] : "n/a"}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[1] ? agentData?.subAgents[1] : "n/a"}</h2>
                                     </div>
                                     <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Mykel4gog@yahoo.com</h2>
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[2] ? agentData?.subAgents[2] : "n/a"}</h2>
                                     </div>
 
                                     <div className="h-[36px] self-center mt-[20px] w-[236px]">
@@ -245,140 +281,97 @@ export default function Agent({ modals, setModalState }) {
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col mt-[20px] lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">KYC Details</h2>
                         </div>
-                        <div className="flex w-full grow flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] px-4 py-4 rounded-[10px]">  
-                        <div className="w-[541px]  h-fit">
+                        <div className="flex w-full grow flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] pl-[10px] py-2 rounded-[10px]">  
+                        <div className="w-[741px] lg:w-full  h-fit">
 
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
                                 <tr className="flex gap-[5px]">
-                                    <th className="font-400 flex  text-[12px] w-[50px] leading-[15.62px] font-pushpennyBook">KYC</th>
+                                    <th className="font-400 flex text-[12px] w-[40px] leading-[15.62px] font-pushpennyBook">KYC</th>
                                     <th className="font-400 w-[100px] flex   text-[12px] leading-[15.62px] font-pushpennyBook">DETAILS</th>
                                     <th className="font-400  flex w-[100px] text-[12px] leading-[15.62px] font-pushpennyBook">UPLOADED ON</th>
                                     <th className="font-400  flex   text-[12px] w-[60px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400 w-[210px] flex text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                    <th className="font-400 grow  ml-[95px] flex text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
                                 <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
+                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.bvn ? "BVN" : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvn}</td>                                   
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agentData?.kyc.bvnUploadedDate)}</td>
+                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvnKycStatus}</td>
                                     
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
+                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="edit" text="Approve" />
                                         </div>
-                                        <div className="w-[100px] h-[36px]">
+                                        <div className="w-[49%] h-[36px]">
+                                            <UserButton type="view" text="Decline" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr className="flex  gap-[5px] h-[50px]">
+                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.nin ? "NIN" : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.nin : "n/a" }</td>                                   
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.ninUploadedDate : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.ninKycStatus : "PENDING_UPLOAD" }</td>
+                                    
+                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
+                                        <div className="w-[49%] h-[36px]">
+                                            <UserButton type="edit" text="Approve" />
+                                        </div>
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="view" text="Decline" />
                                         </div>
                                     </td>
                                 </tr>
                                 <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
+                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.rcNumber ? "RC No." : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumber : "n/a" }</td>                                   
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumberUploadedDate : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumberKycStatus : "PENDING_UPLOAD" }</td>
                                     
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
+                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="edit" text="Approve" />
                                         </div>
-                                        <div className="w-[100px] h-[36px]">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="view" text="Decline" />
                                         </div>
                                     </td>
                                 </tr>
                                 <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
+                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.tin ? "TIN" : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tin : "n/a" }</td>                                   
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tinUploadedDate : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tinKycStatus : "PENDING_UPLOAD" }</td>
                                     
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
+                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="edit" text="Approve" />
                                         </div>
-                                        <div className="w-[100px] h-[36px]">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="view" text="Decline" />
                                         </div>
                                     </td>
                                 </tr>
                                 <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
+                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.contractNo ? "Contract No" : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNo : "n/a" }</td>                                   
+                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNoUploadedDate : "n/a" }</td>
+                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNoKycStatus : "PENDING_UPLOAD" }</td>
                                     
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
+                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="edit" text="Approve" />
                                         </div>
-                                        <div className="w-[100px] h-[36px]">
+                                        <div className="w-[49%] h-[36px]">
                                             <UserButton type="view" text="Decline" />
                                         </div>
                                     </td>
                                 </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[100px] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[100px] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[100px] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">BVN</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">12345678909</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">27-12-2021 06:48 PM</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Verified</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] flex w-[210px]  flex items-start">
-                                        <div className="w-[110px] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[100px] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
+                                
+                                
                             </tbody>
                         </table>
                     </div>                          

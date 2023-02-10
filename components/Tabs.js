@@ -123,7 +123,7 @@ export const tabs = [
                 active:'/icons/customer-management.svg',
                 inactive: '/icons/customer-management-inactive.svg',
                 data: "2",
-                link: "customermanagement",
+                link: "/dashboard/agency/customer-management",
             },
             {
                 text: "Fund Request",

@@ -1,18 +1,18 @@
 
-import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
+import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
-import UserButton from "../../../../../components/ButtonMaker";
+import UserButton from "../../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
 import useSWR from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv } from "../../../../../components/Endpoints";
+import { ngrok, testEnv } from "../../../../components/Endpoints";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState }) {
+export default function Customers({ modals, setToken, setActiveDashboard, setActiveState }) {
 
     const [chargeData, setChargeData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/customer/all?pageNo=0&pageSize=10`, fetching)
     const router = useRouter()
 
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {data?.data.map((agent, index) => {
+                                {/* {data?.data.map((agent, index) => {
                                     return (
                                         <tr key={index} className="flex justify-between h-[50px]">
                                             <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{agent.agentIdentifier}</td>
@@ -99,7 +99,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                             </td>
                                         </tr>
                                     )
-                                })}
+                                })} */}
                             </tbody>
                         </table>
                     </div>
@@ -109,4 +109,4 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
     )
 }
 
-Agents.Layout = MetricLayoutTemplate
+Customers.Layout = MetricLayoutTemplate
