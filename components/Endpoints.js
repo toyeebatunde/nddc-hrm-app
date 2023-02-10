@@ -3,7 +3,7 @@ import axios from "axios";
 
 function editApi(e, endpoint, body, token, router, modalSuccessNotify, closer) {
   e.preventDefault()
-  debugger
+  // debugger
   axios.put(endpoint, body, {
     headers: {
       Authorization: `Bearer ${token}`
