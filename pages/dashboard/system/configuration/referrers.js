@@ -9,7 +9,7 @@ import axios from "axios"
 import { testEnv } from "../../../../components/Endpoints"
 import useSWR from 'swr'
 
-export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editChargeState }) {
+export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [referralData, setReferralData] = useState()
@@ -29,20 +29,12 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
         }
     }, [data])
 
-    function referrerView(id) {
-        if (view) {
-            setView(false)
-            return
-        }
-        setView(true)
-        const currentView = charges.data.filter(charge => charge.id === id)
-        setChargeView(currentView[0])
+    function referrerHandler(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
     }
 
-    function chargeEdit(modalState, modal, fields, id) {
-        setModalState(modalState, modal)
-        editChargeState(fields, id)
-    }
+    const deleteCaution = "You are about to delete a referrer, note after deleting it will go through approval process"
 
 
     return (
@@ -68,7 +60,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
                                 <tr className="flex justify-between">
-                                    <th className="font-400   flex w-[30%] text-[12px] leading-[15.62px] font-pushpennyBook">REFERRERS NAME</th>
+                                    <th className="font-400   flex w-[30%] text-[12px] leading-[15.62px] font-pushpennyBook">REFERRER NAME</th>
                                     <th className="font-400  flex  w-[30%]  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT TYPE</th>
                                     <th className="font-400  flex w-[35%]  text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                 </tr>
@@ -100,7 +92,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                                                     <UserButton type="edit" />
                                                 </div>
                                                 <div className="xl:w-[130px] h-[36px]">
-                                                    <UserButton type="delete" />
+                                                    <UserButton type="delete" onClick={()=>{referrerHandler(true, "action", {caution:deleteCaution, action: "delete" }, item.id)}} />
                                                 </div>
                                             </td>
                                         </tr>

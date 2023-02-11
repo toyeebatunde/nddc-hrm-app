@@ -82,15 +82,8 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     modalSuccessNotify={modalSuccessNotify}
                 />
             </div>
-            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : "hidden"}  fixed justify-center  items-center top-0 z-[150]`}>
-                {/* <Modal
-                    modal={modals}
-                    closeModal={closeModal}
-                    values={editForm}
-                    setFormFields={setEditForm}
-                    formEdit={formEdit}
-                    modalSuccessNotify={modalSuccessNotify}
-                /> */}
+            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
+            
             </div>
 
 
