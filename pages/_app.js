@@ -15,7 +15,7 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, editCharges: false, addSplit: false, editSetting:false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting:false })
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
@@ -43,12 +43,12 @@ export default function MyApp({ Component, pageProps }) {
       setModals({ ...modals, isOpen: state, [modalToSet]: state })
       return
     }
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false, editCharges: false, addSplit: false, editSetting: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
 
   }
 
   function closeModals() {
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, bankDelete: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false })
   }
 
   function changeForm(e, form, setter) {
