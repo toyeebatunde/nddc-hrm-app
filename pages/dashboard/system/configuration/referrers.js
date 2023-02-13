@@ -11,7 +11,7 @@ import useSWR from 'swr'
 
 export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef }) {
     const [chargeView, setChargeView] = useState({})
-    const [view, setView] = useState(false)
+    const [view, setView] = useState(true)
     const [referralData, setReferralData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/referrer/all?pageNo=0&pageSize=10`, fetching)
@@ -28,6 +28,16 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
 
         }
     }, [data])
+
+    function changeView(id) {
+        if (view) {
+            setView(false)
+            return
+        }
+        setView(true)
+        const currentView = chargeData.data.filter(charge => charge.id === id)
+        setChargeView(currentView[0])
+    }
 
     function referrerHandler(modalState, modal, fields, id) {
         setModalState(modalState, modal)
@@ -47,15 +57,15 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                     </div>
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                    <button ref={getModalButtonRef} onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
+                    <button ref={getModalButtonRef} onClick={() => {setView(true)}} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
                         + Add new referrers
                     </button>
                 </section>
 
             </section>
-            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "block"}`}>
+            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-2">
-                    <div className=" w-full h-fit">
+                    <div className={`w-full h-fit ${view ? "hidden" : "block"}`}>
 
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
@@ -102,6 +112,25 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                             </tbody>
                         </table>
                     </div>
+
+                    <section className={`py-2 w-full h-fit mt-[20px] flex-col lg:justify-between px-4 ${view ? "flex" : "hidden"}`}>
+                    <div className="w-[90px] xl:w-[107px] text-[#6E7883] h-[36px]">
+                        <UserButton text="Back" onClick={changeView} />
+                    </div>
+                        <div className="w-full h-[57px] mt-[20px] md:w-[427px] rounded-[28px]">
+                            <Textfield type="text" title="Name" bg="white" />
+                        </div>
+                        <div className="w-full h-[57px] md:w-[427px] mt-[20px] rounded-[28px]">
+                        <Textfield type="text" title="Logo URL" bg="white" />
+                        </div>
+                        <div className="w-full h-[132px] md:w-[427px] mt-[20px] rounded-[30px]">
+                        <Textfield type="text" title="Logo URL" bg="white" />
+                        </div>
+                        {/* select */}
+                        {/* <div className="w-full h-[132px] md:w-[427px] mt-[20px] rounded-[30px]">
+                        <Textfield type="text" title="Logo URL" bg="white" />
+                        </div> */}
+                    </section>
                 </section>
             </section>
         </div>

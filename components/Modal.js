@@ -3,12 +3,12 @@ import UserButton from "./ButtonMaker"
 import ImageHolder from "./ImageHolder"
 import Textfield from "./TextField"
 import { useRef, useState, useEffect } from "react"
-import { editApi } from "./Endpoints"
+import { editApi, deleteApi } from "./Endpoints"
 import apiToken from "./Token"
 import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify }) {
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser }) {
     const router = useRouter()
 
     const chargeSelectOptions = [
@@ -86,7 +86,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         <UserButton text="Cancel" />
                     </div>
                     <div className='w-[126px] h-[46px]'>
-                        <UserButton text="Save" type="gradient" />
+                        <UserButton onClick={(e)=>{deleteApi(e,`http://admapis-staging.payrail.co/v1/referrer/${values.id}/delete`, localStorage.getItem('token'), modalCloser)}} text="Delete" type="gradient" />
                     </div>
                 </div>
             </div>
