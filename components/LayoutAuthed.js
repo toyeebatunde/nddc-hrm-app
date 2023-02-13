@@ -30,9 +30,9 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
 
 
     useEffect(() => {
-        window.innerWidth < 1024 ? setIsFull(true) : setIsFull(false)
+        window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {
-            window.innerWidth < 1024 ? setIsFull(true) : setIsFull(false)
+            window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         }
         window.addEventListener('resize', logWindow)
 
@@ -49,7 +49,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
     }
 
     function closeSideBar() {
-        if (window.innerWidth > 1023) {
+        if (window.innerWidth >= 1025) {
             return
         }
 
@@ -80,6 +80,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     setFormFields={setEditForm}
                     formEdit={formEdit}
                     modalSuccessNotify={modalSuccessNotify}
+                    modalCloser={setModalState}
                 />
             </div>
             <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
