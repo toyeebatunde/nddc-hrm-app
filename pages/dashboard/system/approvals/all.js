@@ -1,9 +1,7 @@
 
-import ImageHolder from '../../../components/ImageHolder'
 import { useState, useRef, useEffect } from "react"
-import ButtonTab from "../../../components/ButtonTab"
-import ApprovalsLayoutTemplate from '../../../components/ApprovalsLayoutTemplate'
-import UserButton from '../../../components/ButtonMaker'
+import ApprovalsLayoutTemplate from "../../../../components/ApprovalsLayoutTemplate"
+import UserButton from "../../../../components/ButtonMaker"
 
 export default function Approval({ modals, setModalState }) {
     const [activeTab, setActiveTab] = useState("")

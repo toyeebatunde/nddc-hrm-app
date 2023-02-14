@@ -3,7 +3,7 @@ import ImageHolder from "../components/ImageHolder"
 import { tabs } from "../components/Tabs"
 import SideTabs from "../components/SideTabs"
 import { useEffect, useState, useRef } from "react"
-import Modal from "./modal"
+import Modal from "./Modal"
 import Textfield from "./TextField"
 import UserButton from "./ButtonMaker"
 

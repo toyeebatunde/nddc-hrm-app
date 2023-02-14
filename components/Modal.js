@@ -86,7 +86,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         <UserButton text="Cancel" />
                     </div>
                     <div className='w-[126px] h-[46px]'>
-                        <UserButton onClick={(e)=>{deleteApi(e,`http://admapis-staging.payrail.co/v1/referrer/${values.id}/delete`, localStorage.getItem('token'), modalCloser)}} text="Delete" type="gradient" />
+                        <UserButton onClick={(e)=>{deleteApi(e,values.values.endpoint, localStorage.getItem('token'), modalCloser)}} text="Delete" type="gradient" />
                     </div>
                 </div>
             </div>

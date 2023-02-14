@@ -11,7 +11,7 @@ import useSWR from 'swr'
 
 export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef }) {
     const [chargeView, setChargeView] = useState({})
-    const [view, setView] = useState(true)
+    const [view, setView] = useState(false)
     const [referralData, setReferralData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/referrer/all?pageNo=0&pageSize=10`, fetching)
@@ -102,7 +102,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                                                     <UserButton type="edit" />
                                                 </div>
                                                 <div className="xl:w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={()=>{referrerHandler(true, "action", {caution:deleteCaution, action: "delete" }, item.id)}} />
+                                                    <UserButton type="delete" onClick={()=>{referrerHandler(true, "action", {caution:deleteCaution, action: "delete", endpoint: `http://admapis-staging.payrail.co/v1/referrer/${item.id}/delete`}, item.id)}} />
                                                 </div>
                                             </td>
                                         </tr>
