@@ -47,7 +47,7 @@ export default function MetricLayoutTemplate({ children, title, modals }) {
             </section>
             <section className={`h-[44px] flex flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex w-full z-[40] absolute h-full top-[1px] approvals-tab justify-start relative">
-                    {tabs.map((tab, index) => <div><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)}
+                    {tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)}
                 </div>
                 <div className="border-b-[2px] z-[10] mt-auto z-10 border-[#979797]"></div>
             </section>

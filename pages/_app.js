@@ -1,4 +1,4 @@
-import Layout from '../components/Layout'
+
 import '../styles/globals.css'
 import { useState, useEffect } from 'react'
 import LayoutAuthed from '../components/LayoutAuthed'

@@ -51,7 +51,7 @@ export default function SubLayoutTemplate({ modals, setModalState, children }) {
             </section>
             <section className={`h-[44px] flex w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex w-full justify-between relative">
-                    {tabs.map((tab, index)=><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} />)}
+                    {tabs.map((tab, index)=><div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)}
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>

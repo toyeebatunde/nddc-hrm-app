@@ -15,7 +15,7 @@ import axios from 'axios'
 import useSWR from 'swr'
 import { testEnv, editApi } from '../../../components/Endpoints'
 
-export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
+export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState }) {
 
     const initialForm = {
         institutionCode: "",
@@ -32,6 +32,12 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
     const { data, error } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=10`, fetching)
     const [view, setView] = useState(false)
     // const router = useRouter()
+
+    function institutionHandler(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
+    const deleteCaution = "You are about to delete an institution, note after deleting it will go through an approval process"
 
     useEffect(() => {
         setToken()
@@ -182,7 +188,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                                             <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
 
                                                 <UserButton type="edit" onClick={(e) => { changeView(e, data.id) }} />
-                                                <UserButton type="delete" />
+                                                <UserButton type="delete" onClick={()=>{institutionHandler(true, "action", {caution:deleteCaution, action: "delete", endpoint: `${testEnv}v1/institution/delete/${data.id}` }, data.id)}} />
 
                                             </td>
                                         </tr>
@@ -197,7 +203,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
 
                             {textFieldList.map((item, index) => {
                                 return (
-                                    <div className='mt-[25px] w-full rounded-[28.5px] h-[57px]'>
+                                    <div key={index} className='mt-[25px] w-full rounded-[28.5px] h-[57px]'>
                                         <Textfield bg="bg-white" title={item.title} value={institutionView[item.name]} formEdit={formEdit} name={item.name} />
                                     </div>
                                 )

@@ -1,4 +1,4 @@
-import TheCalendar from "./calendar"
+import TheCalendar from "./Calendar"
 import ImageHolder from "./ImageHolder"
 import { months } from "./Tabs"
 

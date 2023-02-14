@@ -16,7 +16,8 @@
     "react": "^18.2.0",
     "react-calendar": "^3.9.0",
     "react-dom": "^18.2.0",
-    "swr": "^2.0.3"
+    "swr": "^2.0.3",
+    "vercel": "^28.15.3"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
