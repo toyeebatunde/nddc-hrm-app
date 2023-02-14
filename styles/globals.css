@@ -40,74 +40,91 @@ input[type=password]::-ms-clear {
 .create-role {
   left: 5200px;
   transition: all linear 0.3s;
-  transition-property: inherit;  
+  transition-property: inherit;
 }
+
 .create-role.show {
   left: 0;
 }
 
-.tab-parent:hover, .tab-parent.active {
+.tab-parent:hover,
+.tab-parent.active {
   height: 80px;
 }
 
-.tab-parent:hover:nth-child(1n+2), .tab-parent.active:nth-child(1n+2) {
+.tab-parent:hover:nth-child(1n+2),
+.tab-parent.active:nth-child(1n+2) {
   height: 140px;
 }
 
-.tab-parent:hover:nth-child(1n+3), .tab-parent.active:nth-child(1n+3) {
+.tab-parent:hover:nth-child(1n+3),
+.tab-parent.active:nth-child(1n+3) {
   height: 240px;
 }
 
-.tab-parent:hover:nth-child(1n+4), .tab-parent.active:nth-child(1n+4) {
+.tab-parent:hover:nth-child(1n+4),
+.tab-parent.active:nth-child(1n+4) {
   height: 70px;
 }
 
-.tab-parent:hover:nth-child(1n+5), .tab-parent.active:nth-child(1n+5) {
+.tab-parent:hover:nth-child(1n+5),
+.tab-parent.active:nth-child(1n+5) {
   height: 110px;
 }
 
-.tab-parent:hover:nth-child(1n+6), .tab-parent.active:nth-child(1n+6) {
+.tab-parent:hover:nth-child(1n+6),
+.tab-parent.active:nth-child(1n+6) {
   height: 80px;
 }
 
-.tab-parent:hover .tab-holder, .tab-holder.active {
+.tab-parent:hover .tab-holder,
+.tab-holder.active {
   /* display: none; */
   top: var(--setMargin);
 }
 
-.tab-parent:hover .tab-holder#Reports, .tab-holder#Reports.active {
+.tab-parent:hover .tab-holder#Reports,
+.tab-holder#Reports.active {
   top: calc(var(--setMargin)*1.5);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+3), .tab-holder.active:nth-child(1n+3) {
+.tab-parent:hover .tab-holder:nth-child(1n+3),
+.tab-holder.active:nth-child(1n+3) {
   top: calc(var(--setMargin)*2);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+4), .tab-holder.active:nth-child(1n+4) {
+.tab-parent:hover .tab-holder:nth-child(1n+4),
+.tab-holder.active:nth-child(1n+4) {
   top: calc(var(--setMargin)*3);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+5), .tab-holder.active:nth-child(1n+5) {
+.tab-parent:hover .tab-holder:nth-child(1n+5),
+.tab-holder.active:nth-child(1n+5) {
   top: calc(var(--setMargin)*4);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+6), .tab-holder.active:nth-child(1n+6) {
+.tab-parent:hover .tab-holder:nth-child(1n+6),
+.tab-holder.active:nth-child(1n+6) {
   top: calc(var(--setMargin)*5);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+7), .tab-holder.active:nth-child(1n+7) {
+.tab-parent:hover .tab-holder:nth-child(1n+7),
+.tab-holder.active:nth-child(1n+7) {
   top: calc(var(--setMargin)*6);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+8), .tab-holder.active:nth-child(1n+8) {
+.tab-parent:hover .tab-holder:nth-child(1n+8),
+.tab-holder.active:nth-child(1n+8) {
   top: calc(var(--setMargin)*7);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+9), .tab-holder.active:nth-child(1n+9) {
+.tab-parent:hover .tab-holder:nth-child(1n+9),
+.tab-holder.active:nth-child(1n+9) {
   top: calc(var(--setMargin)*8);
 }
 
-.tab-parent:hover .tab-holder:nth-child(1n+10), .tab-holder.active:nth-child(1n+10) {
+.tab-parent:hover .tab-holder:nth-child(1n+10),
+.tab-holder.active:nth-child(1n+10) {
   top: calc(var(--setMargin)*9);
 }
 
@@ -182,6 +199,12 @@ input[type=password]::-ms-clear {
   height: 400px;
 }
 
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 
 .react-calendar__month-view__weekdays__weekday {
@@ -192,7 +215,7 @@ input[type=password]::-ms-clear {
   background: -webkit-linear-gradient(#F6BC18, #EF6B25);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-    
+
 }
 
 .react-calendar button {
@@ -203,7 +226,7 @@ input[type=password]::-ms-clear {
   background: #ffffff !important;
 }
 
-.react-calendar__viewContainer button:hover {  
+.react-calendar__viewContainer button:hover {
   background: -webkit-linear-gradient(#F6BC18, #EF6B25) !important;
   width: 30px !important;
   height: 50px !important;
@@ -213,7 +236,8 @@ input[type=password]::-ms-clear {
 button.react-calendar__tile--now {
   background: -webkit-linear-gradient(#F6BC18, #EF6B25) !important;
 }
-.react-calendar__viewContainer button:focus {  
+
+.react-calendar__viewContainer button:focus {
   background: -webkit-linear-gradient(#F6BC18, #EF6B25) !important;
   /* width: 30px !important;
   height: 50px !important; */
@@ -238,9 +262,9 @@ button.react-calendar__tile--now {
 
 
 
-.calendar-component button:hover {  
-  border-radius: 50%; 
-  height: 45px; 
+.calendar-component button:hover {
+  border-radius: 50%;
+  height: 45px;
 }
 
 .system-active {
@@ -251,8 +275,8 @@ button.react-calendar__tile--now {
 }
 
 .search-tab {
-  border: none; 
-  box-shadow: none; 
+  border: none;
+  box-shadow: none;
   outline: none;
 }
 
@@ -276,85 +300,100 @@ input {
 
 .radio-checked {
   border: black;
-  background-color: #E99E24;    
+  background-color: #E99E24;
 }
 
 
 
 
 
-@property --p{
+@property --p {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
 }
 
 .pie {
-  --p:20;
-  --b:22px;
-  --c:darkred;
-  --w:180px;
-  
-  width:var(--w);
-  aspect-ratio:1;
-  position:relative;
-  display:inline-grid;
-  margin:5px;
-  place-content:center;
-  font-size:25px;
-  font-weight:bold;
-  font-family:sans-serif;
+  --p: 20;
+  --b: 22px;
+  --c: darkred;
+  --w: 180px;
+
+  width: var(--w);
+  aspect-ratio: 1;
+  position: relative;
+  display: inline-grid;
+  margin: 5px;
+  place-content: center;
+  font-size: 25px;
+  font-weight: bold;
+  font-family: sans-serif;
 }
+
 .pie:before,
 .pie:after {
-  content:"";
-  position:absolute;
-  border-radius:50%;
+  content: "";
+  position: absolute;
+  border-radius: 50%;
 }
+
 .pie:before {
-  inset:0;
+  inset: 0;
   background:
-    radial-gradient(farthest-side,var(--c) 98%,#0000) top/var(--b) var(--b) no-repeat,
-    conic-gradient(var(--c) calc(var(--p)*1%),#0000 0);
-  -webkit-mask:radial-gradient(farthest-side,#0000 calc(99% - var(--b)),#000 calc(100% - var(--b)));
-          mask:radial-gradient(farthest-side,#0000 calc(99% - var(--b)),#000 calc(100% - var(--b)));
+    radial-gradient(farthest-side, var(--c) 98%, #0000) top/var(--b) var(--b) no-repeat,
+    conic-gradient(var(--c) calc(var(--p)*1%), #0000 0);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(99% - var(--b)), #000 calc(100% - var(--b)));
+  mask: radial-gradient(farthest-side, #0000 calc(99% - var(--b)), #000 calc(100% - var(--b)));
 }
+
 .pie:after {
-  inset:calc(50% - var(--b)/2);
-  background:var(--c);
-  transform:rotate(calc(var(--p)*3.6deg)) translateY(calc(50% - var(--w)/2));
+  inset: calc(50% - var(--b)/2);
+  background: var(--c);
+  transform: rotate(calc(var(--p)*3.6deg)) translateY(calc(50% - var(--w)/2));
 }
+
 .animate {
-  animation:p 1.5s .5s both;
+  animation: p 1.5s .5s both;
 }
+
 .animate-chart {
-  animation:charter 1.5s .5s both;
+  animation: charter 1.5s .5s both;
 }
 
 .animate-two {
-  animation:p 1s .5s both;
+  animation: p 1s .5s both;
 }
+
 .animate-three {
-  animation:p 2s .5s both;
+  animation: p 2s .5s both;
 }
+
 .no-round:before {
-  background-size:0 0,auto;
+  background-size: 0 0, auto;
 }
+
 .no-round:after {
-  content:none;
+  content: none;
 }
+
 @keyframes p {
-  from{--p:0}
+  from {
+    --p: 0
+  }
 }
+
 @keyframes charter {
-  from{height:0}
+  from {
+    height: 0
+  }
 }
+
 /* @keyframes charter {
   from{height:0}
 } */
 
 
-.approvals-tab:hover > :hover {
+.approvals-tab:hover> :hover {
   border-bottom: 3px solid black;
 }
 
@@ -366,7 +405,7 @@ input {
 #first-chart {
   position: absolute;
 }
+
 #second-chart {
   position: absolute;
 }
-
