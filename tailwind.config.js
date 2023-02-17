@@ -17,7 +17,7 @@ module.exports = {
       "input-gray": "rgba(119, 119, 119, 0)",
     },
     screens: {
-      'xs': '340px',
+      // 'xs': '340px',
       'sm': '650px',
       'md': '768px',
       'mdxl': '870px',

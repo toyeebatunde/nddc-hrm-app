@@ -15,7 +15,7 @@ import axios from 'axios'
 import useSWR from 'swr'
 import { testEnv, editApi } from '../../../components/Endpoints'
 
-export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState }) {
+export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, viewState, setView }) {
 
     const initialForm = {
         institutionCode: "",
@@ -30,7 +30,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
     const [institutionsData, setInstitutionsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=10`, fetching)
-    const [view, setView] = useState(false)
+    // const [view, setView] = useState(false)
     // const router = useRouter()
 
     function institutionHandler(modalState, modal, fields, id) {
@@ -41,6 +41,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
 
     useEffect(() => {
         setToken()
+        setView(false)
         setActiveDashboard("Institutions")
         setActiveState("1")
         if (data) {
@@ -111,7 +112,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
     function changeView(e, id) {
         console.log(e)
         e.preventDefault()
-        if (view) {
+        if (viewState) {
             setView(false)
             return
         }
@@ -146,7 +147,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
             <section className={`h-fit flex font-pushpennyMedium leading-[31px] text-[24px] font-[400] w-fit px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 Bank Management
             </section>
-            <section className={`px-4 justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "flex"}`}>
+            <section className={`px-4 justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"} ${viewState ? "hidden" : "flex"}`}>
                 <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                     <section className="md:w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
                         <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
@@ -164,11 +165,11 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
             </section>
 
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <div className={`mt-[25px] w-full ${view ? "flex" : "hidden"} font-[400] text-[18px] font-pushpennyBook md:w-[485px] items-center pl-[20px] border border-[#F3F3F3] bg-[#F3F3F3] rounded-[28.5px] h-[57px]`}>
+                <div className={`mt-[25px] w-full ${viewState ? "flex" : "hidden"} font-[400] text-[18px] font-pushpennyBook md:w-[485px] items-center pl-[20px] border border-[#F3F3F3] bg-[#F3F3F3] rounded-[28.5px] h-[57px]`}>
                     Edit Bank
                 </div>
-                <section className={`min-h-[674px] ${view ? "w-full md:w-[485.7px]" : "w-full"} ${view ? "mt-[20px]" : "mt-0"} overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4`}>
-                    <div className={`w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px] ${view ? "hidden" : "block"}`}>
+                <section className={`min-h-[674px] ${viewState ? "w-full md:w-[485.7px]" : "w-full"} ${viewState ? "mt-[20px]" : "mt-0"} overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4`}>
+                    <div className={`w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px] ${viewState ? "hidden" : "block"}`}>
 
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
@@ -197,7 +198,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                             </tbody>
                         </table>
                     </div>
-                    <section className={`w-full mt-[30px] h-fit rounded-[10px] flex-col bg-[#FBF4EB] ${view ? "flex" : "hidden"}`}>
+                    <section className={`w-full mt-[30px] h-fit rounded-[10px] flex-col bg-[#FBF4EB] ${viewState ? "flex" : "hidden"}`}>
 
                         <form className="w-full w-full flex flex-col items-center justify-between px-4">
 
