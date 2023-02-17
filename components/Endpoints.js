@@ -10,7 +10,7 @@ function editApi(e, endpoint, body, token, modalSuccessNotify, closer) {
     }
   })
     .then(response => {
-      modalSuccessNotify(true)
+      // modalSuccessNotify(true)
       debugger
       // router.reload(window.location.pathname)
       console.log(response)

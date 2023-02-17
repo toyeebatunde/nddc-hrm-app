@@ -13,7 +13,7 @@ import { testEnv } from "../../../../../../components/Endpoints"
 export default function Agent({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
     const router = useRouter()
     const [toggleStateOne, setToggleStateOne] = useState(false)
-    const [toggleStateTwo, setToggleStateTwo] = useState(true)
+    const [lienStatus, setLienStatus] = useState()
     const [tranDetails, setTranDetails] = useState(false)
 
     const[agentData, setAgentData] = useState()
@@ -21,27 +21,43 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
     const {data, error} = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
 
     useEffect(()=>{
-        console.log(router.query)
+        console.log(router.query)   
         setToken()
         setActiveDashboard("Agent Management")
         setActiveState("2")
         if(data) {
-            setAgentData(data)            
+            setAgentData(data)   
+            setLienStatus({lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off"})         
         }
         if(error) {
             console.log(error)
         }
     },[data])
 
+    // useEffect(()=>{
+    //     if(data) {
+    //         debugger
+    //         axios.patch(`${testEnv}v1/agent/${data.agent.id}/lien?param=${lienStatus.status}`,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}})
+    //     .then(response =>{console.log(response)})
+    //     .catch(error => {console.log(error)})
+    //     }
+    // },[lienStatus])
+
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
-    const toggle = (e, toggler) => {
-        // console.log(e.target.checked)
-        toggler(e.target.checked)
+    const toggle = (e, agentId) => {
+        setLienStatus({...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off"}) 
+        debugger  
+        
+        axios.put(`${testEnv}v1/agent/${agentId}/lien?param=${lienStatus.status}`,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}})
+        .then(response =>{console.log(response)})
+        .catch(error => {console.log(error)})     
+        
     };
+    
 
     const dataFormat=(data)=>{
         const value = data.toString()
@@ -153,7 +169,7 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Lien Status</h2>
                                                 <div >
-                                                    <Toggler toggleState={toggleStateOne} onClick={toggle} toggler={setToggleStateOne} />
+                                                    <Toggler toggleState={toggleStateOne} onClick={toggle} id={agentData?.agent.id} toggler={setToggleStateOne} toggled={lienStatus?.lien == true ?lienStatus.lien : lienStatus?.lien == false ? lienStatus.lien : false} />
                                                 </div>
                                             </div>
                                         </div>

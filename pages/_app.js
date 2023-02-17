@@ -19,11 +19,13 @@ export default function MyApp({ Component, pageProps }) {
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
+  const [viewState, setViewState] = useState(false)
 
   const Layout = Component.Layout || EmptyLayout
 
-
-
+  function setView(state) {
+    setViewState(state)
+}
 
   function switchBoard(e, board, active) {
     setActiveDashboard(board)
@@ -129,7 +131,7 @@ export default function MyApp({ Component, pageProps }) {
       formEdit={formEdit}
       modalSuccessNotify={modalSuccessNotify}
       >
-      <Layout modals={modals}>
+      <Layout modals={modals} activeAgency={activeDashboard} setView={setView} viewState={viewState}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -148,6 +150,8 @@ export default function MyApp({ Component, pageProps }) {
           setModalState={setModalState}
           editFormState={editFormState}
           modalSuccessNotify={modalSuccessNotify}
+          setView={setView}
+          viewState={viewState}
         />
       </Layout>
     </LayoutAuthed>
