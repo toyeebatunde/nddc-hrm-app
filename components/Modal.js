@@ -83,7 +83,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 </div>
                 <div className="mt-[30px] w-[330px] lg:w-[370px] flex justify-between">
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
-                        <UserButton text="Cancel" />
+                        <UserButton text="Cancel" onClick={(e)=>{modalCloser(false, "action")}} />
                     </div>
                     <div className='w-[126px] h-[46px]'>
                         <UserButton onClick={(e)=>{deleteApi(e,values.values.endpoint, localStorage.getItem('token'), modalCloser)}} text="Delete" type="gradient" />
@@ -176,7 +176,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => {closeModal(e)}}/>
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e)=>{modalCloser(false, "editCharges")}}/>
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
@@ -191,9 +191,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                         "upperBound": values.values.upperBound
                                     },
                                     localStorage.getItem('token'),
-                                    router,
-                                    modalSuccessNotify,
-                                    closeModal
+                                    modalCloser,
+                                    "editSetting",
+                                    setLoading
                                 )
                             }}
                                 text="Save" type="gradient" />

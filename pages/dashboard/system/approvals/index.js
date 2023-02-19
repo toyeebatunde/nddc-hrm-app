@@ -7,7 +7,7 @@ import useSWR from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 
-export default function Approval({ modals, setModalState, setActiveDashboard, setActiveState, setToken }) {
+export default function Approval({ modals, setModalState, setActiveDashboard, setActiveState, setToken, setLoading }) {
     const [activeTab, setActiveTab] = useState("")
     const [createRole, setCreateRole] = useState(false)
     const[approvalsData, setApprovalsData] = useState()
@@ -21,7 +21,11 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
         setToken()
         setActiveDashboard("Approvals")
         setActiveState("1")
+        if(!approvalsData) {
+            setLoading(true)
+        }
         if(data) {
+            setLoading(false)
             setApprovalsData(data)
             
         }

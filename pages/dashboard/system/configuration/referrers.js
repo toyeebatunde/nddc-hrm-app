@@ -102,7 +102,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                                                     <UserButton type="edit" />
                                                 </div>
                                                 <div className="xl:w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={()=>{referrerHandler(true, "action", {caution:deleteCaution, action: "delete", endpoint: `http://admapis-staging.payrail.co/v1/referrer/${item.id}/delete`}, item.id)}} />
+                                                    <UserButton type="delete" onClick={()=>{referrerHandler(true, "action", {caution:deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/referrer/${item.id}/delete`}, item.id)}} />
                                                 </div>
                                             </td>
                                         </tr>

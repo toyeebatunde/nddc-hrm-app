@@ -15,7 +15,7 @@ import axios from 'axios'
 import useSWR from 'swr'
 import { testEnv, editApi } from '../../../components/Endpoints'
 
-export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, viewState, setView }) {
+export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, viewState, setView, setLoading }) {
 
     const initialForm = {
         institutionCode: "",
@@ -44,7 +44,11 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
         setView(false)
         setActiveDashboard("Institutions")
         setActiveState("1")
+        if(!institutionsData) {
+            setLoading(true)
+        }
         if (data) {
+            setLoading(false)
             setInstitutionsData(data)
         }
         if (error) {
