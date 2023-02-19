@@ -12,7 +12,7 @@ export default function TheCalendar({dateRangeParam, dateRange, setDateRange}) {
   }
 
   useEffect(()=>{
-    console.log(date)
+    // console.log(date)
   }, [date])
 
   // console.log(Date())

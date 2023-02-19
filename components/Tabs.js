@@ -151,7 +151,7 @@ export const tabs = [
                 active:'/icons/settlement.svg',
                 inactive: '/icons/settlement-inactive.svg',
                 data: "2",
-                link: "settlement",
+                link: "/dashboard/agency/settlement",
             },
             {
                 text: "Reconciliation",

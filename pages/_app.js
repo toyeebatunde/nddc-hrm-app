@@ -15,24 +15,29 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting:false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
   const [viewState, setViewState] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const Layout = Component.Layout || EmptyLayout
 
   function setView(state) {
     setViewState(state)
-}
+  }
 
   function switchBoard(e, board, active) {
     setActiveDashboard(board)
     setActiveState(active)
   }
 
-  function modalSuccessNotify (state) {
+  function setLoading(state) {
+    setIsLoading(state)
+  }
+
+  function modalSuccessNotify(state) {
     setModalSuccess(state)
   }
 
@@ -45,12 +50,13 @@ export default function MyApp({ Component, pageProps }) {
       setModals({ ...modals, isOpen: state, [modalToSet]: state })
       return
     }
+    console.log("closer")
     setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
 
   }
 
   function closeModals() {
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
   }
 
   function changeForm(e, form, setter) {
@@ -62,22 +68,16 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function formEdit(e) {
-    setEditForm({...editForm, values: {...editForm.values, [e.target.name]:e.target.value}})
-    // console.log(e.target.value)
-    // console.log(e.target.name)
-    // console.log(editForm.values[e.target.name])
+    setEditForm({ ...editForm, values: { ...editForm.values, [e.target.name]: e.target.value } })
   }
 
   function login(details) {
-    // https://3695-41-138-165-100.eu.ngrok.io/v1/auth/login
-    // https://aa63-102-219-152-17.eu.ngrok.io 
+
     axios.post(`${testEnv}v1/auth/login`, {
       password: details.password,
       username: details.username
     })
       .then(response => {
-        // debugger
-        // console.log(response.data)
         setToken(true)
         Cookies.set("token", response.data.token)
         localStorage.setItem('token', response.data.token)
@@ -107,16 +107,10 @@ export default function MyApp({ Component, pageProps }) {
     }
   }
   return (
-    // <Layout token={token}>
-    //   <Component {...pageProps} showPassword={showPassword} 
-    //   passwordDisplay={passwordDisplay.passwordInput}
-    //   setPasswordDisplay={setPasswordDisplay}
-    //   resetPasswordDisplay = {resetPasswordDisplay}
-    //   setResetPasswordDisplay = {setResetPasswordDisplay}
-    //   />
-    // </Layout>
 
     <LayoutAuthed
+      isLoading={isLoading}
+      setLoading={setLoading}
       modals={modals}
       editForm={editForm}
       setEditForm={setEditForm}
@@ -130,7 +124,7 @@ export default function MyApp({ Component, pageProps }) {
       closeModals={closeModals}
       formEdit={formEdit}
       modalSuccessNotify={modalSuccessNotify}
-      >
+    >
       <Layout modals={modals} activeAgency={activeDashboard} setView={setView} viewState={viewState}>
         <Component
           login={login}
@@ -152,6 +146,8 @@ export default function MyApp({ Component, pageProps }) {
           modalSuccessNotify={modalSuccessNotify}
           setView={setView}
           viewState={viewState}
+          isLoading={isLoading}
+          setLoading={setLoading}
         />
       </Layout>
     </LayoutAuthed>

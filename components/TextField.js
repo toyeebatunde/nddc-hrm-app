@@ -9,9 +9,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
 
     useEffect(() => { }, [value])
 
-    function onChange(e) {
-        setFormFields({ ...formFields, [e.target.name]: e.target.value })
-    }
+    
 
     if (type == "select") {
         return (

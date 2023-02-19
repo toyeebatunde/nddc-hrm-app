@@ -90,7 +90,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
         )
     }
     return (
-        <button type={preventDefault} onClick={onClick} className={` ${textColor} ${bg}  w-full h-full font-[400] rounded-[23px]`}>
+        <button onClick={onClick} className={` ${textColor} ${bg}  w-full h-full font-[400] rounded-[23px]`}>
             {text}
         </button>
     )

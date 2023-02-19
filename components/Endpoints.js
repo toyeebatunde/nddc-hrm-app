@@ -1,20 +1,19 @@
 
 import axios from "axios";
 
-function editApi(e, endpoint, body, token, modalSuccessNotify, closer) {
+function editApi(e, endpoint, body, token, modalCloser, modalToClose, loadState) {
   e.preventDefault()
   // debugger
+  loadState(true)
   axios.put(endpoint, body, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
     .then(response => {
-      // modalSuccessNotify(true)
-      debugger
-      // router.reload(window.location.pathname)
       console.log(response)
-      closer(e)
+      loadState(false)
+      modalCloser(false, "editSetting")
     })
     .catch(error => { console.log(error) })
 }
@@ -40,5 +39,5 @@ function deleteApi(e, endpoint, token, closer) {
 //  axios.post("http://admapis-staging.payrail.co/v1/auth/login", {
 
 const ngrok = "https://a34f-102-89-33-46.eu.ngrok.io/"
-const testEnv = "http://admapis-staging.payrail.co/"
+const testEnv = "https://admapis-staging.payrail.co/"
 export { editApi, ngrok, testEnv, deleteApi }
