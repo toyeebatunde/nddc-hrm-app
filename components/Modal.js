@@ -8,7 +8,7 @@ import apiToken from "./Token"
 import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser }) {
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading}) {
     const router = useRouter()
 
     const chargeSelectOptions = [
@@ -176,13 +176,13 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" textColor="text-black" />
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => {closeModal(e)}}/>
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
                                 editApi(
                                     e,
-                                    `http://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
+                                    `https://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
                                     {
                                         "amount": values.values.value,
                                         "chargeType": values.values.chargeType,
@@ -208,9 +208,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
         return (
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[95%] justify-between">
-                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
-                    <button className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Setting. <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
+                    <button onClick={(e) => {closeModal(e)}} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg"  />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] w-[95%] text-[#6E7883] md:text-[18px] leading-[26px]">Make your changes, note that the changes you make will be subject to approval</p>
@@ -239,17 +239,13 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton onClick={(e) => {
-                                e.preventDefault()
-                                closeModal(e)
-                            }
-                            } text="Cancel" textColor="text-black" />
+                            <UserButton onClick={(e)=>{modalCloser(false, "editSetting")}}  text="Cancel" textColor="text-black" />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
                                 editApi(
                                     e,
-                                    `http://admapis-staging.payrail.co/v1/setting/${values.id}/update`,
+                                    `https://admapis-staging.payrail.co/v1/setting/${values.id}/update`,
                                     {
                                         "value": values.values.value || "n/a",
                                         "type": values.values.type || "n/a",
@@ -257,10 +253,11 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                         "name": values.values.name || "n/a"
                                     },
                                     localStorage.getItem('token'),
-                                    router,
-                                    modalSuccessNotify,
-                                    closeModal
+                                    modalCloser,
+                                    "editSetting",
+                                    setLoading
                                 )
+
                             }} text="Save" type="gradient" />
                         </div>
                     </section>
