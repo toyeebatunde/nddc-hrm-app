@@ -18,6 +18,9 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
     const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
     const {data, error} = useSWR(`${testEnv}v1/charge/all?pageNo=1&pageSize=10`, fetching)
 
+    const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
+
+
 
     
 
@@ -93,7 +96,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                                     <UserButton type="edit" onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
                                                 </div>
                                                 <div className="w-[130px] h-[36px]">
-                                                    <UserButton type="delete" />
+                                                    <UserButton type="delete" onClick={()=>{chargeEdit(true, "action", {caution:deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`}, item.id)}} />
                                                 </div>
                                             </td>
                                         </tr>
