@@ -34,7 +34,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Add Split</p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" onClick={(e) => {closeModal(e) }} src="/icons/close-modal.svg" />
+                        <ImageHolder id="closer" onClick={(e)=>{modalCloser(false, "addSplit")}} src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">
@@ -44,21 +44,34 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex  flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Value" />
+                            <Textfield name="value" formEdit={formEdit} value={values.values.value} type="text" title="Value" />
                         </div>
                     </section>
                     <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Actor Type" />
+                            <Textfield name="actorType" formEdit={formEdit} value={values.values.actorType} type="text" title="Actor Type" />
                         </div>
                     </section>
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" />
+                            <UserButton text="Cancel" onClick={(e)=>{modalCloser(false, "addSplit")}} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Save" type="gradient" />
+                            <UserButton onClick={(e)=> {
+                                editApi(
+                                    e,
+                                    `https://admapis-staging.payrail.co/v1/charge/${values.id}/add_split`,
+                                    {
+                                        "actorType" : values.values.actorType,
+                                        "amount" : values.values.value
+                                    },
+                                    localStorage.getItem('token'),
+                                    modalCloser,
+                                    "addSplit",
+                                    setLoading
+                                )
+                            }} text="Save" type="gradient" />
                         </div>
                     </section>
                 </form>

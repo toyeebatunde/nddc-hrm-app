@@ -162,7 +162,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Charge Splits</h2>
                             <div className="w-[134px] h-[35px]">
-                                <UserButton type="gradient" text="+Add Split" onClick={()=>{setModalState(true, "addSplit")}} />
+                                <UserButton type="gradient" text="+Add Split" onClick={()=>{chargeEdit(true, "addSplit", {value: "", actorType: ""}, chargeView.id)}} />
                             </div>
                         </div>
 
