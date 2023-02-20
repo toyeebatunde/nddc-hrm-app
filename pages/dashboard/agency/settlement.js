@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 
-export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Settlement({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
     
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -50,12 +50,16 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
                         <table className="table-fixed px-[5px] w-full flex flex-col">
                             <thead>
                                 <tr className="flex justify-between">
-                                    <th className="font-400  flex w-[80px] text-[12px] leading-[15.62px] font-pushpennyBook">FIRSTNAME</th>
-                                    <th className="font-400  flex w-[80px]  text-[12px] leading-[15.62px] font-pushpennyBook">LASTNAME</th>
-                                    <th className="font-400  flex w-[170px] text-[12px] leading-[15.62px] font-pushpennyBook">EMAIL ADDRESS</th>
-                                    <th className="font-400  flex w-[120px] text-[12px] leading-[15.62px] font-pushpennyBook">PHONE NUMBER</th>
-                                    <th className="font-400  flex w-[75px] text-[12px] leading-[15.62px] font-pushpennyBook">CREATED ON</th>
-                                    <th className="font-400  flex w-[173px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTION</th>
+                                    <th className="font-400 w-[106px]  flex  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT</th>
+                                    <th className="font-400 w-[75px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                    <th className="font-400 w-[73px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">TYPE/ID</th>
+                                    <th className="font-400 w-[80px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">SERVICE TYPE</th>
+                                    <th className="font-400 w-[73px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">COMMISSION AGENT</th>
+                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">COMMISSION SA</th>
+                                    <th className="font-400 w-[70px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">PRE BALANCE</th>
+                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">POST BALANCE</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
@@ -91,4 +95,4 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
 
 
 
-Customers.Layout = MetricLayoutTemplate
+Settlement.Layout = MetricLayoutTemplate
