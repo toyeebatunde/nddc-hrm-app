@@ -19,13 +19,12 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
 
     useEffect(() => {
         setToken()
+        // setLoading(true)
         setActiveDashboard("Approvals")
         setActiveState("1")
-        if(!approvalsData) {
-            setLoading(true)
-        }
+
         if(data) {
-            setLoading(false)
+            // setLoading(false)
             setApprovalsData(data)
             
         }

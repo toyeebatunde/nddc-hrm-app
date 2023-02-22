@@ -52,7 +52,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     if (type == "decline") {
         return (
             <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
-                <h2 className="font-[400] text-[white] font-pushPenny text-[18px]">Decline</h2>
+                <h2 className="font-[400] text-[white] font-pushPenny text-[18px]">{text || "Decline"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/decline.svg' />
                 </div>
@@ -62,7 +62,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     if (type == "accept") {
         return (
             <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
-                <h2 className="font-[400] font-pushPenny text-[14px]">Accept</h2>
+                <h2 className="font-[400] font-pushPenny text-[14px]">{text || "Accept"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/check.svg' />
                 </div>
@@ -71,7 +71,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "file") {
         return (
-            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-[#6E7883] border border-[#6E7883] rounded-[24px] bg-[#FBF4EB] flex">
+            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center text-[#6E7883] border border-[#6E7883] rounded-[24px] bg-[#FBF4EB] flex">
                 <h2 className="font-[500] font-pushPenny text-[14px]">Export CSV</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/file-text.svg' />
@@ -81,7 +81,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "pdf") {
         return (
-            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] border border-[#6E7883] items-center ml-[5px] text-[#6E7883] rounded-[24px] bg-[#FBF4EB] flex">
+            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] border border-[#6E7883] items-center text-[#6E7883] rounded-[24px] bg-[#FBF4EB] flex">
                 <h2 className="font-[500] font-pushPenny text-[14px]">Export PDF</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/file-pdf.svg' />
