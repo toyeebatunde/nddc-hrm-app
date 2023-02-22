@@ -202,7 +202,7 @@ export const tabs = [
                 active:'/icons/bulk-notification.svg',
                 inactive: '/icons/bulk-notification-inactive.svg',
                 data: "4",
-                link: "bulknotification",
+                link: "/dashboard/support/bulk-notification",
             },
             {
                 text: "Audits",
