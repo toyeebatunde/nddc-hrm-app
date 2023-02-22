@@ -1,24 +1,31 @@
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DateSelector from "../components/DateSelector"
 import ButtonTab from "./ButtonTab"
 import ImageHolder from "./ImageHolder"
 import UserButton from "./ButtonMaker"
 import { useRouter } from "next/router"
+import { tabs } from "./Tabs"
 
 
-export default function MetricLayoutTemplate({ children, title, modals, activeAgency, viewState, setView, activeTab, setActiveTab }) {
+
+export default function MetricLayoutTemplate({ children, title, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState }) {
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
-
-    const router = useRouter()
-    const inventory = router.pathname.includes("inventory")
     // const [activeTab, setActiveTab] = useState("")
+    const [tab, setTab] = useState()
+
+    useEffect(()=>{
+        if(activeState) {
+            setTab(Number(activeState))
+        }
+    },[activeState])
+
 
     
 
 
 
-    const tabs = [
+    const agencyTabs = [
         {
             name: "Agents",
             url: "/dashboard/agency/agent-management/agents"
@@ -77,7 +84,7 @@ export default function MetricLayoutTemplate({ children, title, modals, activeAg
         <div className="flex flex-col items-center pt-[60px] w-full">
             <section className="w-full flex flex-col sm:flex-row px-4 justify-between">
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
-                    Agency
+                {tab ? tabs[tab].text : "Agency"}
                 </h4>
                 <div className={`${activeAgency == "POSTerminals" ? "hidden" : ""}`}>
                 <DateSelector dateRange={dateRange} setDateRange={setDateRange} directionDown="/icons/direction-down.svg" />
@@ -85,7 +92,7 @@ export default function MetricLayoutTemplate({ children, title, modals, activeAg
             </section>
             <section className={`h-[44px] ${activeAgency == "Agent Management" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex":"hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex w-full z-[40] absolute h-full top-[1px] approvals-tab justify-start relative">
-                    {activeAgency == "Agent Management" ? tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : activeAgency == "Transactions" ? transactionTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : PosTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)}
+                    {activeAgency == "Agent Management" ? agencyTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : activeAgency == "Transactions" ? transactionTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : PosTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)}
                 </div>
                 <div className="border-b-[2px] z-[10] mt-auto z-10 border-[#979797]"></div>
             </section>

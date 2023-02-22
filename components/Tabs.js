@@ -209,7 +209,7 @@ export const tabs = [
                 active:'/icons/audits.svg',
                 inactive: '/icons/audits-inactive.svg',
                 data: "4",
-                link: "audits",
+                link: "/dashboard/support/audits",
             },
         ]
     },

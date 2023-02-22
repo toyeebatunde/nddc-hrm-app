@@ -140,7 +140,7 @@ export default function MyApp({ Component, pageProps }) {
       viewState={viewState}
       setView={setView}
     >
-      <Layout modals={modals} activeTab={activeTab} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState}>
+      <Layout modals={modals} activeTab={activeTab} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}

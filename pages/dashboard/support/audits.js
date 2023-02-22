@@ -19,7 +19,7 @@ export default function Settlement({ modals, setToken, setActiveDashboard, setAc
     useEffect(() => {
         setView(false)
         setActiveDashboard("Audits")
-        setActiveState("2")
+        setActiveState("4")
         if (data) {
             setLoading(false)
             setSettlementData(data)
