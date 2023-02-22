@@ -29,8 +29,8 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
     if (type == "textbox") {
         return (
             <div className="w-full h-full rounded-[inherit] bg-[#F3F3F3]">
-                <h2 className="absolute font-pushpennyMedium ml-[15px] text-[10px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">Reason for action</h2>
-                <textarea className="h-full w-full rounded-[inherit] bg-[#F3F3F3] outline-none px-[10px] py-[10px]"></textarea>
+                <label className="absolute font-pushpennyMedium ml-[15px] text-[10px] left-[45px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">{title || "Reason for action"}</label>
+                <textarea className={`h-full w-full rounded-[inherit] ${bg || "bg-[#F3F3F3]"} outline-none px-[10px] py-[10px]`}></textarea>
             </div>
         )
     }
