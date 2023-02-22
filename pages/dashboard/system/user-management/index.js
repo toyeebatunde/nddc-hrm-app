@@ -1,18 +1,19 @@
 
-import ImageHolder from '../../../components/ImageHolder'
+import ImageHolder from '../../../../components/ImageHolder'
 // import directionDown from '../../../public/icons/direction-down.svg'
 // import down from '../../../public/icons/down.svg'
 // import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
-import searchIcon from '../../../public/icons/search-icon.svg'
-import closeIcon from '../../../public/icons/close-modal.svg'
+import searchIcon from '../../../../public/icons/search-icon.svg'
+import closeIcon from '../../../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect } from "react"
 // import tick from '../../../public/icons/tick.svg'
-import RadioToggle from "../../../components/radioToggle"
-import ButtonTab from "../../../components/ButtonTab"
+import RadioToggle from "../../../../components/radioToggle"
+import ButtonTab from "../../../../components/ButtonTab"
 import nookies from 'nookies'
 import useSWR from 'swr'
 import axios from 'axios'
-import { testEnv } from '../../../components/Endpoints'
+import { testEnv } from '../../../../components/Endpoints'
+import  jwt  from 'jsonwebtoken'
 
 export default function UserManagement({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
     const [activeTab, setActiveTab] = useState("Team")
@@ -23,8 +24,12 @@ export default function UserManagement({ modals, setModalState, setToken, setAct
     // const router = useRouter()
 
     useEffect(() => {
+        const decoded =jwt.decode(localStorage.getItem('token'))
+        console.log(decoded) 
+        const permissions =decoded.permissions.split(',')
+        console.log(permissions)    
         setToken()
-        setActiveDashboard("User Management")
+        setActiveDashboard("UserManagement")
         setActiveState("1")
         if (data) {
             setUsersData(data)

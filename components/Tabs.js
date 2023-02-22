@@ -144,7 +144,7 @@ export const tabs = [
                 active:'/icons/transactions.svg',
                 inactive: '/icons/transactions-inactive.svg',
                 data: "2",
-                link: "transactions",
+                link: "/dashboard/agency/transactions",
             },
             {
                 text: "Settlement",
@@ -158,14 +158,14 @@ export const tabs = [
                 active:'/icons/reconciliation.svg',
                 inactive: '/icons/reconciliation-inactive.svg',
                 data: "2",
-                link: "reconciliation",
+                link: "/dashboard/agency/reconciliation",
             },
             {
                 text: "POS Terminals",
                 active:'/icons/pos-terminals.svg',
                 inactive: '/icons/pos-terminals-inactive.svg',
                 data: "2",
-                link: "pos",
+                link: "/dashboard/agency/pos-terminals",
             },
         ]
     },

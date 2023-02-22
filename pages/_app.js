@@ -11,6 +11,7 @@ import { ngrok, testEnv } from '../components/Endpoints'
 export default function MyApp({ Component, pageProps }) {
   const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
   const [activeState, setActiveState] = useState("0")
+  const [activeTab, setActiveTab] = useState()
   const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
@@ -21,11 +22,21 @@ export default function MyApp({ Component, pageProps }) {
   const router = useRouter()
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [user, setUser] = useState()
+  
 
   const Layout = Component.Layout || EmptyLayout
 
   function setView(state) {
     setViewState(state)
+  }
+
+  function setUserPrivilege (user) {
+
+  }
+
+  function setTab(tab) {
+    setActiveTab(tab)
   }
 
   function switchBoard(e, board, active) {
@@ -124,8 +135,12 @@ export default function MyApp({ Component, pageProps }) {
       closeModals={closeModals}
       formEdit={formEdit}
       modalSuccessNotify={modalSuccessNotify}
+      activeTab={activeTab}
+      setActiveTab={setTab}
+      viewState={viewState}
+      setView={setView}
     >
-      <Layout modals={modals} activeAgency={activeDashboard} setView={setView} viewState={viewState}>
+      <Layout modals={modals} activeTab={activeTab} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -148,6 +163,8 @@ export default function MyApp({ Component, pageProps }) {
           viewState={viewState}
           isLoading={isLoading}
           setLoading={setLoading}
+          activeTab={activeTab}
+          setActiveTab={setTab}
         />
       </Layout>
     </LayoutAuthed>

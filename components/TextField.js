@@ -14,7 +14,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
     if (type == "select") {
         return (
             <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
-                <label className="text-[12px] font-[400] top-[-10px] left-[25px] font-interegular absolute w-fit text-[#777777] bg-[white] px-[4px]">{title}</label>
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[white] px-[4px]">{title}</label>
                 <select name={name} onChange={(e) => { formEdit(e) }} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`}>
                     {selectOptions.map((option, index) => {
                         if (option == value) {
