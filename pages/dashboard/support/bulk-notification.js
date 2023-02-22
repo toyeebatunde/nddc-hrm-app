@@ -110,12 +110,12 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                                     <td className="font-pushpennyBook  w-[601px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
                                     <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
                                         <div className="w-[106px] group  inline-flex h-[36px]">
-                                            <UserButton type="accept" text="Assign" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                            <UserButton type="accept" text="True" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
                                         </div>
                                     </td>
                                     <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
                                         <div className="w-[106px]  inline-flex h-[36px]">
-                                            <UserButton type="decline" text="Decline" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                            <UserButton type="decline" text="False" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
                                         </div>
                                     </td>
                                 </tr>
@@ -124,6 +124,7 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                         </table>
                     </div>
                 </section>
+                
 
             </section>
         </div>
