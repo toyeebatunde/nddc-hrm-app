@@ -75,7 +75,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                             <td className="font-pushpennyBook flex w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>                                            
                                             <td className="font-pushpennyBook flex w-[88px]  flex items-start">                                            
                                                 <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={()=>{ router.push(`/dashboard/agency/transactions/${transaction.tranRef}`)}} />
+                                                    <UserButton type="view" text="View" onClick={()=>{ router.push(`/dashboard/agency/transactions/${transaction.id}`)}} />
                                                 </div>
                                             </td>
                                         </tr>

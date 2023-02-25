@@ -14,7 +14,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const [transactionToView, setTransactionToView] = useState()
     const [viewState, setViewState] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/transaction/withdrawal/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/transaction/deposit/all?pageNo=0&pageSize=10`, fetching)
     const router = useRouter()
 
     useEffect(() => {

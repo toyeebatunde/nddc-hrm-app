@@ -12,9 +12,9 @@ import ImageHolder from "../../../../components/ImageHolder";
 
 export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
 
-    const [settlementData, setSettlementData] = useState()
+    const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/pos_request/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=0&pageSize=10`, fetching)
 
 
     useEffect(() => {
@@ -24,7 +24,7 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
         setActiveState("2")
         if (data) {
             setLoading(false)
-            setSettlementData(data)
+            setPosData(data)
         }
         if (error) {
             console.log(error)
@@ -80,18 +80,24 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                                         <th colspan="2" className="text-start">Agent Information</th>
                                         <th colspan="3" className=""></th>
                                     </tr>
-                                    <tr className="h-[50px] border-b px-[10px] border-[#979797]">
-                                        <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">2022-09-0513:32:45.0</td>
-                                        <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Arasi Mensahaug</td>
-                                        <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">+2348060110110</td>
-                                        <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Successful</td>
-                                        <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">GA POS Android Terminal</td>
-                                        <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
-                                            <div className="w-[88px] h-[36px]">
-                                                <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                            </div>
-                                        </td>
-                                    </tr>
+
+                                    {posData?.data.map((data, index) => {
+                                        return (
+                                            <tr className="h-[50px] border-b px-[10px] border-[#979797]">
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
+                                                <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerName}</td>
+                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerPhoneNumber || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
+                                                <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+
 
                                 </tbody>
                             </table>
