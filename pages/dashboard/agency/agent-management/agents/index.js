@@ -8,11 +8,11 @@ import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../../components/Endpoints";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState }) {
+export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue }) {
 
     const [agentData, setAgentData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const router = useRouter()
 
     useEffect(() => {

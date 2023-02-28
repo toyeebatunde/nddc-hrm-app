@@ -51,7 +51,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "decline") {
         return (
-            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
+            <button onClick={onClick} type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
                 <h2 className="font-[400] text-[white] font-pushPenny text-[18px]">{text || "Decline"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/decline.svg' />
@@ -61,7 +61,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
     }
     if (type == "accept") {
         return (
-            <button type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
+            <button onClick={onClick} type={preventDefault} className="w-full h-full flex justify-between px-[10px] items-center ml-[5px] text-white rounded-[24px] bg-black flex">
                 <h2 className="font-[400] font-pushPenny text-[14px]">{text || "Accept"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/check.svg' />
@@ -90,7 +90,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
         )
     }
     return (
-        <button onClick={onClick} className={` ${textColor} ${bg}  w-full h-full font-[400] rounded-[23px]`}>
+        <button onClick={onClick} className={` ${textColor} ${bg} border border-[#F3F3F3]  w-full h-full font-[400] rounded-[23px]`}>
             {text}
         </button>
     )

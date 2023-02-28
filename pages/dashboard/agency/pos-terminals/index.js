@@ -10,11 +10,11 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
 
-export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {

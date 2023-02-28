@@ -137,6 +137,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
             </div>
             <div className=" grow h-[fit] overflow-auto pb-[50px]">
                 {children}
+                
             </div>
         </div>
     )

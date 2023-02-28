@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 
-export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
 
     const initialCustomerForm = {
         customerId: "",
@@ -31,7 +31,7 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
     const [customerEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [customerData, setCustomerData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/customer/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/customer/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     
     function formEdit(e) {
         setCustomerEdit({ ...customerEdit, editForm: {...customerEdit.editForm, [e.target.name]: e.target.value}})

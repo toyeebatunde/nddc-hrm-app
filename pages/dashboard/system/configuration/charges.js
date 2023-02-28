@@ -10,13 +10,13 @@ import axios from 'axios'
 import useSWR from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [callToken, setCallToken] = useState()
     const[chargeData, setChargeData] = useState()
     const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
-    const {data, error} = useSWR(`${testEnv}v1/charge/all?pageNo=1&pageSize=10`, fetching)
+    const {data, error} = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
 

@@ -9,11 +9,11 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
 
-export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue }) {
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
@@ -29,6 +29,11 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
             console.log(error)
         }
     }, [data])
+
+    function posEdit(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
 
 
     const dateFormatter = (stamp) => {
@@ -58,7 +63,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Add New Inventory" />
+                            <UserButton onClick={()=>{posEdit(true, "posModalAdd", {terminalId:"", serialNumber: "", posTerminalType: "", action: "Add"}, "")}} type="gradient" text="+ Add New Inventory" />
                         </div>
                     </div>
                 </section>
@@ -89,16 +94,16 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                                         <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.status}</td>
                                         <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
                                             <div className="w-[88px] inline-flex h-[36px]">
-                                                <UserButton type="edit" text="Edit" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="edit" text="Edit" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="accept" text="Assign" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="accept" text="Assign" onClick={()=>{posEdit(true, "posModalAssign", {agentId:"", agentName: "", posTerminalType: "", action: "Assign"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="decline" text="Decline" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="decline" text="Retrieve" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="view" text="View"  />
                                             </div>
                                         </td>
                                     </tr>

@@ -6,6 +6,8 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { ngrok, testEnv } from '../components/Endpoints'
+import Textfield from '../components/TextField'
+import ImageHolder from '../components/ImageHolder'
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -16,14 +18,15 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false })
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
-  
+  const [entryValue, setEntryValue] = useState({ size: 5, page: 0 })
+
 
   const Layout = Component.Layout || EmptyLayout
 
@@ -31,7 +34,7 @@ export default function MyApp({ Component, pageProps }) {
     setViewState(state)
   }
 
-  function setUserPrivilege (user) {
+  function setUserPrivilege(user) {
 
   }
 
@@ -62,12 +65,12 @@ export default function MyApp({ Component, pageProps }) {
       return
     }
     console.log("closer")
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false })
 
   }
 
   function closeModals() {
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false })
   }
 
   function changeForm(e, form, setter) {
@@ -108,6 +111,22 @@ export default function MyApp({ Component, pageProps }) {
       setToken("token")
     }
   }, [])
+
+  function pageSelector(e, entry) {
+    if (entry == "size") {
+      setEntryValue({ ...entryValue, size: e.target.value })
+      return
+    }
+    if (entry == "page") {
+      setEntryValue({ ...entryValue, page: e.target.value })
+      return
+    }
+     if (entry == "none") {
+      setEntryValue({ ...entryValue, page: entryValue.page + 1 })
+      return
+     }
+
+  }
 
 
   function showPassword(field, shower, showState) {
@@ -165,7 +184,28 @@ export default function MyApp({ Component, pageProps }) {
           setLoading={setLoading}
           activeTab={activeTab}
           setActiveTab={setTab}
+          pageSelector={pageSelector}
+          entryValue={entryValue}
         />
+        <div className="flex px-[20px] justify-between w-full">
+          <div className="flex items-center gap-[10px]">
+            <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">Show</h2>
+            <div className="w-[83px] h-[51px] rounded-[25.5px] border-[#D1D1D1] border">
+              <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[5, 10, 15]} />
+            </div>
+            <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">entries</h2>
+          </div>
+
+          <div className="w-[83px] h-[51px] rounded-[25.5px] justify-center border-[#D1D1D1] border flex items-center">
+            <div className=' w-[40%] relative h-[100%] flex justify-center items-center leading-[28px] font-pushpennyBook text-[22px] font-[400]'>{entryValue.page + 1}</div>
+            <button onClick={(e)=>{pageSelector(e, "none")}} className='w-[40%] h-[100%] relative justify-center flex items-center'>
+              <div className='w-[50%] relative h-[40%]'>
+                <ImageHolder src='/icons/forward.svg' />
+              </div>
+            </button>
+          </div>
+
+        </div>
       </Layout>
     </LayoutAuthed>
   )
