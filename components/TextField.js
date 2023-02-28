@@ -26,6 +26,29 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
             </div>
         )
     }
+    if (type == "pageSize") {
+        return (
+            <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[white] px-[4px]">{title}</label>
+                <select name={name} onChange={(e) => { formEdit(e, "size") }} className={`h-full outline-none pl-[25px] font-pushpennyBook text-[22px] font-[400] rounded-[10px] leading-[28px] ${bg} w-[95%] rounded-[inherit]`}>
+                    {selectOptions.map((option, index) => {
+                        if (option == value) {
+                            return <option key={index} value={option} selected>{option}</option>
+                        }
+                        return <option key={index} value={option}>{option}</option>
+                    })}
+                </select>
+            </div>
+        )
+    }
+
+    if (type == "pageSelect") {
+        return (
+            <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
+                <input type="number" onChange={(e) => { formEdit(e, "size") }} value={value} className={`h-full outline-none pl-[25px] font-pushpennyBook text-[22px] font-[400] rounded-[10px] leading-[28px] ${bg} w-[95%] rounded-[inherit]`} />
+            </div>
+        )
+    }
     if (type == "textbox") {
         return (
             <div className="w-full h-full rounded-[inherit] bg-[#F3F3F3]">

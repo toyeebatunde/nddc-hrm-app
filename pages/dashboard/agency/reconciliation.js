@@ -9,11 +9,11 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 
-export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
 
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
@@ -44,37 +44,31 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
         <div className="w-full">
 
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className={`h-[674px] w-full flex overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
-                    <div className="w-[1135px] h-fit">
+                <section className={`h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
+                    <div className="min-w-[1135px] h-fit">
 
-                        <table className="table-fixed px-[5px] w-full flex flex-col">
+                        <table className="table-fixed px-[5px] w-full">
                             <thead>
-                                <tr className="flex justify-between">
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">CREDIT {"(IN)"}</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">DEBIT {"(OUT)"}</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">BALANCE</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">LEDGER BALANCE</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">SUPER AGENT</th>
-                                    <th className="font-400 w-[116px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">PAYRAIL</th>
-                                    <th className="font-400 w-[161px] border flex  text-[12px] leading-[15.62px] font-pushpennyBook">GL BALANCE</th>
+                                <tr className="px-[10px]">
+                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">CREDIT {"(IN)"}</th>
+                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">DEBIT {"(OUT)"}</th>
+                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">BALANCE</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">LEDGER BALANCE</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">SUPER AGENT</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">PAYRAIL</th>
+                                    <th className="font-400 w-[161px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">GL BALANCE</th>
                                 </tr>
                             </thead>
-                            <tbody className="mt-6 flex">
-
+                            <tbody className="mt-6">
                                 <tr>
-                                    <th className="w-[116px] border"></th>
+                                    <th colSpan="1" className=""></th>
+                                    <th colSpan="2" className="">Agents Wallet</th>
+                                    <th colSpan="2" className="">Commissions</th>
+                                    <th className="w-[161px] "></th>
                                 </tr>
-                                <tr>
-                                    <th className="w-[464px] border">Agents Wallet</th>
-                                </tr>
-                                <tr>
-                                    <th className="w-[348px] border">Commissions</th>
-                                </tr>
-                                <tr>
-                                    <th className="w-[161px] border"></th>
-                                </tr>
+                                
 
                                 {/* {customerData?.data.map((customer, index) => {
                                     return (

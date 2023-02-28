@@ -9,11 +9,11 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
 
-export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue }) {
 
-    const [settlementData, setSettlementData] = useState()
+    const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/pos_request/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
@@ -23,12 +23,17 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
         setActiveState("2")
         if (data) {
             setLoading(false)
-            setSettlementData(data)
+            setPosData(data)
         }
         if (error) {
             console.log(error)
         }
     }, [data])
+
+    function posEdit(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
 
 
     const dateFormatter = (stamp) => {
@@ -58,54 +63,58 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Add New Inventory" />
+                            <UserButton onClick={()=>{posEdit(true, "posModalAdd", {terminalId:"", serialNumber: "", posTerminalType: "", action: "Add"}, "")}} type="gradient" text="+ Add New Inventory" />
                         </div>
                     </div>
                 </section>
-            </section>  
+            </section>
 
             <section className="h-[674px] mt-[20px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                    <div className="min-w-[1115px] h-fit">
+                <div className="min-w-[1115px] h-fit">
 
-                        <table className="table-fixed px-[15px] w-full">
-                            <thead>
-                                <tr className="">
-                                    <th className="font-400 w-[160px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">TERMINAL ID</th>
-                                    <th className="font-400 w-[132px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">SERIAL NO.</th>
-                                    <th className="font-400 w-[106px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                    <th className="font-400 w-[90px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ASSIGNEE</th>
-                                    <th className="font-400 w-[70px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400 w-[460px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">                                    
+                    <table className="table-fixed px-[15px] w-full">
+                        <thead>
+                            <tr className="">
+                                <th className="font-400 w-[160px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">TERMINAL ID</th>
+                                <th className="font-400 w-[132px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">SERIAL NO.</th>
+                                <th className="font-400 w-[106px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                <th className="font-400 w-[90px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ASSIGNEE</th>
+                                <th className="font-400 w-[70px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                <th className="font-400 w-[460px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody className="mt-6">
+                            {posData?.data.map((data, index) => {
+                                return (
                                     <tr className="h-[70px] border-b px-[10px] border-[#979797]">
-                                        <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">00023230116065816005044700062</td>
-                                        <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">POS989108u2i01PAY</td>
-                                        <td className="font-pushpennyBook  w-[106px] break-words  font-400 text-[14px] leading-[14px] text-[#6E7883]">GA POS Android Terminal</td>
-                                        <td className="font-pushpennyBook  w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Arasi Mensahaug</td>
-                                        <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">Inactive</td>
+                                        <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.deviceId}</td>
+                                        <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.retrievalReferenceNumber}</td>
+                                        <td className="font-pushpennyBook  w-[106px] break-words  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
+                                        <td className="font-pushpennyBook  w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.firstName} {data.agent.lastName}</td>
+                                        <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.status}</td>
                                         <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
                                             <div className="w-[88px] inline-flex h-[36px]">
-                                                <UserButton type="edit" text="Edit" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="edit" text="Edit" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="accept" text="Assign" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="accept" text="Assign" onClick={()=>{posEdit(true, "posModalAssign", {agentId:"", agentName: "", posTerminalType: "", action: "Assign"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="decline" text="Decline" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="decline" text="Retrieve" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                <UserButton type="view" text="View"  />
                                             </div>
                                         </td>
                                     </tr>
+                                )
+                            })}
 
-                                </tbody>
-                        </table>
-                    </div>
-                </section>           
-                     
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
         </div>
     )
 }

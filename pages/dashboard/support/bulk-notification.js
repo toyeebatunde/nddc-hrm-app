@@ -13,7 +13,7 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
 
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/bulk_notification/all?pageNo=0&pageSize=10`, fetching)
 
 
     useEffect(() => {

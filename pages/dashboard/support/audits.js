@@ -9,25 +9,25 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 
-export default function Settlement({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Audit({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue}) {
 
-    const [settlementData, setSettlementData] = useState()
+    const [auditData, setAuditData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/audit/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
         setView(false)
         setActiveDashboard("Audits")
-        setActiveState("2")
+        setActiveState("4")
         if (data) {
             setLoading(false)
-            setSettlementData(data)
+            setAuditData(data)
         }
         if (error) {
             console.log(error)
         }
-    }, [data])
+    }, [data, entryValue])
 
 
     const dateFormatter = (stamp) => {
@@ -59,15 +59,19 @@ export default function Settlement({ modals, setToken, setActiveDashboard, setAc
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                <tr className="h-[70px] border-b px-[10px] border-[#979797]">
-                                    <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    
-                                </tr>
+                                {auditData?.data.map((data, index) => {
+                                    return (
+                                        <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
+                                            <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.initiatedBy}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.ipAddress}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.operation}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.comments}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+
+                                        </tr>
+                                    )
+                                })}
 
                             </tbody>
                         </table>
@@ -80,4 +84,4 @@ export default function Settlement({ modals, setToken, setActiveDashboard, setAc
 
 
 
-Settlement.Layout = MetricLayoutTemplate
+Audit.Layout = MetricLayoutTemplate

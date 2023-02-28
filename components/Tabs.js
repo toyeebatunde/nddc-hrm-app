@@ -195,7 +195,7 @@ export const tabs = [
                 active:'/icons/ticket-management.svg',
                 inactive: '/icons/ticket-management-inactive.svg',
                 data: "4",
-                link: "ticketmanagement",
+                link: "/dashboard/support/ticket-management",
             },
             {
                 text: "Bulk Notification",
@@ -209,7 +209,7 @@ export const tabs = [
                 active:'/icons/audits.svg',
                 inactive: '/icons/audits-inactive.svg',
                 data: "4",
-                link: "audits",
+                link: "/dashboard/support/audits",
             },
         ]
     },
