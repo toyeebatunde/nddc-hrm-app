@@ -13,7 +13,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
 
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/pos_request/all?pageNo=0&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/ticket/ANSWERED/all?pageNo=0&pageSize=10`, fetching)
 
 
     useEffect(() => {
@@ -70,16 +70,17 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                         <table className="table-fixed px-[15px] w-full">
                             <thead>
                                 <tr className="">
-                                    <th className="font-400 w-[160px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">TERMINAL ID</th>
-                                    <th className="font-400 w-[132px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">SERIAL NO.</th>
-                                    <th className="font-400 w-[106px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                    <th className="font-400 w-[90px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ASSIGNEE</th>
-                                    <th className="font-400 w-[70px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400 w-[460px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                    <th className="font-400 w-[160px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                    <th className="font-400 w-[132px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">CATEGORY</th>
+                                    <th className="font-400 w-[106px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">UNIQUE ID</th>
+                                    <th className="font-400 w-[90px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">CLIENT</th>
+                                    <th className="font-400 w-[70px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">SUBJECT</th>
+                                    <th className="font-400 w-[460px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                    <th className="font-400 w-[460px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTION</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6">                                    
-                                    <tr className="h-[70px] border-b px-[10px] border-[#979797]">
+                                    {/* <tr className="h-[70px] border-b px-[10px] border-[#979797]">
                                         <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">00023230116065816005044700062</td>
                                         <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">POS989108u2i01PAY</td>
                                         <td className="font-pushpennyBook  w-[106px] break-words  font-400 text-[14px] leading-[14px] text-[#6E7883]">GA POS Android Terminal</td>
@@ -99,7 +100,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                                                 <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
                                             </div>
                                         </td>
-                                    </tr>
+                                    </tr> */}
 
                                 </tbody>
                         </table>
