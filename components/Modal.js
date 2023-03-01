@@ -240,7 +240,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield charType="number" type="text" title="Serial Number" name="serialNumber" formEdit={formEdit} value={values.values.serialNumber || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield charType="text" type="text" title="Serial Number" name="serialNumber" formEdit={formEdit} value={values.values.serialNumber || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">

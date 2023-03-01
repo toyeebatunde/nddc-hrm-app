@@ -9,8 +9,9 @@ import apiToken from "../../../../components/Token"
 import axios from 'axios'
 import useSWR from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
+import TableContainer from "../../../../components/TableContainer"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [callToken, setCallToken] = useState()
@@ -65,9 +66,48 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
             </section>
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "block"}`}>
-                <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                    <div className="w-[1115px] h-fit">
+                <section className="min-h-[674px] w-full  pt-4 pl-2 pr-4">
+                    {/* <div className="w-[1115px] h-fit">
+                        <table className="table-fixed w-full flex flex-col">
+                            <thead>
+                                <tr className="flex justify-around">
+                                    <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
+                                    <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                    <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
+                                    <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
+                                    <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                    <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody className="mt-6">
+                                {chargeData?.data.map((item, index) => {
+                                    return (
+                                        <tr key={index} className="flex justify-around h-[50px]">
+                                            <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                            <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                            <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                            <td className="font-pushpennyBook  flex w-[373px] justify-between">
+                                                <div className="w-[115px] h-[36px]">
+                                                    <UserButton type="view" text="View" onClick={()=>{changeView(item.id)}} />
+                                                </div>
+                                                <div className="w-[107px] h-[36px]">
+                                                    <UserButton type="edit" onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
+                                                </div>
+                                                <div className="w-[130px] h-[36px]">
+                                                    <UserButton type="delete" onClick={()=>{chargeEdit(true, "action", {caution:deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`}, item.id)}} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
 
+                            </tbody>
+                        </table>
+                    </div> */}
+                    <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
+                    <div className="w-[1115px] bg-brand-light-yellow rounded-[10px] pt-[10px] min-h-[674px]">
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
                                 <tr className="flex justify-around">
@@ -106,6 +146,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                             </tbody>
                         </table>
                     </div>
+                    </TableContainer>
                 </section>
             </section>
             <section className={`py-2 w-full h-fit mt-[20px] flex-col lg:justify-between px-4 ${view ? "flex" : "hidden"}`}>

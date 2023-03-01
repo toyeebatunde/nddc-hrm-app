@@ -9,7 +9,7 @@ import { tabs } from "./Tabs"
 
 
 
-export default function MetricLayoutTemplate({ children, title, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState }) {
+export default function MetricLayoutTemplate({Component, children, title, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState }) {
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
     // const [activeTab, setActiveTab] = useState("")
     const [tab, setTab] = useState()
