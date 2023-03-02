@@ -9,15 +9,17 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
 import TableContainer from "../../../../components/TableContainer";
+export default function Tickets({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, setActiveTab }) {
 
-export default function Tickets({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
 
     const [ticketData, setTicketData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/ticket/OPEN/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const router = useRouter()
 
 
     useEffect(() => {
+        setActiveTab("Open Tickets")
         setView(false)
         setActiveDashboard("TicketManagement")
         setActiveState("4")
@@ -58,7 +60,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Add New Inventory" />
+                            <UserButton type="gradient" text="+ Create Ticket" />
                         </div>
                     </div>
                 </section>

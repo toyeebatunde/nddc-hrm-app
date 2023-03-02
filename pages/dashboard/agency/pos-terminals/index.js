@@ -11,11 +11,26 @@ import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Pos({ modals, setToken, setActiveDashboard, setActiveState,setActiveTab, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
+export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
+    const initialView = { agentId: "", agentName:"", agentPhone: "", status: "", posType: "", comment: "" }
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/transaction/pos?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const [viewPos, setViewPos] = useState(initialView)
+
+    function posToView(e,view, id, name, phone, status, comment) {
+        e.preventDefault()
+        if (view) {
+            setViewPos({ ...viewPos, agentId: id, agentName: `${name.firstName} ${name.lastName}`, agentPhone: phone, status: status, comment: comment })
+            return
+        }
+        setViewPos(initialView)
+    }
+
+    function formEdit(e) {
+        setViewPos({ ...viewPos, [e.target.name]: e.target.value })
+    }
 
 
     useEffect(() => {
@@ -86,13 +101,13 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                                         return (
                                             <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
                                                 <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
-                                                <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerName}</td>
-                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerPhoneNumber || "n/a"}</td>
-                                                <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                                <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.firstName} {data.agent.lastName}</td>
+                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.phoneNumber || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.status}</td>
                                                 <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
                                                 <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
                                                     <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                        <UserButton type="view" text="View" onClick={(e) => {posToView(e,true,data.agent.id, {firstName:data.agent.firstName, lastName: data.agent.lastName}, data.agent.phoneNumber, data.status, data.serviceName)}} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -105,30 +120,41 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                         </TableContainer>
                     </section>
                 </div>
-                <div className="w-full lg:w-[35%] gap-[10px] flex flex-col">
+                <div className="w-full lg:w-[35%] gap-[25px] flex flex-col">
                     <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                         <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">POS Process</h2>
                     </div>
-                    <section className={`min-h-[674px] w-full flex rounded-[10px] bg-brand-light-yellow pt-4`}>
-                        <form className="flex pb-[20px] gap-[15px] flex-col items-center w-full">
+                    <section className={`h-[586px] justify-center items-center w-full flex rounded-[10px] bg-brand-light-yellow pt-4`}>
+                        <div className={`${viewPos.agentId == "" ? "flex" : "hidden"} h-[123px] justify-center items-center w-[225px] flex-col`}>
+                            <div className="relative h-[66px] w-[65px]">
+                                <ImageHolder src="/icons/book-remove.svg" />
+                            </div>
+                                <h2 className="font-[400] leading-[18px] text-[#6E7883] font-pushpennyBook text-[14px] text-center">
+                                    Please select an agent process POS Terminal
+                                </h2>
+                        </div>
+                        <form className={`${viewPos.agentId == "" ? "hidden" : "flex"} pb-[20px] gap-[15px] flex-col items-center w-full`}>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield title="Agent ID" bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Agent ID" name="agentId" bg="bg-white" value={viewPos.agentId} />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield title="Agent Name" bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Agent Name" name="agentName" bg="bg-white" value={viewPos.agentName} />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield title="Agent Phone No." bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Agent Phone No." name="agentPhone" bg="bg-white" value={viewPos.agentPhone} />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield title="Status" type="select" selectOptions={["Completed", "Processing"]} bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Status" value={viewPos.status} name="status" type="select" selectOptions={["SUCCESSFUL", "PROCESSING", "PENDING"]} bg="bg-white" />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield title="POS Type" type="select" selectOptions={["GA Linux Terminal", "GA POS Android Terminal"]} bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="POS Type" value={viewPos.posType} name="posType" type="select" selectOptions={["GA Linux Terminal", "GA POS Android Terminal"]} bg="bg-white" />
+                            </div>
+                            <div className="w-[95%] xl:w-[336px] h-[76px] rounded-[28.5px]">
+                                <Textfield formEdit={formEdit} title="Comment" value={viewPos.comment} name="comment" type="textbox"  bg="bg-white" />
                             </div>
                             <div className="w-full flex justify-between items-center xl:w-[336px] mt-auto h-[57px]">
                                 <div className="w-[49%] h-[36px]">
-                                    <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" />
+                                    <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" onClick={(e)=>{posToView(e,false)}} />
                                 </div>
                                 <div className="w-[49%] h-[36px]">
                                     <UserButton type="gradient" text="Save" />
