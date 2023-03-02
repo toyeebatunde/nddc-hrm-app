@@ -8,8 +8,9 @@ import Textfield from "../../../../components/TextField"
 import axios from "axios"
 import { testEnv } from "../../../../components/Endpoints"
 import useSWR from 'swr'
+import TableContainer from "../../../../components/TableContainer"
 
-export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef }) {
+export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef, pageSelector, entryValue }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [referralData, setReferralData] = useState()
@@ -64,9 +65,8 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
 
             </section>
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-2">
-                    <div className={`w-full h-fit ${view ? "hidden" : "block"}`}>
-
+                <section className="h-[674px] w-full  pt-4 pl-2 pr-2">
+                    <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
                                 <tr className="flex justify-between">
@@ -75,21 +75,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
                                     <th className="font-400  flex w-[35%]  text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                 </tr>
                             </thead>
-                            <tbody className="mt-6">
-                                {/* <tr className="flex justify-around h-[50px]">
-                                    <td className="font-pushpennyBook  flex w-[30%] font-400 text-[18px] leading-[14px] text-[#6E7883]">item</td>
-                                    <td className="font-pushpennyBook  flex w-[30%] font-400 text-[18px] leading-[14px] text-[#6E7883]">item</td>
-
-                                    <td className="font-pushpennyBook lg:pl-[10px] flex w-[35%] justify-start lg:gap-[10px]">
-                                        
-                                        <div className="w-[90px] xl:w-[107px] h-[36px]">
-                                            <UserButton type="edit" />
-                                        </div>
-                                        <div className="xl:w-[130px] h-[36px]">
-                                            <UserButton type="delete" />
-                                        </div>
-                                    </td>
-                                </tr> */}
+                            <tbody className="mt-6">                                
                                 {referralData?.data.map((item, index) => {
                                     return (
                                         <tr key={index} className="flex justify-around h-[50px]">
@@ -111,26 +97,8 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
 
                             </tbody>
                         </table>
-                    </div>
-
-                    <section className={`py-2 w-full h-fit mt-[20px] flex-col lg:justify-between px-4 ${view ? "flex" : "hidden"}`}>
-                    <div className="w-[90px] xl:w-[107px] text-[#6E7883] h-[36px]">
-                        <UserButton text="Back" onClick={changeView} />
-                    </div>
-                        <div className="w-full h-[57px] mt-[20px] md:w-[427px] rounded-[28px]">
-                            <Textfield type="text" title="Name" bg="white" />
-                        </div>
-                        <div className="w-full h-[57px] md:w-[427px] mt-[20px] rounded-[28px]">
-                        <Textfield type="text" title="Logo URL" bg="white" />
-                        </div>
-                        <div className="w-full h-[132px] md:w-[427px] mt-[20px] rounded-[30px]">
-                        <Textfield type="text" title="Logo URL" bg="white" />
-                        </div>
-                        {/* select */}
-                        {/* <div className="w-full h-[132px] md:w-[427px] mt-[20px] rounded-[30px]">
-                        <Textfield type="text" title="Logo URL" bg="white" />
-                        </div> */}
-                    </section>
+                   
+                    </TableContainer>
                 </section>
             </section>
         </div>
@@ -140,21 +108,3 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
 
 
 Referrers.Layout = SubLayoutTemplate
-
-// export const getServerSideProps = async (context) => {
-//     const cookies = nookies.get(context)
-//     const response = await fetch(`http://admapis-staging.payrail.co/v1/referrer/all?pageNo=1&pageSize=5`,
-//         {
-//             method: 'GET',
-//             headers: {
-//                 'Authorization': `Bearer ${cookies.token}`
-//             }
-//         }
-//     )
-//     const referrers = await response.json()
-//     return {
-//         props: {
-//             referrers
-//         }
-//     }
-// }

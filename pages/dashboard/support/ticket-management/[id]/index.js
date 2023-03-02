@@ -10,32 +10,36 @@ import { useRouter } from "next/router"
 import { testEnv } from "../../../../../components/Endpoints"
 import dynamic from "next/dynamic"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState, convertToRaw } from "draft-js"
+import draftToHtml from "draftjs-to-html"
+// import draftToMarkdown from 'draftjs-to-markdown'
 import Textfield from "../../../../../components/TextField"
+
 
 export default function Ticket({ modals, setModalState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
-    console.log(router.query.id)
-    const [lienStatus, setLienStatus] = useState()
-    const [tranDetails, setTranDetails] = useState(false)
-    const [transactionData, setTransactionData] = useState()
+    const [ticketData, setTicketData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/transaction/${router.query.id}`, fetching)
-    const [textFormat, setTextFormat] = useState({ bold: false, italic: false, underline: false })
+    const { data, error } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)    
+    const [editorState, setEditorState] = useState({editorState: EditorState.createEmpty()})
 
     useEffect(() => {
         // setLoading(true)
-        console.log(router.query)
         setToken()
         setActiveDashboard("TicketManagement")
         setActiveState("4")
         if (data) {
             setLoading(false)
-            setTransactionData(data)
+            setTicketData(data)
         }
         if (error) {
             console.log(error)
         }
     }, [data])
+
+    function onEditorStateChange (editorState) {
+        setEditorState({editorState,})
+    }
 
     const Editor = dynamic(
         () => import('react-draft-wysiwyg').then(mod => mod.Editor),
@@ -72,6 +76,9 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
         setActiveTab(tab)
     }
 
+    console.log(draftToHtml(convertToRaw(editorState.editorState.getCurrentContent())))
+    // console.log(convertToRaw(editorState.editorState.getCurrentContent()))
+
 
     return (
         <div className={`flex relative flex-col items-start pt-[60px] overflow-hidden w-full`}>
@@ -89,6 +96,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                 toolbarClassName="rounded-[10px]"
                                 wrapperClassName=" min-h-[460px]"
                                 editorClassName=""
+                                editorState={editorState.editorState}
+                                onEditorStateChange={onEditorStateChange}
                             />
                         </div>
                         <div className="flex justify-between items-center flex-col lg:flex-row lg:flex-wrap items-center gap-[10px] w-full min-h-[57px]">
@@ -146,7 +155,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                     <div className="flex flex-col w-full h-[440px] gap-[10px]">
                         <div className="flex flex-col justify-between rounded-[12px] w-full border items-center border-[#F3F3F3] h-[356px]">
                             <div className=" border-b border-[#F3F3F3] flex justify-between items-center w-[90%] h-[54px]">
-                                <h2 className="font-[400] text-[16px] font-pushpennyBook">Ticket information • #Technical - 9540</h2>
+                                <h2 className="font-[400] text-[16px] font-pushpennyBook">Ticket information • {ticketData?.data.uniqueId}</h2>
                                 <div className="w-[18px] h-[18px] relative">
                                     <ImageHolder src="/icons/caret-up.svg" />
                                 </div>
@@ -157,7 +166,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                 </div>
                                 <div className="flex flex-col">
                                     <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Requester - Agent</h2>
-                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">Olamide Olagunju • +2348060110110</h2>
+                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">{ticketData?.data.agentName} • {ticketData?.data.agentPhoneNumber}</h2>
                                 </div>
                             </div>
                             <div className=" border-b border-[#F3F3F3] flex items-center gap-[10px] w-[90%] h-[54px]">
@@ -165,8 +174,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                     <ImageHolder src="/icons/layers.svg" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Requester - Agent</h2>
-                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">Olamide Olagunju • +2348060110110</h2>
+                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Department</h2>
+                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">{ticketData?.data.department}</h2>
                                 </div>
                             </div>
                             <div className=" border-b border-[#F3F3F3] flex items-center gap-[10px] w-[90%] h-[54px]">
@@ -174,8 +183,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                     <ImageHolder src="/icons/tick-double.svg" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Requester - Agent</h2>
-                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">Olamide Olagunju • +2348060110110</h2>
+                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Submitted</h2>
+                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">{dateFormatter(ticketData?.data.dateCreated)}</h2>
                                 </div>
                             </div>
                             <div className=" flex items-center gap-[10px] w-[90%] h-[54px]">
@@ -183,8 +192,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                     <ImageHolder src="/icons/notification.svg" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Requester - Agent</h2>
-                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">Olamide Olagunju • +2348060110110</h2>
+                                    <h2 className="text-[12px] font-[400] font-pushpennyBook leading-[18px]">Status</h2>
+                                    <h2 className="text-[15px] font-[400] font-pushpennyBook leading-[24px]">{ticketData?.data.ticketStatus}</h2>
                                 </div>
                             </div>
                         </div>

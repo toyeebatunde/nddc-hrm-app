@@ -64,19 +64,19 @@ export default function MetricLayoutTemplate({Component, children, title, modals
     const ticketTabs = [
         {
             name: "Open Tickets",
-            url: "/dashboard/agency/ticket-management"
+            url: "/dashboard/support/ticket-management"
         },
         {
             name: "Answered Tickets",
-            url: "/dashboard/agency/ticket-management/answered-tickets"
+            url: "/dashboard/support/ticket-management/answered-tickets"
         },
         {
             name: "Closed Tickets",
-            url: "/dashboard/agency/ticket-management/closed-tickets"
+            url: "/dashboard/support/ticket-management/closed-tickets"
         },
         {
             name: "Ticket Metrics",
-            url: "/dashboard/agency/ticket-management/ticket-metrics"
+            url: "/dashboard/support/ticket-management"
         }
     ]
     const PosTabs = [

@@ -14,8 +14,9 @@ import Textfield from '../../../components/TextField'
 import axios from 'axios'
 import useSWR from 'swr'
 import { testEnv, editApi } from '../../../components/Endpoints'
+import TableContainer from '../../../components/TableContainer'
 
-export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, viewState, setView, setLoading }) {
+export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, viewState, setView, setLoading, pageSelector, entryValue }) {
 
     const initialForm = {
         institutionCode: "",
@@ -44,7 +45,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
         setView(false)
         setActiveDashboard("Institutions")
         setActiveState("1")
-        if(!institutionsData) {
+        if (!institutionsData) {
             setLoading(true)
         }
         if (data) {
@@ -104,13 +105,13 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
-            }            
+            }
         )
-        .then(response =>{
-            // console.log(response)
-            setView(false)
-        })
-        .catch(error=>{console.log(error)})
+            .then(response => {
+                // console.log(response)
+                setView(false)
+            })
+            .catch(error => { console.log(error) })
     }
 
     function changeView(e, id) {
@@ -172,35 +173,37 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                 <div className={`mt-[25px] w-full ${viewState ? "flex" : "hidden"} font-[400] text-[18px] font-pushpennyBook md:w-[485px] items-center pl-[20px] border border-[#F3F3F3] bg-[#F3F3F3] rounded-[28.5px] h-[57px]`}>
                     Edit Bank
                 </div>
-                <section className={`min-h-[674px] ${viewState ? "w-full md:w-[485.7px]" : "w-full"} ${viewState ? "mt-[20px]" : "mt-0"} overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4`}>
-                    <div className={`w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px] ${viewState ? "hidden" : "block"}`}>
-
-                        <table className="table-fixed w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400  flex w-[20%]  text-[12px] leading-[15.62px] font-pushpennyBook">CODE</th>
-                                    <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">BANK NAME</th>
-                                    <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">
-                                {institutionsData?.data.map((data, index) => {
-                                    return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionName}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionCode}</td>
-
-                                            <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-
-                                                <UserButton type="edit" onClick={(e) => { changeView(e, data.id) }} />
-                                                <UserButton type="delete" onClick={()=>{institutionHandler(true, "action", {caution:deleteCaution, action: "delete", endpoint: `${testEnv}v1/institution/delete/${data.id}` }, data.id)}} />
-
-                                            </td>
+                <section className={`min-h-[674px] ${viewState ? "w-full" : "w-full"} ${viewState ? "mt-[20px]" : "mt-0"} overflow-x-auto rounded-[10px]  pt-4 pl-2 pr-4`}>
+                    <div className={`${viewState ? "hidden" : "flex"} w-full`}>
+                        <TableContainer entryValue={entryValue} pageSelector={pageSelector}>
+                                <table className="table-fixed w-full flex flex-col">
+                                    <thead>
+                                        <tr className="flex justify-around">
+                                            <th className="font-400  flex w-[20%]  text-[12px] leading-[15.62px] font-pushpennyBook">CODE</th>
+                                            <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">BANK NAME</th>
+                                            <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                         </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody className="mt-6">
+                                        {institutionsData?.data.map((data, index) => {
+                                            return (
+                                                <tr key={index} className="flex justify-around h-[50px]">
+                                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionName}</td>
+                                                    <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionCode}</td>
+
+                                                    <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+
+                                                        <UserButton type="edit" onClick={(e) => { changeView(e, data.id) }} />
+                                                        <UserButton type="delete" onClick={() => { institutionHandler(true, "action", { caution: deleteCaution, action: "delete", endpoint: `${testEnv}v1/institution/delete/${data.id}` }, data.id) }} />
+
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            
+                        </TableContainer>
                     </div>
                     <section className={`w-full mt-[30px] h-fit rounded-[10px] flex-col bg-[#FBF4EB] ${viewState ? "flex" : "hidden"}`}>
 
@@ -224,7 +227,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                                     <UserButton text="Cancel" onClick={(e) => { changeView(e) }} />
                                 </div>
                                 <div className='w-[126px] h-[46px]'>
-                                    <UserButton text="Save" type="gradient" onClick={(e)=>{updateInstitution(e)}} />
+                                    <UserButton text="Save" type="gradient" onClick={(e) => { updateInstitution(e) }} />
                                 </div>
                             </div>
                         </form>

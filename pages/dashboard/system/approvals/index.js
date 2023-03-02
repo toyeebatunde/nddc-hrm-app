@@ -6,16 +6,17 @@ import axios from "axios"
 import useSWR from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
+import TableContainer from "../../../../components/TableContainer"
 
-export default function Approval({ modals, setModalState, setActiveDashboard, setActiveState, setToken, setLoading }) {
+export default function Approval({ modals, setModalState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector }) {
     const [activeTab, setActiveTab] = useState("")
     const [createRole, setCreateRole] = useState(false)
-    const[approvalsData, setApprovalsData] = useState()
-    const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
-    const {data, error} = useSWR(`${testEnv}v1/approval/all?pageNo=1&pageSize=10`, fetching)
+    const [approvalsData, setApprovalsData] = useState()
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data, error } = useSWR(`${testEnv}v1/approval/all?pageNo=1&pageSize=10`, fetching)
 
 
-    
+
 
     useEffect(() => {
         setToken()
@@ -23,10 +24,10 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
         setActiveDashboard("Approvals")
         setActiveState("1")
 
-        if(data) {
+        if (data) {
             // setLoading(false)
             setApprovalsData(data)
-            
+
         }
     }, [data])
 
@@ -40,9 +41,8 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
 
     return (
         <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[]5px pr-[5px]">
-                    <div className="w-[1115px] h-fit">
-
+            <section className="h-[674px] w-full  pt-4 pl-[]5px pr-[5px]">
+                <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
                         <table className="table-fixed pl-[10px] w-full flex flex-col">
                             <thead>
                                 <tr className="flex w-full px-[5px] gap-[25px]">
@@ -65,7 +65,7 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
                                             <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
                                             <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
                                                 <div className="w-[137px] h-[36px]">
-                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"} onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
+                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"} onClick={() => { chargeEdit(true, "editCharges", { lowerBound: item.lowerBound, upperBound: item.upperBound, value: item.value, transactionType: item.transactionType, chargeType: item.chargeType }, item.id) }} />
                                                 </div>
                                                 <div className="w-[137px] h-[36px]">
                                                     <UserButton type={approval.approvalStatus == "PENDING" ? "accept" : "delete"} />
@@ -77,9 +77,10 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
 
                             </tbody>
                         </table>
-                    </div>
-                </section>
+                    
+                </TableContainer>
             </section>
+        </section>
     )
 }
 

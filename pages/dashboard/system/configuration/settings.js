@@ -7,7 +7,8 @@ import axios from "axios"
 import useSWR from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
-export default function Settings({ modals, setActiveState, setActiveDashboard, activeTab, setToken, setModalState, getModalButtonRef, editFormState, setLoading, entryValue }) {
+import TableContainer from "../../../../components/TableContainer"
+export default function Settings({ modals, setActiveState, setActiveDashboard, activeTab, setToken, setModalState, getModalButtonRef, editFormState, setLoading, entryValue, pageSelector }) {
 
     const [settingsData, setSettingsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -15,11 +16,11 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, a
     // const router = useRouter()
 
     useEffect(() => {
-        
+
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
-        if(!settingsData) {
+        if (!settingsData) {
             setLoading(true)
         }
         if (data) {
@@ -51,37 +52,37 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, a
 
             </section>
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className="h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                    <div className=" w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px]">
+                <section className="min-h-[674px] w-full pt-4 pl-2 pr-4">
+                    <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
+                            <table className="table-fixed w-full flex flex-col">
+                                <thead>
+                                    <tr className="flex justify-around">
+                                        <th className="font-400  flex w-[40%]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
+                                        <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">DESCRIPTION</th>
+                                        <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                        <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="mt-6">
+                                    {settingsData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className="flex justify-around h-[50px]">
+                                                <td className="font-pushpennyBook flex w-[40%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.name}</td>
+                                                <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description ? item.description : "n/a"}</td>
+                                                <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
+                                                <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                    <div className="w-[107px] h-[36px]">
+                                                        <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", { name: item.name, description: item.description, value: item.value, type: item.type }, item.id) }} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
 
-                        <table className="table-fixed w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400  flex w-[40%]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
-                                    <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">DESCRIPTION</th>
-                                    <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">
-                                {settingsData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook flex w-[40%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.name}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description ? item.description : "n/a"}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                                <div className="w-[107px] h-[36px]">
-                                                    <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", {name: item.name, description: item.description, value: item.value, type: item.type}, item.id) }} />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                        
+                    </TableContainer>
                 </section>
             </section>
         </div>

@@ -7,9 +7,9 @@ import useSWR from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
-import Textfield from "../../../components/TextField";
+import TableContainer from "../../../components/TableContainer";
 
-export default function Audit({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue}) {
+export default function Audit({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
 
     const [auditData, setAuditData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -44,9 +44,8 @@ export default function Audit({ modals, setToken, setActiveDashboard, setActiveS
 
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
 
-                <section className="h-[674px] mt-[20px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                    <div className="min-w-[1115px] h-fit">
-
+                <section className="min-h-[674px] mt-[20px] w-full pt-4 pl-2 pr-4">
+                    <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
                         <table className="table-fixed px-[15px] w-full">
                             <thead>
                                 <tr className="">
@@ -75,7 +74,7 @@ export default function Audit({ modals, setToken, setActiveDashboard, setActiveS
 
                             </tbody>
                         </table>
-                    </div>
+                    </TableContainer>
                 </section>
             </section>
         </div>

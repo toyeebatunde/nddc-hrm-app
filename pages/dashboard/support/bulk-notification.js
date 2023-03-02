@@ -8,8 +8,9 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 import SupportLayoutTemplate from "../../../components/SupportLayout";
+import TableContainer from "../../../components/TableContainer";
 
-export default function Bulk({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading }) {
+export default function Bulk({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, pageSelector, entryValue }) {
 
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)

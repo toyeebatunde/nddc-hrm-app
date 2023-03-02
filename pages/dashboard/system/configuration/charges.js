@@ -15,23 +15,23 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [callToken, setCallToken] = useState()
-    const[chargeData, setChargeData] = useState()
-    const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
-    const {data, error} = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const [chargeData, setChargeData] = useState()
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data, error } = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
 
 
 
-    
+
 
     useEffect(() => {
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
-        if(data) {
+        if (data) {
             setChargeData(data)
-            
+
         }
     }, [data])
 
@@ -67,85 +67,46 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
             </section>
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "block"}`}>
                 <section className="min-h-[674px] w-full  pt-4 pl-2 pr-4">
-                    {/* <div className="w-[1115px] h-fit">
-                        <table className="table-fixed w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
-                                    <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                    <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
-                                    <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
-                                    <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                    <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">
-                                {chargeData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
-                                            <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
-                                            <td className="font-pushpennyBook  flex w-[373px] justify-between">
-                                                <div className="w-[115px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={()=>{changeView(item.id)}} />
-                                                </div>
-                                                <div className="w-[107px] h-[36px]">
-                                                    <UserButton type="edit" onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
-                                                </div>
-                                                <div className="w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={()=>{chargeEdit(true, "action", {caution:deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`}, item.id)}} />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-
-                            </tbody>
-                        </table>
-                    </div> */}
+                    
                     <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
-                    <div className="w-[1115px] bg-brand-light-yellow rounded-[10px] pt-[10px] min-h-[674px]">
-                        <table className="table-fixed w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
-                                    <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                    <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
-                                    <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
-                                    <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                    <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">
-                                {chargeData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
-                                            <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
-                                            <td className="font-pushpennyBook  flex w-[373px] justify-between">
-                                                <div className="w-[115px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={()=>{changeView(item.id)}} />
-                                                </div>
-                                                <div className="w-[107px] h-[36px]">
-                                                    <UserButton type="edit" onClick={()=>{chargeEdit(true, "editCharges", {lowerBound:item.lowerBound, upperBound:item.upperBound, value:item.value, transactionType:item.transactionType, chargeType:item.chargeType }, item.id)}} />
-                                                </div>
-                                                <div className="w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={()=>{chargeEdit(true, "action", {caution:deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`}, item.id)}} />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
+                            <table className="table-fixed w-full flex flex-col">
+                                <thead>
+                                    <tr className="flex justify-around">
+                                        <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
+                                        <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                        <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
+                                        <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
+                                        <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                        <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="mt-6">
+                                    {chargeData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className="flex justify-around h-[50px]">
+                                                <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                                <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                                <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                                <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                                <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                                <td className="font-pushpennyBook  flex w-[373px] justify-between">
+                                                    <div className="w-[115px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
+                                                    </div>
+                                                    <div className="w-[107px] h-[36px]">
+                                                        <UserButton type="edit" onClick={() => { chargeEdit(true, "editCharges", { lowerBound: item.lowerBound, upperBound: item.upperBound, value: item.value, transactionType: item.transactionType, chargeType: item.chargeType }, item.id) }} />
+                                                    </div>
+                                                    <div className="w-[130px] h-[36px]">
+                                                        <UserButton type="delete" onClick={() => { chargeEdit(true, "action", { caution: deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete` }, item.id) }} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
 
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                        
                     </TableContainer>
                 </section>
             </section>
@@ -203,7 +164,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Charge Splits</h2>
                             <div className="w-[134px] h-[35px]">
-                                <UserButton type="gradient" text="+Add Split" onClick={()=>{chargeEdit(true, "addSplit", {value: "", actorType: ""}, chargeView.id)}} />
+                                <UserButton type="gradient" text="+Add Split" onClick={() => { chargeEdit(true, "addSplit", { value: "", actorType: "" }, chargeView.id) }} />
                             </div>
                         </div>
 
@@ -211,24 +172,24 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                             <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[14px] text-[#6E7883]">
                                 All Splits are in percentage
                             </h2>
-                            
+
                             <table className="table-fixed mt-[20px] w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-between">
-                                    <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTOR</th>
-                                    <th className="font-400    flex w-[33%] text-[12px]  leading-[15.62px] font-pushpennyBook">VALUE</th>
-                                    <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] justify-center font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-[10px]">
-                            <tr className="flex justify-around h-[50px]">
-                                <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">ACTOR</td>
-                                <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">VALUE</td>
-                                <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                    <UserButton type="delete"  />
-                                </td>
-                                </tr>
-                            </tbody>
+                                <thead>
+                                    <tr className="flex justify-between">
+                                        <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTOR</th>
+                                        <th className="font-400    flex w-[33%] text-[12px]  leading-[15.62px] font-pushpennyBook">VALUE</th>
+                                        <th className="font-400  flex w-[33%] text-[12px] leading-[15.62px] justify-center font-pushpennyBook">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="mt-[10px]">
+                                    <tr className="flex justify-around h-[50px]">
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">ACTOR</td>
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">VALUE</td>
+                                        <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                            <UserButton type="delete" />
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>

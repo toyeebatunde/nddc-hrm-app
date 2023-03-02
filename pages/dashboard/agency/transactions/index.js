@@ -7,8 +7,9 @@ import useSWR from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
+import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue }) {
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector }) {
 
     const [transactionsData, setTransactionsData] = useState()
     const [transactionToView, setTransactionToView] = useState()
@@ -42,8 +43,8 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     return (
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className={`h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
-                    <div className="w-[1135px] h-fit">
+                <section className={`min-h-[674px] w-full  pt-4 pl-[5px]`}>
+                    <TableContainer entryValue={entryValue} pageSelector={pageSelector}>
 
                         <table className="table-fixed w-full flex flex-col">
                             <thead>
@@ -66,16 +67,16 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                         <tr key={index} className="flex justify-between h-[60px]">
                                             <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>
                                             <td className="font-pushpennyBook w-[148px] truncate inline-block  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.tranRef}</td>
-                                            <td className="font-pushpennyBook truncate inline-block w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>                                            
+                                            <td className="font-pushpennyBook truncate inline-block w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>
                                             <td className="font-pushpennyBook flex w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.phoneNumber}</td>
-                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceNAme}</td>                                            
+                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceNAme}</td>
                                             <td className="font-pushpennyBook truncate inline-block w-[165px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.externalServiceReference || "n/a"}</td>
-                                            <td className="font-pushpennyBook flex w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>                                            
-                                            <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge}</td>                                            
-                                            <td className="font-pushpennyBook flex w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>                                            
-                                            <td className="font-pushpennyBook flex w-[88px]  flex items-start">                                            
+                                            <td className="font-pushpennyBook flex w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
+                                            <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge}</td>
+                                            <td className="font-pushpennyBook flex w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
+                                            <td className="font-pushpennyBook flex w-[88px]  flex items-start">
                                                 <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={()=>{ router.push(`/dashboard/agency/transactions/${transaction.id}`)}} />
+                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
                                                 </div>
                                             </td>
                                         </tr>
@@ -83,7 +84,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                 })}
                             </tbody>
                         </table>
-                    </div>
+                    </TableContainer>
                 </section>
                 <section></section>
             </section>
