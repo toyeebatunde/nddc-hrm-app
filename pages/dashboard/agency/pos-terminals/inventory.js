@@ -8,8 +8,9 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
+import TableContainer from "../../../../components/TableContainer";
 
-export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue }) {
+export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue, pageSelector }) {
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -63,15 +64,14 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton onClick={()=>{posEdit(true, "posModalAdd", {terminalId:"", serialNumber: "", posTerminalType: "", action: "Add"}, "")}} type="gradient" text="+ Add New Inventory" />
+                            <UserButton onClick={() => { posEdit(true, "posModalAdd", { terminalId: "", serialNumber: "", posTerminalType: "", action: "Add" }, "") }} type="gradient" text="+ Add New Inventory" />
                         </div>
                     </div>
                 </section>
             </section>
 
-            <section className="h-[674px] mt-[20px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                <div className="min-w-[1115px] h-fit">
-
+            <section className="min-h-[674px] mt-[20px] w-full  pt-4 pl-2 pr-4">
+                <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
                     <table className="table-fixed px-[15px] w-full">
                         <thead>
                             <tr className="">
@@ -86,7 +86,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                         <tbody className="mt-6">
                             {posData?.data.map((data, index) => {
                                 return (
-                                    <tr className="h-[70px] border-b px-[10px] border-[#979797]">
+                                    <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
                                         <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.deviceId}</td>
                                         <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.retrievalReferenceNumber}</td>
                                         <td className="font-pushpennyBook  w-[106px] break-words  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
@@ -94,16 +94,16 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                                         <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.status}</td>
                                         <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
                                             <div className="w-[88px] inline-flex h-[36px]">
-                                                <UserButton type="edit" text="Edit" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
+                                                <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
                                             </div>
                                             <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="accept" text="Assign" onClick={()=>{posEdit(true, "posModalAssign", {agentId:"", agentName: "", posTerminalType: "", action: "Assign"}, data.id)}} />
+                                                <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="decline" text="Retrieve" onClick={()=>{posEdit(true, "posModalAdd", {terminalId:data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit"}, data.id)}} />
+                                                <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
                                             </div>
                                             <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="view" text="View"  />
+                                                <UserButton type="view" text="View" />
                                             </div>
                                         </td>
                                     </tr>
@@ -112,7 +112,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
 
                         </tbody>
                     </table>
-                </div>
+                </TableContainer>
             </section>
 
         </div>

@@ -9,8 +9,9 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import ImageHolder from "../../../../components/ImageHolder";
+import TableContainer from "../../../../components/TableContainer";
 
-export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
+export default function Pos({ modals, setToken, setActiveDashboard, setActiveState,setActiveTab, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -18,7 +19,7 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
 
 
     useEffect(() => {
-
+        setActiveTab("Requests")
         setView(false)
         setActiveDashboard("POSTerminals")
         setActiveState("2")
@@ -61,8 +62,8 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                             </div>
                         </section>
                     </section>
-                    <section className={`h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
-                        <div className="w-[696px] h-fit">
+                    <section className={`min-h-[674px] w-full pt-4 pl-[5px]`}>
+                        <TableContainer entryValue={entryValue} pageSelector={pageSelector}>
                             <table className="table-fixed px-[15px] w-full ">
                                 <thead>
                                     <tr className="px-[10px]">
@@ -83,7 +84,7 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
 
                                     {posData?.data.map((data, index) => {
                                         return (
-                                            <tr className="h-[50px] border-b px-[10px] border-[#979797]">
+                                            <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
                                                 <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
                                                 <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerName}</td>
                                                 <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.customerPhoneNumber || "n/a"}</td>
@@ -101,8 +102,7 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
 
                                 </tbody>
                             </table>
-
-                        </div>
+                        </TableContainer>
                     </section>
                 </div>
                 <div className="w-full lg:w-[35%] gap-[10px] flex flex-col">
