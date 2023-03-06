@@ -11,8 +11,9 @@ import SupportLayoutTemplate from "../../../components/SupportLayout";
 import TableContainer from "../../../components/TableContainer";
 
 export default function Bulk({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, pageSelector, entryValue }) {
-
-    const [settlementData, setSettlementData] = useState()
+    const initialMessage = { title: "", message: "", push: false, sms: false }
+    const [newMessage, setNewMessage] = useState(initialMessage)
+    const [bulkData, setBulkData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/bulk_notification/all?pageNo=0&pageSize=10`, fetching)
 
@@ -24,18 +25,37 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
         setActiveState("4")
         if (data) {
             setLoading(false)
-            setSettlementData(data)
+            setBulkData(data)
         }
         if (error) {
             console.log(error)
         }
     }, [data])
 
+    function formEdit(e) {
+        setNewMessage({ ...newMessage, [e.target.name]: e.target.value })
+    }
+
+    function pushEdit(e) {
+        setNewMessage({ ...newMessage, [e.target.name]: e.target.checked })
+    }
+
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
+
+    function addBulkNotification() {
+        axios.post(`${testEnv}v1/bulk_notification/send`, newMessage, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(response => {
+                setNewMessage(initialMessage)
+                console.log(response)
+            })
+            .catch(error => console.log("error"))
+    }
+
+
 
 
 
@@ -54,10 +74,20 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                         <section className={`h-[402px] w-full flex rounded-[10px] bg-brand-light-yellow pt-4`}>
                             <form className="flex pb-[20px] gap-[15px] flex-col items-center w-full">
                                 <div className="w-full xl:w-[427px] h-[57px] rounded-[28.5px]">
-                                    <Textfield title="Title" bg="bg-white" />
+                                    <Textfield title="Title" name="title" formEdit={formEdit} value={newMessage.title} bg="bg-white" />
                                 </div>
                                 <div className="w-[95%] xl:w-[427px] h-[132px] rounded-[30px] relative rounded-[28.5px]">
-                                    <Textfield type="textbox" title="Message" bg="bg-white" />
+                                    <Textfield type="textbox" title="Message" value={newMessage.message} formEdit={formEdit} name="message" bg="bg-white" />
+                                </div>
+                                <div className="w-full h-[50px] flex items-center">
+                                    <div class="flex items-center">
+                                        <input onChange={(e) => { pushEdit(e) }} name="push" type="checkbox" class="w-4 h-4 focus:bg-[#E99E24] border-[white] border-none rounded-[2px]" />
+                                        <label for="push" class="text-[14px] ml-[5px] font-[400] text-[#E99E24]">Push Notification</label>
+                                    </div>
+                                    <div class="flex ml-[20px] items-center">
+                                        <input onChange={(e) => { pushEdit(e) }} name="sms" type="checkbox" value="" class="w-4 h-4 border-[white] border-none rounded-[2px]" />
+                                        <label for="sms" class="text-[14px] ml-[5px] font-[400] text-[#E99E24]">SMS</label>
+                                    </div>
                                 </div>
 
                                 <div className="w-full flex px-[10px] justify-between items-center xl:w-[427px] mt-auto h-[57px]">
@@ -65,7 +95,7 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                                         <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" />
                                     </div>
                                     <div className="w-[49%] h-[46px]">
-                                        <UserButton type="gradient" text="Save" />
+                                        <UserButton type="gradient" text="Save" onClick={addBulkNotification} />
                                     </div>
                                 </div>
 
@@ -106,26 +136,29 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                <tr className="h-[70px] border-b px-[10px] border-[#979797]">
-                                    <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  w-[601px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">stuff</td>
-                                    <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
-                                        <div className="w-[106px] group  inline-flex h-[36px]">
-                                            <UserButton type="accept" text="True" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                        </div>
-                                    </td>
-                                    <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
-                                        <div className="w-[106px]  inline-flex h-[36px]">
-                                            <UserButton type="decline" text="False" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                        </div>
-                                    </td>
-                                </tr>
-
+                                {bulkData?.data.map((bulk, index) => {
+                                    return (
+                                        <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
+                                            <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(bulk.dateCreated)}</td>
+                                            <td className="font-pushpennyBook  w-[601px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{bulk.message}</td>
+                                            <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
+                                                <div className="w-[106px] group  inline-flex h-[36px]">
+                                                    <UserButton type={bulk.sms ? "accept" : "decline"} text={bulk.sms ? "True" : "False"} />
+                                                </div>
+                                            </td>
+                                            <td className="font-pushpennyBook  group:ml-[10px] w-[106px]">
+                                                <div className="w-[106px]  inline-flex h-[36px]">
+                                                    <UserButton type={bulk.push ? "accept" : "decline"} text={bulk.push ? "True" : "False"} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
                 </section>
-                
+
 
             </section>
         </div>

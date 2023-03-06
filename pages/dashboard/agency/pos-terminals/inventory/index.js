@@ -1,14 +1,14 @@
-import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
+import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
-import UserButton from "../../../../components/ButtonMaker";
+import UserButton from "../../../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
 import useSWR from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
-import Textfield from "../../../../components/TextField";
-import ImageHolder from "../../../../components/ImageHolder";
-import TableContainer from "../../../../components/TableContainer";
+import { ngrok, testEnv, editApi } from "../../../../../components/Endpoints";
+import Textfield from "../../../../../components/TextField";
+import ImageHolder from "../../../../../components/ImageHolder";
+import TableContainer from "../../../../../components/TableContainer";
 
 export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue, pageSelector }) {
 

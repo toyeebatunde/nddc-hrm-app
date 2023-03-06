@@ -7,18 +7,19 @@ import useSWR from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
+import { patchApi } from "../../../../components/Endpoints"
 
-export default function Approval({ modals, setModalState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector }) {
-    const [activeTab, setActiveTab] = useState("")
+export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab }) {
     const [createRole, setCreateRole] = useState(false)
     const [approvalsData, setApprovalsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/approval/all?pageNo=1&pageSize=10`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/approval/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
 
 
     useEffect(() => {
+        setActiveTab("All")
         setToken()
         // setLoading(true)
         setActiveDashboard("Approvals")
@@ -31,12 +32,11 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
         }
     }, [data])
 
-    function setTab(tab) {
-        setActiveTab(tab)
+    function approvalHandler(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
     }
 
-    const getModalRef = useRef()
-    const getModalButtonRef = useRef()
 
 
     return (
@@ -65,10 +65,14 @@ export default function Approval({ modals, setModalState, setActiveDashboard, se
                                             <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
                                             <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
                                                 <div className="w-[137px] h-[36px]">
-                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"} onClick={() => { chargeEdit(true, "editCharges", { lowerBound: item.lowerBound, upperBound: item.upperBound, value: item.value, transactionType: item.transactionType, chargeType: item.chargeType }, item.id) }} />
+                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "decline" : "edit"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?${approval.approvalStatus == "PENDING" ? "decline" : "edit"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit" }, data.id) }}
+                                                     />
                                                 </div>
                                                 <div className="w-[137px] h-[36px]">
-                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "accept" : "delete"} />
+                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "accept" : "delete"}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "accept" : "delete"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "accept" : "delete"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete" }, data.id) }}
+                                                     />
                                                 </div>
                                             </td>
                                         </tr>

@@ -17,6 +17,27 @@ function editApi(e, endpoint, body, token, modalCloser, modalToClose, loadState)
     })
     .catch(error => { console.log(error) })
 }
+function patchApi(e, endpoint, token, modalCloser, loadState, modal) {
+  e.preventDefault()
+  // loadState(true)
+  // debugger
+  axios.patch(endpoint, null, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      // debugger
+      console.log(response.config.url)
+      loadState(false)
+      modalCloser(false, modal)
+    })
+    .catch(error => { 
+      // debugger
+      console.log(error) 
+      modalCloser(false, modal)
+    })
+}
 
 function deleteApi(e, endpoint, token, closer) {
   e.preventDefault()
@@ -40,4 +61,4 @@ function deleteApi(e, endpoint, token, closer) {
 
 const ngrok = "https://a34f-102-89-33-46.eu.ngrok.io/"
 const testEnv = "https://admapis-staging.payrail.co/"
-export { editApi, ngrok, testEnv, deleteApi }
+export { editApi, ngrok, testEnv, deleteApi, patchApi }

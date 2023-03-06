@@ -18,7 +18,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const router = useRouter()
 
     useEffect(() => {
-        setActiveTab("All Transactions")
+        setActiveTab("Utilities")
         setLoading(true)
         setToken()
         setActiveDashboard("Transactions")

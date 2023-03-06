@@ -9,61 +9,97 @@ import axios from "axios"
 import useSWR from 'swr'
 import { useRouter } from "next/router"
 import { testEnv } from "../../../../../../components/Endpoints"
+import { editApi, patchApi } from "../../../../../../components/Endpoints"
+import { convertFromHTML } from "draft-js"
+import { useRef } from "react"
 
-export default function Agent({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
+
+export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
     const [toggleStateOne, setToggleStateOne] = useState(false)
-    const [lienStatus, setLienStatus] = useState()
+    const [lienStatus, setLienStatus] = useState({lien:false, status: "off", api:false})
+    const [accountStatus, setAccountStatus] = useState({account:true, status: "on", api:false})
+    const [activationStatus, setActivationStatus] = useState()
     const [tranDetails, setTranDetails] = useState(false)
+    const [viewTransaction, setViewTransaction] = useState(false)
+    const lienToggle = useRef()
+    const accountStatusToggle = useRef()
 
-    const[agentData, setAgentData] = useState()
-    const fetching = (url) => axios.get(url,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}}).then(res => res.data)
-    const {data, error} = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
+    const [agentData, setAgentData] = useState()
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data, error } = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
 
-    useEffect(()=>{
-        console.log(router.query)   
+    useEffect(() => {
+        // setLoading(true)        
         setToken()
-        setActiveDashboard("Agent Management")
+        setActiveDashboard("AgentManagement")
         setActiveState("2")
-        if(data) {
-            setAgentData(data)   
-            setLienStatus({lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off"})         
+        if (data) {
+            setAgentData(data)
+            setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
+            setActivationStatus({ active: data.agent.onLien, status: data.agent.onLien ? "on" : "off" })
+            setLoading(false)
         }
-        if(error) {
+        if (error) {
             console.log(error)
         }
-    },[data])
+    }, [data])
 
-    // useEffect(()=>{
-    //     if(data) {
-    //         debugger
-    //         axios.patch(`${testEnv}v1/agent/${data.agent.id}/lien?param=${lienStatus.status}`,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}})
-    //     .then(response =>{console.log(response)})
-    //     .catch(error => {console.log(error)})
-    //     }
-    // },[lienStatus])
+    useEffect(() => {
+        if (lienStatus.api) {
+            // const notLienStatus = lienStatus.status == "on" ? "off" : lienStatus.status == "off" ? "on" : "off"
+            // setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off" })
+            agentHandler(true, "action",
+                {
+                    caution: `You are about to place ${agentData.agent.firstName} ${agentData.agent.lastName} on lien`,
+                    action: "delete",
+                    endPoint: `${testEnv}v1/agent/${router.query.id}/lien?param=${lienStatus.status}`,
+                    reason: false,
+                    onClick: patchApi,
+                    text: "Place on lien",
+                    cancelClick: reverseLien
+                }, data.id)
+                return
+        }
+    }, [lienStatus])
+
+    function reverseLien() {
+        lienToggle.current.checked = !lienToggle.current.checked
+        setLienStatus({...lienStatus, lien: lienToggle.current.checked, status: lienToggle.current.checked ? "on" : "off", api: false})
+    }
+
+
+
+    function agentHandler(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
+
+    function cancelLien() {
+    }
+
+    const approveCaution = "You are about to approve a KYC. Please note after approving it will go through the approval process"
+    const declineCaution = "You are about to decline a KYC. Please note after approving it will go through the approval process"
+    const deleteCaution = "You are about to delete device information"
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
-    const toggle = (e, agentId) => {
-        setLienStatus({...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off"}) 
-        debugger  
-        
-        axios.put(`${testEnv}v1/agent/${agentId}/lien?param=${lienStatus.status}`,{headers:{'Authorization':`Bearer ${localStorage.getItem('token')}`}})
-        .then(response =>{console.log(response)})
-        .catch(error => {console.log(error)})     
-        
+    const toggle = (e, handler) => {
+        // console.log(lienToggle.current.checked)
+        setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off", api:true })
     };
-    
 
-    const dataFormat=(data)=>{
+
+
+
+    const dataFormat = (data) => {
         const value = data.toString()
-        if(value.includes(".00")){
+        if (value.includes(".00")) {
             return `₦${value}`
-        }        
+        }
         return `₦${value}.00`
     }
 
@@ -82,7 +118,7 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                 </h4>
             </section>
             <h2 className="mt-[40px] ml-4 font-pushpennyBook">Agent Management</h2>
-            <section className="flex px-4 flex-col mt-[35px] gap-[3%] lg:flex-row w-full">
+            <section className={`${viewTransaction ? "hidden" : "flex"} px-4 flex-col mt-[35px] gap-[3%] lg:flex-row w-full`}>
                 <div className="flex flex-col w-full lg:w-[47%]">
                     <div className="w-full gap-[7px] h-[520px] flex flex-col">
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
@@ -123,7 +159,7 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.customerAccount.externalBankName}</h2>
                                 </div>
                                 <div className="w-[95%] flex self-center h-[36px]">
-                                    <UserButton type="transaction" />
+                                    <UserButton type="transaction" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/${router.query.id}/transaction-history?agent=${router.query.id}`) }} />
                                 </div>
                             </div>
                         </div>
@@ -146,10 +182,10 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                 <div className="flex justify-between w-full">
                                     <div className="w-[40px] text-center   font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">{agentData?.agent.status}</div>
                                     <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                    {agentData?.agent.dateCreated == null ? "n/a" : dateFormatter(agentData?.agent.dateCreated)}
+                                        {agentData?.agent.dateCreated == null ? "n/a" : dateFormatter(agentData?.agent.dateCreated)}
                                     </div>
                                     <div className="w-[80px] xl:w-[100px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">
-                                    {agentData?.agent.lastLoginDate == null ? "n/a" : dateFormatter(agentData?.agent.lastLoginDate)}
+                                        {agentData?.agent.lastLoginDate == null ? "n/a" : dateFormatter(agentData?.agent.lastLoginDate)}
                                     </div>
                                     <div className="w-[60px] xl:w-[100px] lg:w-[40px]  font-pushpennyBook text-[18px] font-[400] leading-[23px] text-[#6E7883] ">{agentData?.agent.onLien ? "YES" : "NO"}</div>
                                 </div>
@@ -163,13 +199,13 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between xl:w-full lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Account Status</h2>
                                                 <div>
-                                                    <Toggler toggleState={toggleStateOne} onClick={toggle} toggler={setToggleStateOne} />
+                                                    <Toggler toggleState={toggleStateOne} />
                                                 </div>
                                             </div>
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Lien Status</h2>
                                                 <div >
-                                                    <Toggler toggleState={toggleStateOne} onClick={toggle} id={agentData?.agent.id} toggler={setToggleStateOne} toggled={lienStatus?.lien == true ?lienStatus.lien : lienStatus?.lien == false ? lienStatus.lien : false} />
+                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggle(e) }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
                                                 </div>
                                             </div>
                                         </div>
@@ -198,12 +234,21 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">DEVICE ID</h2>
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">ACTION</h2>
                             </div>
-                            <div className="flex justify-between border-b-[1px] border-[#D8D8D8] mt-[30px] h-[57px] items-start w-full">
-                                <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">CBCFF9FE-7BC2-4FE7-9BD8-494A3FFED8DD</h2>
-                                <div className="w-[98px] h-[30px]">
-                                    <UserButton type="delete" small={true} />
-                                </div>
-                            </div>
+                            {agentData?.devices.map((device, index) => {
+                                if (!device.deviceId) {
+                                    return
+                                }
+
+                                return (
+                                    <div key={index} className="flex justify-between border-b-[1px] border-[#D8D8D8] mt-[30px] h-[57px] items-start w-full">
+                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{device.deviceId}</h2>
+                                        <div className="w-[98px] h-[30px]">
+                                            <UserButton type="delete" small={true} onClick={() => { agentHandler(true, "action", { caution: `You are about to delete ${agentData.agent.firstName} ${agentData.agent.lastName}'s device information`, action: "delete", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_bvn`, reason: false, onClick: patchApi }, data.id) }} />
+                                        </div>
+                                    </div>
+                                )
+                            })}
+
                         </div>
                     </div>
                 </div>
@@ -267,130 +312,74 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                             </div>
                         </div>
                         <div className="w-full xl:w-[49%] mt-[20px] xl:mt-0  xl:h-full">
-                            <div className="w-full min-h-[213px] gap-[7px] flex flex-col">
-                                <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Sub-agent Information</h2>
-                                </div>
-                                <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[0] ? agentData?.subAgents[0] : "n/a"}</h2>
-                                    </div>
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[1] ? agentData?.subAgents[1] : "n/a"}</h2>
-                                    </div>
-                                    <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Email</h2>
-                                        <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[2] ? agentData?.subAgents[2] : "n/a"}</h2>
-                                    </div>
+                            {agentData?.subAgents.length < 1 ? "" : (
+                                agentData?.subAgents.map((agent, index) => {
+                                    return (
+                                        <div className={`w-full min-h-[213px] gap-[7px] flex flex-col`}>
+                                            <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                                                <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Sub-agent Information</h2>
+                                            </div>
+                                            <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
+                                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[0] ? agentData?.subAgents[0] : "n/a"}</h2>
+                                                </div>
+                                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Name</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[1] ? agentData?.subAgents[1] : "n/a"}</h2>
+                                                </div>
+                                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Phone</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[2] ? agentData?.subAgents[2] : "n/a"}</h2>
+                                                </div>
 
-                                    <div className="h-[36px] self-center mt-[20px] w-[236px]">
-                                        <UserButton type="view" text="View agent" />
-                                    </div>
+                                                <div className="h-[36px] self-center mt-[20px] w-[236px]">
+                                                    <UserButton type="view" text="View agent" />
+                                                </div>
 
-                                </div>
-                            </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
                         </div>
                     </div>
                     <div className="flex-col w-full mt-[10px] min-h-[763px]">
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col mt-[20px] lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">KYC Details</h2>
                         </div>
-                        <div className="flex w-full grow flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] pl-[10px] py-2 rounded-[10px]">  
-                        <div className="w-[741px] lg:w-full  h-fit">
+                        <div className="flex w-full grow flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] pl-[10px] py-2 rounded-[10px]">
+                            <div className="w-[741px] lg:w-full h-fit">
 
-                        <table className="table-fixed w-full flex flex-col">
-                            <thead>
-                                <tr className="flex gap-[5px]">
-                                    <th className="font-400 flex text-[12px] w-[40px] leading-[15.62px] font-pushpennyBook">KYC</th>
-                                    <th className="font-400 w-[100px] flex   text-[12px] leading-[15.62px] font-pushpennyBook">DETAILS</th>
-                                    <th className="font-400  flex w-[100px] text-[12px] leading-[15.62px] font-pushpennyBook">UPLOADED ON</th>
-                                    <th className="font-400  flex   text-[12px] w-[60px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400 grow  ml-[95px] flex text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6 ">
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.bvn ? "BVN" : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvn}</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agentData?.kyc.bvnUploadedDate)}</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvnKycStatus}</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex  gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.nin ? "NIN" : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.nin : "n/a" }</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.ninUploadedDate : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.nin ? agentData.kyc.ninKycStatus : "PENDING_UPLOAD" }</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.rcNumber ? "RC No." : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumber : "n/a" }</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumberUploadedDate : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.rcNumber ? agentData.kyc.rcNumberKycStatus : "PENDING_UPLOAD" }</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.tin ? "TIN" : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tin : "n/a" }</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tinUploadedDate : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.tin ? agentData.kyc.tinKycStatus : "PENDING_UPLOAD" }</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr className="flex gap-[5px] h-[50px]">
-                                    <td className="font-pushpennyBook flex w-[40px] font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.contractNo ? "Contract No" : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNo : "n/a" }</td>                                   
-                                    <td className="font-pushpennyBook flex w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNoUploadedDate : "n/a" }</td>
-                                    <td className="font-pushpennyBook flex w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.contractNo ? agentData.kyc.contractNoKycStatus : "PENDING_UPLOAD" }</td>
-                                    
-                                    <td className="font-pushpennyBook gap-[5px] ml-[95px] flex grow flex items-start">
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="edit" text="Approve" />
-                                        </div>
-                                        <div className="w-[49%] h-[36px]">
-                                            <UserButton type="view" text="Decline" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                
-                            </tbody>
-                        </table>
-                    </div>                          
+                                <table className="table-fixed w-full">
+                                    <thead>
+                                        <tr className="">
+                                            <th className="font-400 text-[12px] text-start w-[83px] leading-[15.62px] font-pushpennyBook">KYC</th>
+                                            <th className="font-400 w-[105px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DETAILS</th>
+                                            <th className="font-400   w-[85px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">UPLOADED ON</th>
+                                            <th className="font-400   text-[12px] text-start w-[60px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                            <th className="font-400 w-[210px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="mt-6 ">
+                                        <tr className="h-[50px]">
+                                            <td className="font-pushpennyBook  font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.bvn ? "BVN" : "n/a"}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvn}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agentData?.kyc.bvnUploadedDate)}</td>
+                                            <td className="font-pushpennyBook  w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvnKycStatus}</td>
+
+                                            <td className="font-pushpennyBook flex items-start">
+                                                <div className="w-[49%] h-[36px]">
+                                                    <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_bvn`, reason: true, onClick: patchApi }, data.id) }} />
+                                                </div>
+                                                <div className="w-[49%] h-[36px]">
+                                                    <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_bvn`, reason: false, onClick: patchApi }, data.id) }} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

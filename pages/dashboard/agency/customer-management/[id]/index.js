@@ -8,8 +8,9 @@ import axios from "axios"
 import useSWR from 'swr'
 import { useRouter } from "next/router"
 import { testEnv } from "../../../../../components/Endpoints"
+import TableContainer from "../../../../../components/TableContainer"
 
-export default function Customer({ modals, setModalState, setToken, setActiveDashboard, setActiveState }) {
+export default function Customer({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector }) {
     const router = useRouter()
     const [tranDetails, setTranDetails] = useState(false)
 
@@ -20,7 +21,7 @@ export default function Customer({ modals, setModalState, setToken, setActiveDas
     useEffect(() => {
         console.log(router.query)
         setToken()
-        setActiveDashboard("Agent Management")
+        setActiveDashboard("CustomerManagement")
         setActiveState("2")
         if (data) {
             setCustomerData(data)
@@ -176,38 +177,38 @@ export default function Customer({ modals, setModalState, setToken, setActiveDas
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Customer account history</h2>
                         </div>
-                        <div className=" flex w-full overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
-                            <div className="min-w-[880px] xl:w-full h-fit">
-                                <table className="table-fixed w-full flex flex-col">
-                                    <thead>
-                                        <tr className="flex w-full px-[5px] gap-[10px]">
-                                            <th className="font-400 flex w-[190px]  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
-                                            <th className="font-400 flex w-[148px]  text-[12px] leading-[15.62px] font-pushpennyBook">REFERENCE</th>
-                                            <th className="font-400  flex w-[82px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRAN TYPE</th>
-                                            <th className="font-400  flex w-[140px] text-[12px] leading-[15.62px] font-pushpennyBook">DESCRIPTION</th>
-                                            <th className="font-400  flex w-[105px] text-[12px] leading-[15.62px] font-pushpennyBook">CHANNEL</th>
-                                            <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                            <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">OLD BALANCE</th>
-                                            <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">NEW BALANCE</th>
-                                            <th className="font-400  flex w-[80px] text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                        <section className={`min-h-[200px] w-full pt-4 pl-[5px]`}>
+                            <TableContainer entryValue={entryValue} pageSelector={pageSelector}>
+                                <table className="table-fixed w-full ">
+                                    <thead className="">
+                                        <tr className="px-[5px]">
+                                            <th className="font-400  w-[115px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                            <th className="font-400  w-[148px]  text-[12px] text-start leading-[15.62px] font-pushpennyBook">REFERENCE</th>
+                                            <th className="font-400  w-[82px]  text-[12px] text-start leading-[15.62px] font-pushpennyBook">TRAN TYPE</th>
+                                            <th className="font-400  w-[140px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">DESCRIPTION</th>
+                                            <th className="font-400  w-[105px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">CHANNEL</th>
+                                            <th className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                            <th className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">OLD BALANCE</th>
+                                            <th className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">NEW BALANCE</th>
+                                            <th className="font-400  w-[80px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">STATUS</th>
                                         </tr>
                                     </thead>
 
                                     <tbody className="mt-6">
                                         {customerData?.customerAccountTransactions.map((trans, index) => {
                                             return (
-                                                <tr key={index} className="flex px-[5px] items-center w-full border-b border-[#979797] gap-[10px] h-[60px]">
-                                                    <td className="w-[190px]  font-pushpennyBook text-[16px] font-[400] leading-[23px] text-[#6E7883] ">
+                                                <tr key={index} className="px-[5px] items-center w-full border-b border-[#979797] h-[60px]">
+                                                    <td className="w-[85px] text-start font-pushpennyBook text-[16px] font-[400] leading-[23px] text-[#6E7883] ">
                                                         {trans.dateCreated == null ? "n/a" : dateFormatter(trans.dateCreated)}
                                                     </td>
-                                                    <td className="font-400 flex w-[148px]  text-[12px] leading-[15.62px] font-pushpennyBook">{trans.externalReference}</td>
-                                                    <td className="font-400  flex w-[82px]  text-[12px] leading-[15.62px] font-pushpennyBook">{trans.tranType}</td>
-                                                    <td className="font-400  flex w-[140px] text-[12px] leading-[15.62px] font-pushpennyBook">{trans.purpose}</td>
-                                                    <td className="font-400  flex w-[105px] text-[12px] leading-[15.62px] font-pushpennyBook">{trans.channel}</td>
-                                                    <td className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">{dataFormat(trans.amount) || "₦0.00"}</td>
-                                                    <td className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">{dataFormat(trans.oldBalance) || "₦0.00"}</td>
-                                                    <td className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">{dataFormat(trans.newBalance) || "₦0.00"}</td>
-                                                    <td className="font-400  flex w-[80px] text-[12px] leading-[15.62px] font-pushpennyBook">{trans.tranStatus}</td>
+                                                    <td className="font-400  w-[148px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">{trans.externalReference}</td>
+                                                    <td className="font-400  w-[82px]  text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.tranType}</td>
+                                                    <td className="font-400  w-[140px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.purpose}</td>
+                                                    <td className="font-400  w-[105px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.channel}</td>
+                                                    <td className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.amount}</td>
+                                                    <td className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.oldBalance}</td>
+                                                    <td className="font-400  w-[110px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.newBalance}</td>
+                                                    <td className="font-400  w-[80px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">{trans.tranStatus}</td>
                                                 </tr>
                                             )
                                         })}
@@ -215,8 +216,8 @@ export default function Customer({ modals, setModalState, setToken, setActiveDas
                                     </tbody>
 
                                 </table>
-                            </div>
-                        </div>
+                            </TableContainer>
+                        </section>
                     </div>
                 </section>
             </div>

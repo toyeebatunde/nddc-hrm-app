@@ -41,10 +41,10 @@ export default function Approval({ modals, setModalState }) {
                             
                             <td className="font-pushpennyBook flex justify-between lg:w-[25%] items-start font-400 text-[13px] lg:text-[18px] leading-[14px] text-[#6E7883]">
                                 <div className='w-[120px] h-[36px]'>
-                                    <UserButton type="decline" />
+                                    <UserButton type="decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_bvn`, reason: false, onClick: patchApi }, data.id) }} />
                                 </div>
                                 <div className='w-[120px] h-[36px]'>
-                                    <UserButton type="accept" />
+                                    <UserButton type="accept" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_bvn`, reason: true, onClick: patchApi }, data.id) }} />
                                 </div>
                             </td>
                         </tr>
