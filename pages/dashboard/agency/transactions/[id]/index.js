@@ -75,7 +75,7 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
             </section>
             <h2 className="mt-[40px] ml-4 font-pushpennyBook">{transactionData?.data.type}</h2>
             <section className="flex px-4 flex-col mt-[35px] gap-[3%] w-full">
-                <section className="flex-col gap-[20px] lg:gap-[0px] border flex lg:justify-between lg:flex-row w-full">
+                <section className="flex-col gap-[20px] lg:gap-[0px] flex lg:justify-between lg:flex-row w-full">
                     <div className="w-full lg:w-[32%] xl:w-[32%] xl:h-full">
                         <div className="w-full h-fit gap-[7px] flex flex-col">
                             <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
@@ -164,13 +164,13 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device Type</h2>
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{transactionData?.data.deviceName || "n/a"}</h2>
-                                </div>                                
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
-                <section className="flex-col gap-[3%] flex lg:flex-row w-full px-4 mt-[15px]">
-                    <section className="w-full lg:w-[70%] gap-[15px] flex-col flex">
+                <section className="flex-col gap-[3%] flex lg:flex-row w-full px-2 mt-[15px]">
+                    <section className="w-full lg:w-[66%] gap-[15px] flex-col flex">
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Settlement Information</h2>
                         </div>
@@ -186,11 +186,34 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                                             <th className="font-400   w-[100px] break-words text-[12px] leading-[15.62px] font-pushpennyBook">CHANNEL</th>
                                         </tr>
                                     </thead>
+                                    <tbody className="mt-6">
+
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                     </section>
-                    <section className="w-full lg:w-[30%]"></section>
+                    <div className="w-full lg:w-[34%] xl:w-[34%] h-fit">
+                        <div className="w-full h-fit gap-[7px] flex flex-col">
+                            <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                                <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Device Information</h2>
+                            </div>
+                            <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
+                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device ID</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{transactionData?.data.deviceId}</h2>
+                                </div>
+                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device Name</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{transactionData?.data.deviceName || "n/a"}</h2>
+                                </div>
+                                <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device Type</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{transactionData?.data.deviceName || "n/a"}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </section>
         </div>

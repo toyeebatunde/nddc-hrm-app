@@ -41,7 +41,7 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
     useEffect(() => {
         setLoading(true)
         setView(false)
-        setActiveDashboard("Customer Management")
+        setActiveDashboard("CustomerManagement")
         setActiveState("2")
         if (data) {
             setLoading(false)
@@ -235,7 +235,10 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
                             </section>
                             <div className="w-full flex flex-col gap-[20px] lg:gap-0 md:flex-row md:justify-around h-fit rounded-[28px]">
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
-                                    <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={() => { setCustomerEdit({ ...customerEdit, editView: false }) }} />
+                                    <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => { 
+                                        e.preventDefault()
+                                        setCustomerEdit({ ...customerEdit, editView: false }) 
+                                        }} />
                                 </div>
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton onClick={editCustomer} type="gradient" text="Save" />

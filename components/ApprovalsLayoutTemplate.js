@@ -3,25 +3,25 @@ import { useState, useRef} from "react"
 import ButtonTab from "./ButtonTab"
 import ImageHolder from "./ImageHolder"
 
-export default function ApprovalsLayoutTemplate({ modals, setModalState, children }) {
-    const [activeTab, setActiveTab] = useState("")
+export default function ApprovalsLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab }) {
+    // const [activeTab, setActiveTab] = useState("")
 
-    function setTab(tab) {
-        setActiveTab(tab)
-    }
+    // function setTab(tab) {
+    //     setActiveTab(tab)
+    // }
 
     const tabs = [
         {
             name: "All",
-            url: "/system/approvals/all",
+            url: "/dashboard/system/approvals",
         },
         {
             name: "Pending Approvals",
-            url: "/system/approvals/pending-approvals",
+            url: "/dashboard/system/approvals/pending-approvals",
         },
         {
             name: "My Initiation",
-            url: "/system/approvals/user-initiated",
+            url: "/dashboard/system/approvals/user-initiated",
         },
         
               
@@ -37,7 +37,7 @@ export default function ApprovalsLayoutTemplate({ modals, setModalState, childre
             </section>
             <section className={`h-[44px] flex w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="flex w-full approvals-tab justify-start relative">
-                    {tabs.map((tab, index)=> <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)}
+                    {tabs.map((tab, index)=> <div key={index}><ButtonTab tabKey={index} setTab={setActiveTab} name={tab.name} url={tab.url} activeTab={activeTab} link={true}/></div>)}
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>

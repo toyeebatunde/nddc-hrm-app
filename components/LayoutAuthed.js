@@ -119,13 +119,13 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] h-screen bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] h-fit bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px] min-h-fit pb-2">
                     {tabs.map((tab, idx) => {
                         return <SideTabs key={idx} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                     })}
                 </ul>
-                <div className=" flex w-[156px] h-[50px] absolute justify-around bottom-2">
+                <div className=" flex w-[156px] h-[50px] justify-around mt-[100px]">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
                     <div className="flex flex-col">
                         Logout

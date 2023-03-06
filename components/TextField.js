@@ -53,7 +53,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
         return (
             <div className="w-full h-full rounded-[inherit] bg-[#F3F3F3]">
                 <label className="absolute font-pushpennyMedium ml-[15px] text-[10px] left-[45px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">{title || "Reason for action"}</label>
-                <textarea className={`h-full w-full rounded-[inherit] ${bg || "bg-[#F3F3F3]"} outline-none px-[10px] py-[10px]`}></textarea>
+                <textarea name={name} onChange={(e) => {formEdit(e)}} className={`h-full w-full rounded-[inherit] ${bg || "bg-[#F3F3F3]"} outline-none px-[10px] py-[10px]`}></textarea>
             </div>
         )
     }

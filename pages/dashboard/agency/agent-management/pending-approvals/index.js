@@ -16,7 +16,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
     const router = useRouter()
 
     useEffect(() => {
-        setActiveTab("New Agents")
+        setActiveTab("KYC Pending approvals")
         setToken()
         setActiveDashboard("Agent Management")
         setActiveState("2")

@@ -85,7 +85,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
     }
     if (modal.action) {
         return (
-            <div className={`w-[350px] lg:rounded-[48px] lg:w-[529px] flex flex-col items-center min-h-[533px] bg-white rounded-[15px]`}>
+            <div className={`w-[350px] lg:rounded-[48px] lg:w-[529px] pb-[20px] flex flex-col items-center min-h-[403px] bg-white rounded-[15px]`}>
                 <div className="w-[133px] mt-[15px] h-[133px] flex justify-center items-center rounded-[50%] bg-[#F5F5F5]">
                     <div className="w-[60px] h-[60px] relative">
                         <ImageHolder src={values.values.action == "delete" ? "/icons/bin.svg" : values.values.action == "decline" ? "/icons/remove-circle.svg" : "/icons/check-circle.svg"} />
@@ -95,16 +95,21 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <h2 className="text-[18px] text-[#6E7883] leading-[23px] mt-[10px] lg:w-[433px] lg:h-[57px] lg:text-center text-center font-pushpennyMedium">
                     {values.values.caution}
                 </h2>
-                <div className="w-[330px] lg:w-[378px] mt-[20px] h-[80px] rounded-[15px] lg:rounded-[28px] relative bg-[#F3F3F3]">
+                <div className={`w-[330px] ${values.values.reason ? "" : "hidden"} lg:w-[378px] mt-[20px] h-[80px] rounded-[15px] lg:rounded-[28px] relative bg-[#F3F3F3]`}>
                     <h2 className="absolute font-pushpennyMedium ml-[15px] text-[10px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">Reason for action</h2>
                     <textarea className="h-full w-full rounded-[15px] lg:rounded-[28px] bg-[#F3F3F3] h-[76px] lg: w-[full] outline-none px-[10px] py-[10px] w-full"></textarea>
                 </div>
                 <div className="mt-[30px] w-[330px] lg:w-[370px] flex justify-between">
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
-                        <UserButton text="Cancel" onClick={(e)=>{modalCloser(false, "action")}} />
+                        <UserButton text="Cancel" onClick={(e)=>{
+                            if(values.values.cancelClick) {
+                                values.values.cancelClick()
+                            }
+                            modalCloser(false, "action")
+                            }} />
                     </div>
                     <div className='w-[126px] h-[46px]'>
-                        <UserButton onClick={(e)=>{deleteApi(e,values.values.endpoint, localStorage.getItem('token'), modalCloser)}} text="Delete" type="gradient" />
+                        <UserButton onClick={(e)=>{values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action")}} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>
