@@ -51,8 +51,8 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
     }
     if (type == "textbox") {
         return (
-            <div className="w-full h-full rounded-[inherit] bg-[#F3F3F3]">
-                <label className="absolute font-pushpennyMedium ml-[15px] text-[10px] left-[45px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">{title || "Reason for action"}</label>
+            <div className="w-full h-full rounded-[inherit] bg-[#FFFFFF]">
+                <label className="absolute font-pushpennyMedium ml-[15px] text-[10px] left-[45px] top-[-7px] h-[13px] text-[#6E7883] bg-[#FFFFFF] px-[3px]">{title || "Reason for action"}</label>
                 <textarea name={name} onChange={(e) => {formEdit(e)}} className={`h-full w-full rounded-[inherit] ${bg || "bg-[#F3F3F3]"} outline-none px-[10px] py-[10px]`}></textarea>
             </div>
         )
@@ -60,7 +60,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
     if (type == "text") {
         return (
             <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
-                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#F3F3F3] px-[4px]">{title}</label>
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
                 <input type={charType} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
             </div>
         )
