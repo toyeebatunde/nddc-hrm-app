@@ -125,6 +125,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     modalCloser,
                                     setLoading,
                                     "authModal",
+                                    values.values.trigger
                                 )
                             }} text="Save" type="gradient"/>
                         </div>
@@ -160,7 +161,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         }} />
                     </div>
                     <div className='w-[126px] h-[46px]'>
-                        <UserButton onClick={(e) => {values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action") }} text={values.values.text || values.values.action} type="gradient" />
+                        <UserButton onClick={(e) => {values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>

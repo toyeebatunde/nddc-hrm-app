@@ -1,5 +1,7 @@
 
 import axios from "axios";
+import { mutate } from "swr";
+const poster = (url, body) => axios.post(url, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
 
 function editApi(e, endpoint, body, token, modalCloser, loadState) {
   e.preventDefault()
@@ -17,10 +19,17 @@ function editApi(e, endpoint, body, token, modalCloser, loadState) {
     })
     .catch(error => { console.log(error) })
 }
-function createApi(e, endpoint, body, token, modalCloser, loadState, modal) {
+
+async function addCategory(e, posted,url, body) {
+  e.preventDefault()
+  await posted(url, body)  
+  mutate(url)
+}
+
+async function createApi(e, endpoint, body, token, modalCloser, loadState, modal) {
   e.preventDefault()
   // debugger
-  loadState(true)
+  // loadState(true)
   axios.post(endpoint, body, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -32,12 +41,13 @@ function createApi(e, endpoint, body, token, modalCloser, loadState, modal) {
       modalCloser(false, modal)
     })
     .catch(error => { console.log(error) })
+  
 }
 
-function postApi(e, endpoint, body, token, modalCloser, loadState, modal) {
+ function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
   e.preventDefault()
   // debugger
-  loadState(true)
+  // loadState(true)
   axios.post(endpoint, body, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -47,12 +57,16 @@ function postApi(e, endpoint, body, token, modalCloser, loadState, modal) {
       console.log(response)
       loadState(false)
       modalCloser(false, modal)
+      // debugger
+      triggerReload()
     })
     .catch(error => {
       loadState(false)
       console.log(error)
       modalCloser(false, modal)
     })
+  // await addCategory(e, poster, endpoint, body)
+  // modalCloser(false, modal)
 }
 function patchApi(e, endpoint, token, modalCloser, loadState, modal) {
   e.preventDefault()
@@ -76,24 +90,28 @@ function patchApi(e, endpoint, token, modalCloser, loadState, modal) {
     })
 }
 
-function deleteApi(e, endpoint, token, modalCloser, loadState, modal) {
+
+async function deleteApi(e, endpoint, token, modalCloser, loadState, modal, triggerReload) {
   e.preventDefault()
   // loadState(true)
-  debugger
-  axios.delete(endpoint, {
+  // debugger
+ await axios.delete(endpoint, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
     .then(response => {
+      mutate(endpoint)
       console.log(response)
       loadState(false)
       modalCloser(false, modal)
+      triggerReload()
     })
     .catch(error => {
       console.log(error)
       loadState(false)
       modalCloser(false, modal)
+      debugger
     })
 }
 

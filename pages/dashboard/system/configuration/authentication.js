@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
 import axios from 'axios'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { ngrok, testEnv, deleteApi } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 
@@ -16,14 +16,13 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
     const [authData, setAuthData] = useState()
     const [codeCategories, setCodeCategories] = useState()
     const [codeCategoryNames, setCodeCategoryNames] = useState(["", ""])
+    const [reload, setReload] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const poster = (url, body) => axios.post(url, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: auths, error: authError } = useSWR(`${testEnv}v1/code/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: codeCats, error: codeCatError } = useSWR(`${testEnv}v1/code/category/all?pageNo=0&pageSize=10`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
-
-
-
 
 
     useEffect(() => {
@@ -33,13 +32,26 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         setActiveState("1")
         if (auths) {
             setAuthData(auths)
+            // console.log(codeCats)
+        }
+        if (codeCats) {
             setCodeCategories(codeCats)
             const catList = codeCats?.data.map(item => item.name)
             setCodeCategoryNames(catList)
-            // console.log(codeCats)
         }
 
     }, [auths, codeCats])
+
+    useEffect(()=>{
+        mutate(`${testEnv}v1/code/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
+        mutate(`${testEnv}v1/code/category/all?pageNo=0&pageSize=10`)
+    }, [reload])
+
+    function triggerReload() {
+        setReload(!reload)
+    }
+
+    
 
     function onChange(e) {
         setEditAuth({ ...editAuth, [e.target.name]: e.target.value })
@@ -153,6 +165,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                                 <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
                                     <UserButton onClick={(e) => { changeView(e) }} text="Cancel" bg="bg-[#DDDDDD]" textColor="text-[white]" />
                                 </div>
+                                
                                 <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
                                     <UserButton text="Save" type="gradient" />
                                 </div>
@@ -161,50 +174,53 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                         </form>
                     </div>
 
-                    <div className="w-full lg:w-[48%]  h-fit gap-[10px] flex flex-col px-4 py-6">
+                    <div className="w-full lg:w-[48%] h-fit gap-[10px] flex flex-col px-4 py-6">
 
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Authentication Categories</h2>
                             <div className="w-[134px] h-[35px]">
                                 <UserButton
                                     // onClick={() => { authEdit(true, "action", { caution: "Ensure the name of category suites what you want achieve", action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/code/category/create` }, 0) }}
-                                    onClick={() => { authEdit(true, "authModal", { name: "", description: "" }, "0") }}
+                                    onClick={() => { authEdit(true, "authModal", { name: "", description: "", trigger: triggerReload }, "0") }}
                                     type="gradient" text="+Add New"
                                 />
                             </div>
                         </div>
 
-                        <div className="grow w-full justify-around bg-brand-light-yellow rounded-[10px] p-2 flex flex-col">
+                        <div className="grow w-full justify-around bg-brand-light-yellow rounded-[10px] p-[20px] flex flex-col">
                             <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[14px] text-[#6E7883]">
                                 All authentications must fall under a category, if none is available please create one
                             </h2>
 
                             <table className="table-fixed mt-[20px] w-full">
                                 <thead>
-                                    <tr className="">
+                                    <tr className="border-b border-white h-[52px]">
                                         <th className="font-400 w-[167px] text-[12px] text-left leading-[15.62px] font-pushpennyBook">AUTHENTICATION</th>
                                         <th className="font-400 w-[60px] text-[12px] leading-[15.62px]  font-pushpennyBook">ACTIONS</th>
                                     </tr>
                                 </thead>
-                                <tbody className="mt-[10px]">
+                                <tbody className="">
                                     {codeCategories?.data.map((cat, index) => {
                                         return (
-                                            <tr key={index} className=" h-[50px]">
+                                            <tr key={index} className=" h-[72px] border-b border-[#dddddd] ">
                                                 <td className="font-pushpennyBook   w-[167px] font-400  text-[18px] leading-[14px] text-[#6E7883]">{cat.name}</td>
                                                 <td className="font-pushpennyBook  w-[60px] h-[36px]  font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                                    <UserButton                                                
-                                                        onClick={() => {
-                                                            authEdit(true, "action", {
-                                                                caution: "You are about to delete an authentication category, note after deleting it will go through approval process",
-                                                                action: "delete",
-                                                                endPoint: `https://admapis-staging.payrail.co/v1/code/category/${cat.id}/delete`,
-                                                                text:"Delete",
-                                                                onClick: deleteApi
-                                                            },
-                                                                cat.id)
-                                                        }}
-                                                        type="delete"
-                                                    />
+                                                    <div className="w-[70%] ml-[20px] h-[36px]">
+                                                        <UserButton
+                                                            onClick={() => {
+                                                                authEdit(true, "action", {
+                                                                    caution: "You are about to delete an authentication category, note after deleting it will go through approval process",
+                                                                    action: "delete",
+                                                                    endPoint: `https://admapis-staging.payrail.co/v1/code/category/${cat.id}/delete`,
+                                                                    text: "Delete",
+                                                                    onClick: deleteApi,
+                                                                    trigger: triggerReload
+                                                                },
+                                                                    cat.id)
+                                                            }}
+                                                            type="delete"
+                                                        />
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
