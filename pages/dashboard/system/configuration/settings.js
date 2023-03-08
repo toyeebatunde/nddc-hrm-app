@@ -8,7 +8,7 @@ import useSWR from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
-export default function Settings({ modals, setActiveState, setActiveDashboard, activeTab, setToken, setModalState, getModalButtonRef, editFormState, setLoading, entryValue, pageSelector }) {
+export default function Settings({ modals, setActiveState, setActiveDashboard, setActiveTab, setToken, setModalState, getModalButtonRef, editFormState, setLoading, entryValue, pageSelector }) {
 
     const [settingsData, setSettingsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
@@ -16,7 +16,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, a
     // const router = useRouter()
 
     useEffect(() => {
-
+        setActiveTab("Settings")
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")

@@ -10,7 +10,7 @@ import { testEnv } from "../../../../components/Endpoints"
 import useSWR from 'swr'
 import TableContainer from "../../../../components/TableContainer"
 
-export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, editFormState, getModalButtonRef, pageSelector, entryValue }) {
+export default function Referrers({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, editFormState, getModalButtonRef, pageSelector, entryValue }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [referralData, setReferralData] = useState()
@@ -21,6 +21,7 @@ export default function Referrers({ modals, setToken, setActiveDashboard, setAct
 
 
     useEffect(() => {
+        setActiveTab("Referrers")
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")

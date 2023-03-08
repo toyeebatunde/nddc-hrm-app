@@ -2,8 +2,8 @@
 import { useState, useRef} from "react"
 import ButtonTab from "./ButtonTab"
 
-export default function SubLayoutTemplate({ modals, setModalState, children }) {
-    const [activeTab, setActiveTab] = useState("")
+export default function SubLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab }) {
+    // const [activeTab, setActiveTab] = useState("")
     const [createRole, setCreateRole] = useState(false)
 
     function setTab(tab) {

@@ -11,7 +11,7 @@ import useSWR from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
     const [callToken, setCallToken] = useState()
@@ -26,6 +26,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
 
     useEffect(() => {
+        setActiveTab("Charges")
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
@@ -60,8 +61,8 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                         <ImageHolder src="/icons/search-icon.svg" />
                     </div>
                 </section>
-                <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                    <button ref={getModalButtonRef} onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
+                <section className="flex w-[354px] mt-4 mdxl:mt-0">
+                    <button onClick={() => { chargeEdit(true, "createCharges", { lowerBound: "", upperBound: "", value: "", transactionType: "", chargeType: "" }, "0") }}  className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
                 </section>
 
             </section>

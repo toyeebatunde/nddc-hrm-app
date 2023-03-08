@@ -3,12 +3,12 @@ import UserButton from "./ButtonMaker"
 import ImageHolder from "./ImageHolder"
 import Textfield from "./TextField"
 import { useRef, useState, useEffect } from "react"
-import { editApi, deleteApi } from "./Endpoints"
+import { editApi, deleteApi, createApi, postApi } from "./Endpoints"
 import apiToken from "./Token"
 import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading}) {
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading }) {
     const router = useRouter()
 
     const chargeSelectOptions = [
@@ -39,7 +39,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Add Split</p>
                     <button className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" onClick={(e)=>{modalCloser(false, "addSplit")}} src="/icons/close-modal.svg" />
+                        <ImageHolder id="closer" onClick={(e) => { modalCloser(false, "addSplit") }} src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">
@@ -60,16 +60,16 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" onClick={(e)=>{modalCloser(false, "addSplit")}} />
+                            <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "addSplit") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton onClick={(e)=> {
+                            <UserButton onClick={(e) => {
                                 editApi(
                                     e,
                                     `https://admapis-staging.payrail.co/v1/charge/${values.id}/add_split`,
                                     {
-                                        "actorType" : values.values.actorType,
-                                        "amount" : values.values.value
+                                        "actorType": values.values.actorType,
+                                        "amount": values.values.value
                                     },
                                     localStorage.getItem('token'),
                                     modalCloser,
@@ -83,6 +83,58 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             </section>
         )
     }
+    if (modal.authModal) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[434px] bg-white rounded-[15px]`}>
+                <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Add Split</p>
+                    <button onClick={(e) => { modalCloser(false, "authModal") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
+                    </button>
+                </section>
+                <p className="font-pushpennyBook font-[700] text-[12px] md:text-[18px] leading-[26px]">
+                    Ensure the name of category suites what you want achieve
+                </p>
+                <form className="flex flex-col justify-around w-full mt-[10px] min-h-[333px]">
+
+                    <section className="flex  flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield name="name" formEdit={formEdit} value={values.values.name} type="text" title="Authentication" />
+                        </div>
+                    </section>
+                    <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield name="description" formEdit={formEdit} value={values.values.description} type="text" title="Description" />
+                        </div>
+                    </section>
+
+                    <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                        <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "authModal") }} />
+                        </div>
+                        <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton onClick={(e) => {
+                                postApi(
+                                    e,
+                                    `https://admapis-staging.payrail.co/v1/code/category/create`,
+                                    {
+                                        "name": values.values.name,
+                                        "description": values.values.description
+                                    },
+                                    localStorage.getItem('token'),
+                                    modalCloser,
+                                    setLoading,
+                                    "authModal",
+                                    values.values.trigger
+                                )
+                            }} text="Save" type="gradient"/>
+                        </div>
+                    </section>
+                </form>
+            </section>
+        )
+    }
+
     if (modal.action) {
         return (
             <div className={`w-[350px] lg:rounded-[48px] lg:w-[529px] pb-[20px] flex flex-col items-center min-h-[403px] bg-white rounded-[15px]`}>
@@ -101,15 +153,15 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 </div>
                 <div className="mt-[30px] w-[330px] lg:w-[370px] flex justify-between">
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
-                        <UserButton text="Cancel" onClick={(e)=>{
-                            if(values.values.cancelClick) {
+                        <UserButton text="Cancel" onClick={(e) => {
+                            if (values.values.cancelClick) {
                                 values.values.cancelClick()
                             }
                             modalCloser(false, "action")
-                            }} />
+                        }} />
                     </div>
                     <div className='w-[126px] h-[46px]'>
-                        <UserButton onClick={(e)=>{values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action")}} text={values.values.text || values.values.action} type="gradient" />
+                        <UserButton onClick={(e) => {values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>
@@ -164,8 +216,8 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Charge. <span className="text-[#6E7883] text-[26px] font-[500]">{values.values.transactionType || ""}</span></p>
-                    <button className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
+                    <button onClick={(e) => { modalCloser(false, "editCharges") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Make your changes, note that the changes you made will be sent approval</p>
@@ -199,7 +251,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" textColor="text-black" onClick={(e)=>{modalCloser(false, "editCharges")}}/>
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => { modalCloser(false, "editCharges") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
@@ -226,13 +278,81 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             </section>
         )
     }
+    if (modal.createCharges) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
+                <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Create Charges. <span className="text-[#6E7883] text-[26px] font-[500]">{values.values.transactionType || ""}</span></p>
+                    <button onClick={(e) => { modalCloser(false, "createCharges") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
+                    </button>
+                </section>
+                <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Make your changes, note that the changes you make will be sent for approval</p>
+                <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
+
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="number" type="text" title="Lower Bound" name="lowerBound" formEdit={formEdit} value={values.values.lowerBound || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="number" type="text" title="Upper Bound" name="upperBound" formEdit={formEdit} value={values.values.upperBound || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="select" selectOptions={chargeSelectOptions} title="Transaction Type" name="transactionType" formEdit={formEdit} value={values.values.transactionType || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="text" title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="number" type="text" title="Fee" name="value" formEdit={formEdit} value={values.values.value || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+
+                    <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                        <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => { modalCloser(false, "createCharges") }} />
+                        </div>
+                        <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton onClick={(e) => {
+                                createApi(
+                                    e,
+                                    `https://admapis-staging.payrail.co/v1/charge/create`,
+                                    {
+                                        "amount": values.values.value,
+                                        "chargeType": values.values.chargeType,
+                                        "lowerBound": values.values.lowerBound,
+                                        "transactionType": values.values.transactionType,
+                                        "upperBound": values.values.upperBound
+                                    },
+                                    localStorage.getItem('token'),
+                                    modalCloser,
+                                    setLoading,
+                                    "createCharges",
+                                )
+                            }}
+                                text="Save" type="gradient" />
+                        </div>
+                    </section>
+                </form>
+            </section>
+        )
+    }
+
     if (modal.posModalAdd) {
         return (
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">{values.values.action} POS Terminal Inventory</p>
-                    <button onClick={(e)=>{modalCloser(false, "posModalAdd")}} className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer"  src="/icons/close-modal.svg" />
+                    <button onClick={(e) => { modalCloser(false, "posModalAdd") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Note that all changes are effected immediately</p>
@@ -253,11 +373,11 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                             <Textfield type="select" selectOptions={posOptions} title="POS Terminal Type" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminalType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
-                 
+
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" textColor="text-black" onClick={(e)=>{modalCloser(false, "posModalAdd")}}/>
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => { modalCloser(false, "posModalAdd") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
@@ -289,8 +409,8 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">{values.values.action} POS Terminal Inventory</p>
-                    <button onClick={(e)=>{modalCloser(false, "posModalAssign")}} className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer"  src="/icons/close-modal.svg" />
+                    <button onClick={(e) => { modalCloser(false, "posModalAssign") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Note that all changes are effected immediately</p>
@@ -308,14 +428,14 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text"  title="POS Terminal" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminal || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield type="text" title="POS Terminal" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminal || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
-                 
+
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" textColor="text-black" onClick={(e)=>{modalCloser(false, "posModalAssign")}}/>
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => { modalCloser(false, "posModalAssign") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
@@ -348,8 +468,8 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[95%] justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Setting. <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
-                    <button onClick={(e) => {closeModal(e)}} className="w-[40px] h-[40px] relative cursor-pointer">
-                        <ImageHolder id="closer" src="/icons/close-modal.svg"  />
+                    <button onClick={(e) => { closeModal(e) }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
                     </button>
                 </section>
                 <p className="font-pushpennyBook font-[700] text-[12px] w-[95%] text-[#6E7883] md:text-[18px] leading-[26px]">Make your changes, note that the changes you make will be subject to approval</p>
@@ -378,7 +498,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton onClick={(e)=>{modalCloser(false, "editSetting")}}  text="Cancel" textColor="text-black" />
+                            <UserButton onClick={(e) => { modalCloser(false, "editSetting") }} text="Cancel" textColor="text-black" />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
