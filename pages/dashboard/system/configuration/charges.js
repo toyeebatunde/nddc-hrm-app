@@ -7,23 +7,21 @@ import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
 import apiToken from "../../../../components/Token"
 import axios from 'axios'
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
+import { deleteApi, createApi } from "../../../../components/Endpoints"
 
 export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector }) {
     const [chargeView, setChargeView] = useState({})
     const [view, setView] = useState(false)
+    const [reload, setReload] = useState(true)
     const [callToken, setCallToken] = useState()
     const [chargeData, setChargeData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
-
-
-
-
 
     useEffect(() => {
         setActiveTab("Charges")
@@ -35,6 +33,14 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
         }
     }, [data])
+
+    useEffect(()=>{
+        mutate(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
+    }, [reload])
+
+    function triggerReload() {
+        setReload(!reload)
+    }
 
     function changeView(id) {
         if (view) {
@@ -62,7 +68,16 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                     </div>
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0">
-                    <button onClick={() => { chargeEdit(true, "createCharges", { lowerBound: "", upperBound: "", value: "", transactionType: "", chargeType: "" }, "0") }}  className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
+                    <button onClick={() => { chargeEdit(true, "createCharges", {
+                         lowerBound: 0, 
+                         upperBound: 0, 
+                         amount: 0, 
+                         transactionType: "TRANSFER", 
+                         chargeType: "FLAT",
+                         trigger: triggerReload,
+                         onClick: createApi  
+                         }, "0") }}  
+                         className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
                 </section>
 
             </section>
@@ -95,10 +110,23 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                                         <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
                                                     </div>
                                                     <div className="w-[107px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { chargeEdit(true, "editCharges", { lowerBound: item.lowerBound, upperBound: item.upperBound, value: item.value, transactionType: item.transactionType, chargeType: item.chargeType }, item.id) }} />
+                                                        <UserButton type="edit" onClick={() => { chargeEdit(true, "editCharges", { 
+                                                            lowerBound: item.lowerBound, 
+                                                            upperBound: item.upperBound, 
+                                                            amount: item.amount, 
+                                                            transactionType: item.transactionType, 
+                                                            chargeType: item.chargeType 
+                                                            }, item.id) }} />
                                                     </div>
                                                     <div className="w-[130px] h-[36px]">
-                                                        <UserButton type="delete" onClick={() => { chargeEdit(true, "action", { caution: deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete` }, item.id) }} />
+                                                        <UserButton type="delete" onClick={() => { chargeEdit(true, "action", { 
+                                                            caution: deleteCaution, 
+                                                            action: "delete", 
+                                                            endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`, 
+                                                            text:"Delete", 
+                                                            trigger: triggerReload,
+                                                            onClick: deleteApi 
+                                                            }, item.id) }} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -165,7 +193,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Charge Splits</h2>
                             <div className="w-[134px] h-[35px]">
-                                <UserButton type="gradient" text="+Add Split" onClick={() => { chargeEdit(true, "addSplit", { value: "", actorType: "" }, chargeView.id) }} />
+                                <UserButton type="gradient" text="+Add Split" onClick={() => { chargeEdit(true, "addSplit", { value: chargeView.value, actorType: chargeView.actorType || "PAYRAIL", trigger: triggerReload }, chargeView.id) }} />
                             </div>
                         </div>
 
@@ -184,8 +212,8 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                 </thead>
                                 <tbody className="mt-[10px]">
                                     <tr className="flex justify-around h-[50px]">
-                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">ACTOR</td>
-                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">VALUE</td>
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.actor || "n/a"}</td>
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.value? chargeView.value : "n/a"}</td>
                                         <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                             <UserButton type="delete" />
                                         </td>

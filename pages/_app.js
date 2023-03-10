@@ -18,7 +18,7 @@ export default function MyApp({ Component, pageProps }) {
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
@@ -65,12 +65,12 @@ export default function MyApp({ Component, pageProps }) {
       return
     }
     console.log("closer")
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
 
   }
 
   function closeModals() {
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false })
+    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   }
 
   function changeForm(e, form, setter) {

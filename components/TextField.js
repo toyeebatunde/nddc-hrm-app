@@ -18,7 +18,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
                 <select name={name} onChange={(e) => { formEdit(e) }} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`}>
                     {selectOptions.map((option, index) => {
                         if (option == value) {
-                            return <option key={index} value={option} selected>{option}</option>
+                            return <option key={index} value={option} defaultValue>{option}</option>
                         }
                         return <option key={index} value={option}>{option}</option>
                     })}
@@ -33,7 +33,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
                 <select name={name} onChange={(e) => { formEdit(e, "size") }} className={`h-full outline-none pl-[25px] font-pushpennyBook text-[22px] font-[400] rounded-[10px] leading-[28px] ${bg} w-[95%] rounded-[inherit]`}>
                     {selectOptions.map((option, index) => {
                         if (option == value) {
-                            return <option key={index} value={option} selected>{option}</option>
+                            return <option key={index} value={option} defaultValue>{option}</option>
                         }
                         return <option key={index} value={option}>{option}</option>
                     })}
@@ -61,7 +61,7 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
         return (
             <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
                 <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
-                <input type={charType} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
+                <input type={charType || "text"} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
             </div>
         )
     }

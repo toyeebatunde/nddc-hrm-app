@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import ApprovalsLayoutTemplate from "../../../../components/ApprovalsLayoutTemplate"
 import axios from "axios"
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
@@ -11,6 +11,7 @@ import { patchApi } from "../../../../components/Endpoints"
 
 export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab }) {
     const [createRole, setCreateRole] = useState(false)
+    const [reload, setReload] = useState(false)
     const [approvalsData, setApprovalsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/approval/pending/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
@@ -31,6 +32,14 @@ export default function Approval({ modals, setModalState, editFormState, setActi
 
         }
     }, [data])
+
+    useEffect(() => {
+        mutate(`${testEnv}v1/approval/pending/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
+    }, [reload])
+
+    function triggerReload() {
+        setReload(!reload)
+    }
 
     const getModalRef = useRef()
     const getModalButtonRef = useRef()
@@ -68,12 +77,12 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                                         <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
                                             <div className="w-[137px] h-[36px]">
                                                 <UserButton type="accept"
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a pending action that needs approval`, action: "accept", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: "Accept" }, data.id) }}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a pending action that needs approval`, action: "accept", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: "Accept", trigger: triggerReload }, data.id) }}
                                                 />
                                             </div>
                                             <div className="w-[137px] h-[36px]">
                                                 <UserButton type="decline"
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a pending action that needs approval`, action: "delete", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: "Decline" }, data.id) }}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a pending action that needs approval`, action: "delete", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: "Decline", trigger: triggerReload }, data.id) }}
                                                 />
                                             </div>
                                         </td>

@@ -114,7 +114,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
             </div>
             <div onClick={openSideBar} className={`w-[45px] ${token ? "fixed" : "hidden"} ${isFull ? "ml-0" : "-ml-[46px]"} h-screen sticky top-0 bg-[#FAFBFC] block z-[90] pl-[10px] relative`}>
                 <div className="mt-[150px] w-fit sticky top-[140px]">
-                    <div className={`${isFull ? "block" : "hidden"} relative w-[24px] h-[24px]`}>
+                    <div className={`${isFull ? "block" : "hidden"} cursor-pointer relative w-[24px] h-[24px]`}>
                         <ImageHolder src="/icons/chevron-right-2.svg" />
                     </div>
                 </div>

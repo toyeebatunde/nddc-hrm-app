@@ -4,8 +4,8 @@ import ImageHolder from "./ImageHolder"
 export default function TableContainer({ children, pageSelector, entryValue }) {
     return (
         <div className="w-full flex gap-[10px] flex-col">
-            <div className="w-full overflow-x-auto">                
-                    <div className="w-[1115px] px-[10px] pt-[20px] bg-brand-light-yellow rounded-[10px] pt-[10px] min-h-[674px]">
+            <div className="w-full  overflow-x-auto">                
+                    <div className="w-[1115px] px-[10px] xl:w-full pt-[20px] bg-brand-light-yellow rounded-[10px] pt-[10px] min-h-[674px]">
                         {children}
                     </div>
                 

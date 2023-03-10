@@ -4,13 +4,13 @@ import ImageHolder from "../../../../components/ImageHolder"
 import { useEffect, useState } from "react"
 import nookies from 'nookies'
 import axios from "axios"
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
 export default function Settings({ modals, setActiveState, setActiveDashboard, setActiveTab, setToken, setModalState, getModalButtonRef, editFormState, setLoading, entryValue, pageSelector }) {
-
     const [settingsData, setSettingsData] = useState()
+    const [reload, setReload] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/setting/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     // const router = useRouter()
@@ -31,6 +31,15 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
             console.log(error)
         }
     }, [data])
+
+    useEffect(()=>{
+        mutate(`${testEnv}v1/setting/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
+        
+    }, [reload])
+
+     function triggerReload() {
+        setReload(!reload)
+    }
 
     function settingEdit(modalState, modal, fields, id) {
         setModalState(modalState, modal)
@@ -72,7 +81,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
                                                 <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
                                                 <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                                     <div className="w-[107px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", { name: item.name, description: item.description, value: item.value, type: item.type }, item.id) }} />
+                                                        <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", { name: item.name, description: item.description, value: item.value, type: item.type, trigger: triggerReload }, item.id) }} />
                                                     </div>
                                                 </td>
                                             </tr>

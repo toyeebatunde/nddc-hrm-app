@@ -89,6 +89,13 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
             </button>
         )
     }
+    if (type == "image") {
+        return (
+            <button onClick={onClick} type={preventDefault} className="w-[75%] h-[36px] flex justify-between px-[10px] border border-[#6E7883] items-center text-[#6E7883] rounded-[24px] bg-[#FBF4EB] flex">
+                <h2 className="font-[500] font-pushPenny text-[14px]">{text}</h2>                
+            </button>
+        )
+    }
     return (
         <button onClick={onClick} className={` ${textColor} ${bg} border border-[#F3F3F3]  w-full h-full font-[400] rounded-[23px]`}>
             {text}
