@@ -3,10 +3,10 @@ import axios from "axios";
 import { mutate } from "swr";
 const poster = (url, body) => axios.post(url, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
 
-function editApi(e, endpoint, body, token, modalCloser, loadState) {
+function editApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
   e.preventDefault()
   // debugger
-  loadState(true)
+  // loadState(true)
   axios.put(endpoint, body, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -15,36 +15,23 @@ function editApi(e, endpoint, body, token, modalCloser, loadState) {
     .then(response => {
       console.log(response)
       loadState(false)
-      modalCloser(false, "editSetting")
+      modalCloser(false, modal)
+      triggerReload()
     })
-    .catch(error => { console.log(error) })
+    .catch(error => {
+      loadState(false)
+      console.log(error)
+      modalCloser(false, modal)
+    })
 }
 
-async function addCategory(e, posted,url, body) {
+async function addCategory(e, posted, url, body) {
   e.preventDefault()
-  await posted(url, body)  
+  await posted(url, body)
   mutate(url)
 }
 
-async function createApi(e, endpoint, body, token, modalCloser, loadState, modal) {
-  e.preventDefault()
-  // debugger
-  // loadState(true)
-  axios.post(endpoint, body, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-    .then(response => {
-      console.log(response)
-      loadState(false)
-      modalCloser(false, modal)
-    })
-    .catch(error => { console.log(error) })
-  
-}
-
- function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
+function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
   e.preventDefault()
   // debugger
   // loadState(true)
@@ -68,7 +55,32 @@ async function createApi(e, endpoint, body, token, modalCloser, loadState, modal
   // await addCategory(e, poster, endpoint, body)
   // modalCloser(false, modal)
 }
-function patchApi(e, endpoint, token, modalCloser, loadState, modal) {
+
+async function createApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
+  e.preventDefault()
+  // debugger
+  // loadState(true)
+  axios.post(endpoint, body, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      console.log(response)
+      loadState(false)
+      modalCloser(false, modal)
+      triggerReload()
+    })
+    .catch(error => {
+      loadState(false)
+      console.log(error)
+      modalCloser(false, modal)
+    })
+
+}
+
+
+function patchApi(e, endpoint, token, modalCloser, loadState, modal, triggerReload) {
   e.preventDefault()
   // loadState(true)
   // debugger
@@ -79,9 +91,10 @@ function patchApi(e, endpoint, token, modalCloser, loadState, modal) {
   })
     .then(response => {
       // debugger
-      console.log(response.config.url)
+      console.log(response)
       loadState(false)
       modalCloser(false, modal)
+      triggerReload()
     })
     .catch(error => {
       // debugger
@@ -95,13 +108,13 @@ async function deleteApi(e, endpoint, token, modalCloser, loadState, modal, trig
   e.preventDefault()
   // loadState(true)
   // debugger
- await axios.delete(endpoint, {
+  await axios.delete(endpoint, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
     .then(response => {
-      mutate(endpoint)
+      // mutate(endpoint)
       console.log(response)
       loadState(false)
       modalCloser(false, modal)
@@ -111,7 +124,7 @@ async function deleteApi(e, endpoint, token, modalCloser, loadState, modal, trig
       console.log(error)
       loadState(false)
       modalCloser(false, modal)
-      debugger
+      
     })
 }
 

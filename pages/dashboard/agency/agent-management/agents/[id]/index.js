@@ -6,10 +6,10 @@ import RadioToggle from "../../../../../../components/radioToggle"
 import { useState, useEffect } from "react"
 import Toggler from "../../../../../../components/Toggle"
 import axios from "axios"
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { useRouter } from "next/router"
 import { testEnv } from "../../../../../../components/Endpoints"
-import { editApi, patchApi } from "../../../../../../components/Endpoints"
+import { editApi, patchApi, deleteApi } from "../../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
 
@@ -17,17 +17,56 @@ import { useRef } from "react"
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
     const [toggleStateOne, setToggleStateOne] = useState(false)
-    const [lienStatus, setLienStatus] = useState({lien:false, status: "off", api:false})
-    const [accountStatus, setAccountStatus] = useState({account:true, status: "on", api:false})
-    const [activationStatus, setActivationStatus] = useState()
+    const [lienStatus, setLienStatus] = useState({ lien: false, status: "off", api: false })
+    const [accountStatus, setAccountStatus] = useState({ account: false, status: "off", api: false })
     const [tranDetails, setTranDetails] = useState(false)
     const [viewTransaction, setViewTransaction] = useState(false)
     const lienToggle = useRef()
-    const accountStatusToggle = useRef()
+    const accountToggle = useRef()
 
     const [agentData, setAgentData] = useState()
+    const [reload, setReload] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
+    // const kycs = ["bvn", "nin", "contractNo", "tin", "rcNumber"]
+    // const kycImages = ["cac", "selfie", "idCard"]
+    const kycImages = [
+        {
+            name: "cac",
+            url: "cac",
+        },
+        {
+            name: "selfie",
+            url: "selfie",
+        },
+        {
+            name: "idCard",
+            url: "id_card",
+        },
+    ]
+
+    const kycs = [
+        {
+            name: "bvn",
+            url: "bvn"
+        },
+        {
+            name: "nin",
+            url: "nin"
+        },
+        {
+            name: "tin",
+            url: "tin"
+        },
+        {
+            name: "rcNumber",
+            url: "rc_number"
+        },
+        {
+            name: "contractNo",
+            url: "contract_number"
+        },
+    ]
 
     useEffect(() => {
         // setLoading(true)        
@@ -37,7 +76,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         if (data) {
             setAgentData(data)
             setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
-            setActivationStatus({ active: data.agent.onLien, status: data.agent.onLien ? "on" : "off" })
+            setAccountStatus({ account: data.customerAccount.accountStatus, status: data.customerAccount.accountStatus == "ACTIVE" ? "on" : "off", api: false })
             setLoading(false)
         }
         if (error) {
@@ -46,37 +85,72 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     }, [data])
 
     useEffect(() => {
+        mutate(`${testEnv}v1/agent/${router.query.id}`)
+    }, [reload])
+
+    function triggerReload() {
+        setReload(!reload)
+    }
+
+    useEffect(() => {
         if (lienStatus.api) {
-            // const notLienStatus = lienStatus.status == "on" ? "off" : lienStatus.status == "off" ? "on" : "off"
-            // setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off" })
             agentHandler(true, "action",
                 {
-                    caution: `You are about to place ${agentData.agent.firstName} ${agentData.agent.lastName} on lien`,
+                    caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s lien status`,
                     action: "delete",
                     endPoint: `${testEnv}v1/agent/${router.query.id}/lien?param=${lienStatus.status}`,
                     reason: false,
                     onClick: patchApi,
-                    text: "Place on lien",
-                    cancelClick: reverseLien
+                    text: "Update Lien",
+                    cancelClick: reverseStatus,
+                    trigger: triggerReload,
+                    target:lienToggle,
+                    status: lienStatus,
+                    setter: setLienStatus,
+                    keyOne:"lien",
+                    keyTwo:"status",
+                    keyThree:"api",
                 }, data.id)
-                return
+            return
         }
-    }, [lienStatus])
+        // if (accountStatus.api) {
+        //     agentHandler(true, "action",
+        //         {
+        //             caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s account status`,
+        //             action: "delete",
+        //             endPoint: `${testEnv}v1/agent/${router.query.id}/change_activation_status?param=${accountStatus.status}`,
+        //             reason: false,
+        //             onClick: patchApi,
+        //             text: "Place on lien",
+        //             cancelClick: reverseLien,
+        //             trigger: triggerReload
+        //         }, data.id)
+        //     return
+        // }
+    }, [lienStatus, accountStatus])
 
     function reverseLien() {
         lienToggle.current.checked = !lienToggle.current.checked
-        setLienStatus({...lienStatus, lien: lienToggle.current.checked, status: lienToggle.current.checked ? "on" : "off", api: false})
+        setLienStatus({ ...lienStatus, lien: lienToggle.current.checked, status: lienToggle.current.checked ? "on" : "off", api: false })
     }
-
-
+    function reverseStatus(target, status, setStatus, keyOne, keyTwo, keyThree) {
+        target.current.checked = !target.current.checked
+        setStatus({...status, [keyOne]:target.current.checked, [keyTwo]:target.current.checked ? "on" : "off",[keyThree]:false })
+    }
 
     function agentHandler(modalState, modal, fields, id) {
         setModalState(modalState, modal)
         editFormState(fields, id)
-    }
+    }   
 
-    function cancelLien() {
-    }
+    const toggle = (e, handler) => {
+        // console.log(lienToggle.current.checked)
+        setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off", api: true, })
+    };
+    const toggler = (e, handler, keyOne, keyTwo, keyThree) => {
+        // console.log(lienToggle.current.checked)
+        setLienStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
+    };
 
     const approveCaution = "You are about to approve a KYC. Please note after approving it will go through the approval process"
     const declineCaution = "You are about to decline a KYC. Please note after approving it will go through the approval process"
@@ -86,11 +160,6 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
-
-    const toggle = (e, handler) => {
-        // console.log(lienToggle.current.checked)
-        setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off", api:true })
-    };
 
 
 
@@ -138,25 +207,25 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                         <h2 className="font-pushpennyMedium text-[11px] lg:text-[13px] font-[500] leading-[24px]">Commission Configurations</h2>
                                     </div>
                                 </div>
-                                <div className="font-[500] text-[40px] font-pushpennyMedium leading-[52px]"> {agentData ? dataFormat(agentData.wallet.balance) : "₦0.00"}</div>
+                                <div className="font-[500] text-[40px] font-pushpennyMedium leading-[52px]"> {agentData?.wallet?.balance ? dataFormat(agentData.wallet.balance) : "₦0.00"}</div>
                                 <div className="w-[210px] h-[50px] pl-4 justify-center border border-[#E8E8E8] rounded-[10px] flex flex-col">
                                     <h2 className="font-pushpennyBook text-[8px] text-[#6E7883] font-[400] leading-[10px]">commission balance</h2>
-                                    <h2 className="text-[20px] font-pushpennyMedium text-[#6E7883] font-[500] ">{agentData ? dataFormat(agentData.wallet.commission.balance) : "₦0.00"}</h2>
+                                    <h2 className="text-[20px] font-pushpennyMedium text-[#6E7883] font-[500] ">{agentData?.wallet?.commission?.balance ? dataFormat(agentData.wallet.commission.balance) : "₦0.00"}</h2>
                                 </div>
                             </div>
                             <div className="w-full justify-between p-4 h-[258px] bg-[#FBF4EB] flex flex-col rounded-[10px]">
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] text-[#6E7883] leading-[15px]">BANK ACCOUNT DETAILS</h2>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">ACCOUNT NUMBER</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.agent.bankAccountNumber}</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.wallet?.externalAccountNo || "n/a"}</h2>
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">ACCOUNT NAME</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.customerAccount.externalAccountName}</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.wallet?.externalAccountName || "n/a"}</h2>
                                 </div>
                                 <div className="flex justify-between">
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">BANK NAME</h2>
-                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.customerAccount.externalBankName}</h2>
+                                    <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.wallet?.externalBankName || "n/a"}</h2>
                                 </div>
                                 <div className="w-[95%] flex self-center h-[36px]">
                                     <UserButton type="transaction" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/${router.query.id}/transaction-history?agent=${router.query.id}`) }} />
@@ -205,17 +274,40 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Lien Status</h2>
                                                 <div >
-                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggle(e) }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
+                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggler(e, lienStatus, "lien", "status", "api") }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="w-full lg:w-[50%] lg:border-l-[0.5px] lg:border-white flex flex-col p-[10px] items-center lg:items-start">
                                             <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">RESET</h2>
                                             <div className="w-[153px] lg:w-[113px] xl:w-[153px] h-[36px] mt-[17px]">
-                                                <UserButton text="Password" type="edit" />
+                                                <UserButton text="Password" type="edit" onClick={() => {
+                                                    agentHandler(true, "action", {
+                                                        caution: `You are about to RESET PASSWORD OF ${agentData.agent.firstName} ${agentData.agent.lastName}'s account`,
+                                                        action: "delete",
+                                                        endPoint: `${testEnv}v1/agent/${router.query.id}/reset_password`,
+                                                        reason: false,
+                                                        onClick: patchApi,
+                                                        trigger: triggerReload,
+                                                        text: "Reset PASSWORD"
+                                                    },
+                                                        data.id)
+                                                }} />
                                             </div>
                                             <div className="w-[153px] lg:w-[113px] xl:w-[153px] h-[36px] mt-[12px]">
-                                                <UserButton text="PIN" type="edit" />
+                                                <UserButton text="PIN" type="edit" onClick={() => {
+                                                    agentHandler(true, "action", {
+                                                        caution: `You are about to RESET PIN OF ${agentData.agent.firstName} ${agentData.agent.lastName}'s account`,
+                                                        action: "delete",
+                                                        endPoint: `${testEnv}v1/agent/${router.query.id}/reset_pin`,
+                                                        reason: false,
+                                                        onClick: patchApi,
+                                                        trigger: triggerReload,
+                                                        text: "Reset PIN"
+                                                    },
+                                                        data.id)
+                                                }}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -234,7 +326,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">DEVICE ID</h2>
                                 <h2 className="font-pushpennyBook text-[12px] font-[400] leading-[15px]">ACTION</h2>
                             </div>
-                            {agentData?.devices.map((device, index) => {
+                            {agentData?.devices?.map((device, index) => {
                                 if (!device.deviceId) {
                                     return
                                 }
@@ -243,7 +335,18 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                     <div key={index} className="flex justify-between border-b-[1px] border-[#D8D8D8] mt-[30px] h-[57px] items-start w-full">
                                         <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{device.deviceId}</h2>
                                         <div className="w-[98px] h-[30px]">
-                                            <UserButton type="delete" small={true} onClick={() => { agentHandler(true, "action", { caution: `You are about to delete ${agentData.agent.firstName} ${agentData.agent.lastName}'s device information`, action: "delete", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_bvn`, reason: false, onClick: patchApi }, data.id) }} />
+                                            <UserButton type="delete" small={true} onClick={() => {
+                                                agentHandler(true, "action", {
+                                                    caution: `You are about to delete ${agentData.agent.firstName} ${agentData.agent.lastName}'s device information`,
+                                                    action: "delete",
+                                                    endPoint: `${testEnv}v1/agent/${router.query.id}/device/${device.id}`,
+                                                    reason: false,
+                                                    onClick: deleteApi,
+                                                    trigger: triggerReload,
+                                                    text: "Delete"
+                                                },
+                                                    data.id)
+                                            }} />
                                         </div>
                                     </div>
                                 )
@@ -348,35 +451,60 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                         <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col mt-[20px] lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                             <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">KYC Details</h2>
                         </div>
-                        <div className="flex w-full grow flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] pl-[10px] py-2 rounded-[10px]">
+                        <div className="flex w-full  flex-col mt-[10px] overflow-x-auto bg-[#FBF4EB] pl-[10px] py-2 rounded-[10px]">
                             <div className="w-[741px] lg:w-full h-fit">
 
                                 <table className="table-fixed w-full">
                                     <thead>
                                         <tr className="">
-                                            <th className="font-400 text-[12px] text-start w-[83px] leading-[15.62px] font-pushpennyBook">KYC</th>
-                                            <th className="font-400 w-[105px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DETAILS</th>
-                                            <th className="font-400   w-[85px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">UPLOADED ON</th>
-                                            <th className="font-400   text-[12px] text-start w-[60px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                            <th className="font-400 w-[210px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                            <th className="font-[400] text-[12px] text-start w-[83px] leading-[15.62px] font-pushpennyBook">KYC</th>
+                                            <th className="font-[400] w-[85px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DETAILS</th>
+                                            <th className="font-[400]   w-[85px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">UPLOADED ON</th>
+                                            <th className="font-[400]   text-[12px] text-start w-[53px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                            <th className="font-[400] w-[190px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                         </tr>
                                     </thead>
                                     <tbody className="mt-6 ">
-                                        <tr className="h-[50px]">
-                                            <td className="font-pushpennyBook  font-400 text-[14px] leading-[18px] text-[#6E7883]">{agentData?.kyc.bvn ? "BVN" : "n/a"}</td>
-                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvn}</td>
-                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agentData?.kyc.bvnUploadedDate)}</td>
-                                            <td className="font-pushpennyBook  w-[60px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc.bvnKycStatus}</td>
+                                        {kycs.map((item, index) => {
+                                            return (
+                                                <tr key={index} className="h-[50px]">
+                                                    <td className="font-pushpennyBook  font-[400] text-[12px] leading-[18px] text-[#6E7883]">{item.name.toUpperCase()}</td>
+                                                    <td className="font-pushpennyBook  w-[100px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name] ? agentData?.kyc[item.name] : "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[100px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "UploadedDate"] ? dateFormatter(agentData?.kyc[item.name + "UploadedDate"]) : "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[60px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
 
-                                            <td className="font-pushpennyBook flex items-start">
-                                                <div className="w-[49%] h-[36px]">
-                                                    <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_bvn`, reason: true, onClick: patchApi }, data.id) }} />
-                                                </div>
-                                                <div className="w-[49%] h-[36px]">
-                                                    <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_bvn`, reason: false, onClick: patchApi }, data.id) }} />
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                    <td className="font-pushpennyBook flex items-start">
+                                                        <div className="w-[49%] h-[36px]">
+                                                            <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                        </div>
+                                                        <div className="w-[49%] h-[36px]">
+                                                            <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                        {kycImages.map((item, index) => {
+                                            return (
+                                                <tr key={index} className="h-[50px]">
+                                                    <td className="font-pushpennyBook  font-[400] text-[14px] leading-[18px] text-[#6E7883]">{item.name.toUpperCase()}</td>
+                                                    <td className="font-pushpennyBook  w-[100px] font-[400] text-[14px] leading-[14px] text-[#6E7883]">
+                                                        <UserButton type="image" text="view image" bg="bg-[black]" onClick={() => { agentHandler(true, "imageView", { image: agentData.kyc[item.name + "Base64Img"] }, data.id) }} />
+                                                    </td>
+                                                    <td className="font-pushpennyBook  w-[100px]  font-[400] text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "UploadedDate"] ? dateFormatter(agentData?.kyc[item.name + "UploadedDate"]) : "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[53px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
+
+                                                    <td className="font-pushpennyBook flex items-start">
+                                                        <div className="w-[49%] h-[36px]">
+                                                            <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                        </div>
+                                                        <div className="w-[49%] h-[36px]">
+                                                            <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

@@ -6,11 +6,11 @@ import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
 import axios from 'axios'
 import useSWR, { mutate } from 'swr'
-import { ngrok, testEnv, deleteApi } from "../../../../components/Endpoints"
+import { ngrok, testEnv, deleteApi, createApi, editApi } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 
-export default function Authentication({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setActiveTab }) {
-    const initialAuthEdit = { code: "", description: "", type: "" }
+export default function Authentication({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setActiveTab, setLoading }) {
+    const initialAuthEdit = { code: "", description: "", type: "Choose a Category" }
     const [editAuth, setEditAuth] = useState(initialAuthEdit)
     const [view, setView] = useState(false)
     const [authData, setAuthData] = useState()
@@ -42,7 +42,51 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
 
     }, [auths, codeCats])
 
-    useEffect(()=>{
+    function authHandler(e, action, id) {
+        e.preventDefault()
+        let categoryData = codeCategories.data.filter(code => {
+            if (code.name == editAuth.type) {
+                code.deletedOn = code.dateCreated
+                code.dateCreated = code.dateCreated
+                return code
+            }
+        })
+        // console.log(JSON.stringify(categoryData[0]))
+        let catJson = JSON.stringify(categoryData[0])
+        if(action == "edit") {
+            debugger
+            axios.put(`${testEnv}v1/code/update/${id}`,{
+                "code": editAuth.code,
+                "codeCategory": {catJson},
+                "description": editAuth.description,
+                "extraInfo": "none"
+            }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } } )
+            .then((response)=>{
+                triggerReload()
+            })
+            .catch(error=>{
+                console.log(error)
+            })
+
+            return
+        }
+
+        debugger
+        axios.post(`${testEnv}v1/code/create`,{
+            "code": editAuth.code,
+            "codeCategory": {catJson},
+            "description": editAuth.description,
+            "extraInfo": "none"
+        }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } } )
+        .then((response)=>{
+            triggerReload()
+        })
+        .catch(error=>{
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
         mutate(`${testEnv}v1/code/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
         mutate(`${testEnv}v1/code/category/all?pageNo=0&pageSize=10`)
     }, [reload])
@@ -51,27 +95,43 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         setReload(!reload)
     }
 
-    
+
 
     function onChange(e) {
         setEditAuth({ ...editAuth, [e.target.name]: e.target.value })
     }
 
-    function changeView(e, id) {
+
+
+    function changeView(e, type, id) {
         e.preventDefault()
-        if (view) {
+        if (!type) {
             setEditAuth(initialAuthEdit)
             setView(false)
             return
         }
-        setView(true)
-        const currentView = authData.data.filter(auth => auth.id === id)
-        setEditAuth({ ...editAuth, code: currentView[0].code, type: currentView[0].type, description: currentView[0].description })
+        if (type == "edit") {
+            setView({ view: true, action: type, id: id })
+            const currentView = authData.data.filter(auth => auth.id === id)
+            setEditAuth({ ...editAuth, code: currentView[0].code, type: currentView[0].type, description: currentView[0].description })
+            return
+        }
+        if (type == "create") {
+            setView({ view: true, action: type })
+            // const currentView = authData.data.filter(auth => auth.id === id)
+            setEditAuth(initialAuthEdit)
+            return
+        }
     }
 
     function authEdit(modalState, modal, fields, id) {
         setModalState(modalState, modal)
         editFormState(fields, id)
+    }
+
+    function dateFormatter (stamp) {
+        const date = new Date(stamp)
+        return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
 
@@ -88,7 +148,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
                     <button ref={getModalButtonRef}
-                        onClick={() => { authEdit(true, "authModal", { name: "", description: "" }, "0") }}
+                        onClick={(e) => { changeView(e, "create") }}
                         className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new authentication</button>
                 </section>
 
@@ -115,10 +175,10 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                                             <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.type}</td>
                                             <td className="font-pushpennyBook  flex  justify-start">
                                                 <div className="w-[107px] h-[36px]">
-                                                    <UserButton type="edit" onClick={(e) => { changeView(e, item.id) }} />
+                                                    <UserButton type="edit" onClick={(e) => { changeView(e, "edit", item.id) }} />
                                                 </div>
                                                 <div className="w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete` }, item.id) }} />
+                                                    <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: deleteApi, trigger: triggerReload }, item.id) }} />
                                                 </div>
                                             </td>
                                         </tr>
@@ -132,7 +192,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                 </section>
             </section>
             <section className={`py-2 w-full h-fit mt-[20px] flex-col lg:justify-between px-4 ${view ? "flex" : "hidden"}`}>
-                <button className="lg:w-fit" onClick={changeView}>Back</button>
+                <button className="lg:w-fit" onClick={(e) => { changeView(e, false) }}>Back</button>
                 <div className="w-full flex flex-col lg:flex-row">
                     <div className="w-full lg:w-[48%] min-h-[538px] flex flex-col  px-4 py-6">
 
@@ -163,11 +223,11 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
 
                             <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                                 <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                                    <UserButton onClick={(e) => { changeView(e) }} text="Cancel" bg="bg-[#DDDDDD]" textColor="text-[white]" />
+                                    <UserButton onClick={(e) => { changeView(e, false) }} text="Cancel" bg="bg-[#DDDDDD]" textColor="text-[white]" />
                                 </div>
-                                
+
                                 <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                                    <UserButton text="Save" type="gradient" />
+                                    <UserButton onClick={(e) => { authHandler(e, view.action, view.id) }} text="Save" type="gradient" />
                                 </div>
 
                             </section>

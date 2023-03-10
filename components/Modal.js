@@ -54,7 +54,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield name="actorType" formEdit={formEdit} value={values.values.actorType} type="text" title="Actor Type" />
+                            <Textfield selectOptions={["SUPER_AGENT", "AGENT", "PAYRAIL"]} name="actorType" formEdit={formEdit} value={values.values.actorType} type="select" title="Actor Type" />
                         </div>
                     </section>
 
@@ -73,8 +73,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     },
                                     localStorage.getItem('token'),
                                     modalCloser,
+                                    setLoading,
                                     "addSplit",
-                                    setLoading
+                                    values.values.trigger
                                 )
                             }} text="Save" type="gradient" />
                         </div>
@@ -134,6 +135,15 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             </section>
         )
     }
+    if (modal.imageView) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[434px] bg-white rounded-[15px]`}>
+                <div className="w-[90%] h-[90%] relative rounded-[10px]">
+                    <ImageHolder src={values.values.image} uop={true} />
+                </div>
+            </section>
+        )
+    }
 
     if (modal.action) {
         return (
@@ -155,12 +165,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
                         <UserButton text="Cancel" onClick={(e) => {
                             if (values.values.cancelClick) {
-                                values.values.cancelClick()
+                                values.values.cancelClick(values.values.target,values.values.status,values.values.setter,values.values.keyOne,values.values.keyTwo,values.values.keyThree)
                             }
                             modalCloser(false, "action")
                         }} />
                     </div>
-                    <div className='w-[126px] h-[46px]'>
+                    <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[126px]"} h-[46px]`}>
                         <UserButton onClick={(e) => {values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
@@ -240,12 +250,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield type="select" selectOptions={["FLAT", "PERCENTAGE"]} title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield charType="number" type="text" title="Fee" name="value" formEdit={formEdit} value={values.values.value || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Fee" name="amount" formEdit={formEdit} value={values.values.amount || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
 
@@ -259,11 +269,11 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     e,
                                     `https://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
                                     {
-                                        "amount": values.values.value,
+                                        "amount": Number(values.values.value),
                                         "chargeType": values.values.chargeType,
-                                        "lowerBound": values.values.lowerBound,
+                                        "lowerBound": Number(values.values.lowerBound),
                                         "transactionType": values.values.transactionType,
-                                        "upperBound": values.values.upperBound
+                                        "upperBound": Number(values.values.upperBound)
                                     },
                                     localStorage.getItem('token'),
                                     modalCloser,
@@ -307,12 +317,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield type="select" selectOptions={["FLAT", "PERCENTAGE"]} title="Charge Type" name="chargeType" formEdit={formEdit} value={values.values.chargeType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield charType="number" type="text" title="Fee" name="value" formEdit={formEdit} value={values.values.value || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Fee" name="amount" formEdit={formEdit} value={values.values.amount || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
 
@@ -326,7 +336,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     e,
                                     `https://admapis-staging.payrail.co/v1/charge/create`,
                                     {
-                                        "amount": values.values.value,
+                                        "amount": values.values.amount,
                                         "chargeType": values.values.chargeType,
                                         "lowerBound": values.values.lowerBound,
                                         "transactionType": values.values.transactionType,
@@ -336,6 +346,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     modalCloser,
                                     setLoading,
                                     "createCharges",
+                                    values.values.trigger
                                 )
                             }}
                                 text="Save" type="gradient" />
@@ -513,8 +524,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     },
                                     localStorage.getItem('token'),
                                     modalCloser,
+                                    setLoading,
                                     "editSetting",
-                                    setLoading
+                                    values.values.trigger
                                 )
 
                             }} text="Save" type="gradient" />
