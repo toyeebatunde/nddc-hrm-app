@@ -11,25 +11,15 @@ import UserButton from "./ButtonMaker"
 
 
 export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify, isLoading, setLoading }) {
-    // const [activeDashboard, setActiveDashboard] = useState("AgentMetrics")
-    // const [activeState, setActiveState] = useState("0")
     const [isFull, setIsFull] = useState()
+    const [permissions, setPermissions] = useState()
     const bodyRef = useRef()
     const sideBarMargin = isFull ? "-ml-[255px]" : "ml-[0]"
 
-    // function switchBoard(e, board, active) {
-    //     setActiveDashboard(board)
-    //     setActiveState(active)
-    // }
-
-    // function switchActive(e, active) {
-    //     setActiveState(active)
-    // }
-
-
-
 
     useEffect(() => {
+        setPermissions((JSON.parse(localStorage.getItem("user"))?.permissions))
+        // console.log(localStorage.getItem("user"))
         window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {
             window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
@@ -68,24 +58,8 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
 
     }
 
-    // 
-
-    // if(isLoading) {
-    //     return (
-    //         <>
-    //         <div className={`absolute z-[200] ${isLoading ? "flex" : "hidden"} w-[100px] h-[100px] left-[50%] ml-[-50px] top-[50%] mt-[-50px] items-center justify-center`}>
-    //             <div className={`lds-ring`}>
-    //                 <div></div><div></div><div></div><div></div>
-    //             </div>
-    //         </div>
-    //         <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : isLoading ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
-    //         </div>
-    //         </>
-    //     )
-    // }
-
     return (
-        <div className={`w-full h-screen flex justify-between overflow-auto`}>
+        <div className={`w-full h-screen flex overflow-hidden justify-between`}>
             <div className={`bg-[#ffffff] ${modals.isOpen ? "flex" : "hidden"} left-[50%] ml-[-175px] lg:ml-[-327px] top-[70px]  rounded-[15px] lg:rounded-[48px] z-[200] fixed w-fit h-fit`}>
                 <Modal
                     modal={modals}
@@ -119,13 +93,25 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] h-fit bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px] min-h-fit pb-2">
-                    {tabs.map((tab, idx) => {
-                        return <SideTabs key={idx} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                    {tabs.map((tab, index) => {
+                        if (index == 1) {
+                            let newSubs = tab.subTexts.filter((sub, index)=>{
+                                if(permissions?.includes(sub.permission)) {
+                                    return sub
+                                }
+                            })
+                            const newHeight = newSubs.length * 50
+                            const aHeight = `hover:h-[${newHeight}px]` 
+                            const newFull = `h-[${newHeight}px]`                            
+                            console.log(aHeight)
+                            return <SideTabs  key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />                            
+                        }
+                        return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                     })}
                 </ul>
-                <div className=" flex w-[156px] h-[50px] justify-around mt-[100px]">
+                <div className=" flex w-full z-[260] bg-[#FAFBFC] fixed absolute left-0 bottom-[5px] h-[50px] justify-around">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
                     <div className="flex flex-col">
                         Logout
@@ -135,9 +121,8 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div className=" grow h-[fit] overflow-auto pb-[50px]">
+            <div className="grow lg:w-[70%] overflow-auto lg:h-screen pb-[50px]">
                 {children}
-                
             </div>
         </div>
     )

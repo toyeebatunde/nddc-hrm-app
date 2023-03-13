@@ -31,14 +31,21 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     const token = request.cookies.get("token")
+    const userToken = request.cookies.get("token")?.value
 
     if (!token) {
       return NextResponse.rewrite(new URL('/', request.url))
     }
-
-    if (token) {
-      return NextResponse.next()
+    if (!userToken) {
+      return NextResponse.rewrite(new URL('/', request.url))
     }
+
+    if (token && (JSON.parse(request.cookies.get("user").value)).role) {
+      // const acceptUser = (JSON.parse(request.cookies.get("user").value))
+      // if(acceptUser.role)
+      return NextResponse.next()   }
+
+    return NextResponse.rewrite(new URL('/', request.url))
   }
 
 }

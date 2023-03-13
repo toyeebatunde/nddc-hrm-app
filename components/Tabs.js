@@ -79,6 +79,7 @@ export const tabs = [
                 inactive: '/icons/user-management-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/user-management",
+                permission:"USER_MANAGEMENT",
             },
             {
                 text: "Configurations",
@@ -86,8 +87,10 @@ export const tabs = [
                 inactive: '/icons/configurations-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/configuration",
+                permission:"CONFIGURATIONS",
             },
             {
+                permission:"INSTITUTIONS",
                 text: "Institutions",
                 active:'/icons/institutions.svg',
                 inactive: '/icons/institutions-inactive.svg',
@@ -95,6 +98,7 @@ export const tabs = [
                 link: "/dashboard/system/institutions",
             },
             {
+                permission:"APPROVALS",
                 text: "Approvals",
                 active:'/icons/approvals.svg',
                 inactive: '/icons/approvals-inactive.svg',
@@ -103,6 +107,8 @@ export const tabs = [
             },
         ],
         height: "hover:h-[145px]",
+        4: "[145px]",
+        1: "[50px]",
         full: "h-[145px]"
     },
     {

@@ -1,8 +1,8 @@
 
-import { useState, useRef} from "react"
+import { useState, useRef } from "react"
 import ButtonTab from "./ButtonTab"
 
-export default function SubLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab }) {
+export default function SubLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab, activeAgency, activeState }) {
     // const [activeTab, setActiveTab] = useState("")
     const [createRole, setCreateRole] = useState(false)
 
@@ -38,7 +38,18 @@ export default function SubLayoutTemplate({ modals, setModalState, children, act
             name: "FAQs",
             url: "/dashboard/system/configuration/faqs",
         },
-              
+
+    ]
+
+    const userTabs = [
+        {
+            name: "Team",
+            url: "/dashboard/system/user-management",
+        },
+        {
+            name: "Roles and Privileges",
+            url: "/dashboard/system/user-management/roles-and-privileges",
+        },
     ]
 
 
@@ -50,13 +61,14 @@ export default function SubLayoutTemplate({ modals, setModalState, children, act
                 </h4>
             </section>
             <section className={`h-[44px] flex w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <div className="flex w-full justify-between relative">
-                    {tabs.map((tab, index)=><div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)}
+                <div className={`flex w-full ${activeAgency == "Configurations" ? "justify-between" : "justify-start gap-[100px]"} relative`}>
+                    {activeAgency == "Configurations" ? tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : userTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) }
+                    {/* {tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)} */}
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>
             <div className='w-full'>
-            {children}
+                {children}
             </div>
             <div className='w-full'>
             </div>

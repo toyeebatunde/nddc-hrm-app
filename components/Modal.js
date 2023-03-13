@@ -183,7 +183,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
-                    <button className="w-[40px] h-[40px] relative cursor-pointer">
+                    <button onClick={(e) => { modalCloser(false, "editCharges") }} className="w-[40px] h-[40px] relative cursor-pointer">
                         <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
                     </button>
                 </section>
@@ -210,7 +210,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" />
+                            <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "teamModal") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton text="Send Invitations" type="gradient" />

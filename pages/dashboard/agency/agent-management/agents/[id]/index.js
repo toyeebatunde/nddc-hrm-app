@@ -76,7 +76,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         if (data) {
             setAgentData(data)
             setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
-            setAccountStatus({ account: data.customerAccount.accountStatus, status: data.customerAccount.accountStatus == "ACTIVE" ? "on" : "off", api: false })
+            setAccountStatus({ account: data.customerAccount?.accountStatus, status: data.customerAccount?.accountStatus == "ACTIVE" ? "on" : "off", api: false })
             setLoading(false)
         }
         if (error) {

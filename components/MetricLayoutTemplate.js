@@ -9,7 +9,7 @@ import { tabs } from "./Tabs"
 
 
 
-export default function MetricLayoutTemplate({Component, children, title, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState }) {
+export default function MetricLayoutTemplate({children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState }) {
     const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
     // const [activeTab, setActiveTab] = useState("")
     const [tab, setTab] = useState()
@@ -135,27 +135,7 @@ export default function MetricLayoutTemplate({Component, children, title, modals
                     </div>
                 </section>
             </section>
-            {/* <section className={`px-4 hidden justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${viewState ? "hidden" : "flex"} flex-col mdxl:flex-row ${activeAgency == "Reconciliation" ? "justify-end" : "justify-between"} items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
-                    <section className={`md:w-[250px] h-[40px] bg-white rounded-[20px] px-2 relative ${activeAgency == "Reconciliation" ? "hidden" : "flex"} items-center justify-between`}>
-                        <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
-                        <div className="w-[28px] h-[28px] relative">
-                            <ImageHolder src='/icons/search-icon.svg' />
-                        </div>
-                    </section>
-                    <div className={`grow flex flex-col lg:mt-0 mt-[10px] w-full lg:flex-row lg:justify-end gap-[10px] lg:h-[35px]`}>
-                        <div className={`h-[35px] w-full lg:w-[200px] ${activeAgency == "Reconciliation" ? "hidden" : ""}`}>
-                            <UserButton type="file" />
-                        </div>
-                        <div className="h-[35px]  w-full lg:w-[200px]">
-                            <UserButton type="pdf" />
-                        </div>
-                        <div className={`h-[35px] ${activeAgency == "Agent Management" ? "" : "hidden"}  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Add New Agents" />
-                        </div>
-                    </div>
-                </section>
-            </section> */}
+            
             <section className={`w-full relative mt-[10px] px-5 `}>
                 {children}
             </section>

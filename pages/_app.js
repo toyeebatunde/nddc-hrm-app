@@ -8,6 +8,7 @@ import Cookies from 'js-cookie'
 import { ngrok, testEnv } from '../components/Endpoints'
 import Textfield from '../components/TextField'
 import ImageHolder from '../components/ImageHolder'
+import jwt from 'jsonwebtoken'
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -86,18 +87,27 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function login(details) {
-
+    // debugger
     axios.post(`${testEnv}v1/auth/login`, {
-      password: details.password,
-      username: details.username
+      "password": details.password,
+      "username": details.username
     })
       .then(response => {
+        const decoded = jwt.decode(response.data.token)
         setToken(true)
+        const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
         Cookies.set("token", response.data.token)
+        Cookies.set("token", response.data.token)
+        // console.log(user)
+        Cookies.set("user", JSON.stringify(user))
         localStorage.setItem('token', response.data.token)
-        router.push("/dashboard/analytics")
+        localStorage.setItem('user', JSON.stringify(user))
+        router.push("/dashboard/agency/agent-management/agents")
       })
-      .catch(response => console.log(response))
+      .catch(response => {
+        debugger
+        console.log(response)
+      })
   }
 
   function tokenTrue() {
@@ -121,10 +131,10 @@ export default function MyApp({ Component, pageProps }) {
       setEntryValue({ ...entryValue, page: e.target.value })
       return
     }
-     if (entry == "none") {
+    if (entry == "none") {
       setEntryValue({ ...entryValue, page: entryValue.page + 1 })
       return
-     }
+    }
 
   }
 
