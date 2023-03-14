@@ -12,6 +12,7 @@ import dynamic from "next/dynamic"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js"
 import draftToHtml from "draftjs-to-html"
+// import { Editor } from 'react-draft-wysiwyg';
 // import draftToMarkdown from 'draftjs-to-markdown'
 import Textfield from "../../../../../components/TextField"
 
@@ -38,7 +39,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
     }, [data])
 
     function onEditorStateChange (editorState) {
-        setEditorState({editorState,})
+        setEditorState({editorState})
     }
 
     const Editor = dynamic(

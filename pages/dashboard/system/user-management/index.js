@@ -9,59 +9,73 @@ import { useState, useRef, useEffect } from "react"
 import RadioToggle from "../../../../components/RadioToggle"
 import ButtonTab from "../../../../components/ButtonTab"
 import nookies from 'nookies'
-import useSWR, {mutate} from 'swr'
+import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { testEnv } from '../../../../components/Endpoints'
-import  jwt  from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
+import { postApi } from '../../../../components/Endpoints'
 
-export default function UserManagement({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab }) {
+export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading }) {
     // const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
+    const [reload, setReload] = useState(true)
     const [usersData, setUsersData] = useState()
+    const [rolesData, setRolesData] = useState()
+    const [roleNames, setRoleNames] = useState(["", ""])
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/user/all?pageNo=0&pageSize=10`, fetching)
+    const { data: users, error: usersError } = useSWR(`${testEnv}v1/user/all?pageNo=0&pageSize=10`, fetching)
+    const { data: roles, error: rolesError } = useSWR(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=15`, fetching)
     // const router = useRouter()
 
     useEffect(() => {
+        setLoading(true)
         setActiveTab("Team")
-        const decoded =jwt.decode(localStorage.getItem('token'))
-        console.log(decoded) 
-        const permissions =decoded?.permissions?.split(',')
-        console.log(permissions)    
+        const decoded = jwt.decode(localStorage.getItem('token'))
+        // console.log(decoded)
+        const permissions = decoded?.permissions?.split(',')
+        // console.log(permissions)
         setToken()
         setActiveDashboard("UserManagement")
         setActiveState("1")
-        if (data) {
-            setUsersData(data)
+        if (users) {
+            setLoading(false)
+            setUsersData(users)
         }
-        if (error) {
-            console.log(error)
+        if (roles) {
+            setRolesData(roles)
+            const rolesList = roles?.data.map(item => item.name)
+            rolesList.unshift("Select a Role")
+            setRoleNames(rolesList)
         }
-    }, [data])
+    }, [users, roles])
 
-    function setTab(tab) {
-        setActiveTab(tab)
+
+    useEffect(() => {
+        mutate(`${testEnv}v1/user/all?pageNo=0&pageSize=10`)
+    }, [reload])
+
+    function triggerReload() {
+        setReload(!reload)
     }
 
     useEffect(() => {
         setToken()
     }, [])
 
+    function addTeamMateForm(modalState, modal, fields, id) {
+        setModalState(modalState, modal)
+        editFormState(fields, id)
+    }
+
 
 
     const getModalRef = useRef()
     const getModalButtonRef = useRef()
 
-    const tabs = [
-        "Team",
-        "Roles and Privileges"
-    ]
-
-
     return (
-        <div className={``}>           
+        <div className={``}>
             <section className={`px-4 flex justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                     <section className="w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
@@ -72,7 +86,23 @@ export default function UserManagement({ modals, setModalState, setToken, setAct
                     </section>
                     <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
                         <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · 0</p>
-                        <button onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
+                        <button onClick={() => {
+                            addTeamMateForm(true, "teamModal",
+                                {
+                                    firstName: "",
+                                    lastName: "",
+                                    email: "",
+                                    assignRole: "",
+                                    resetPasswordUrl: "/change-password",
+                                    endPoint: `${testEnv}v1/user/add_user`,
+                                    onClick: postApi,
+                                    trigger: triggerReload,
+                                    loadState: setLoading,
+                                    selectOptions: roleNames
+                                },
+                                0
+                            )
+                        }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
                     </section>
 
                 </section>
@@ -108,11 +138,11 @@ export default function UserManagement({ modals, setModalState, setToken, setAct
                         </table>
                     </div>
                 </section>
-            </section>    
+            </section>
 
-        
 
-           
+
+
 
             <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.rolesModal ? "block" : "hidden"}`}>
                 <section className={`absolute bg-[#F9F9F9] z-50 top-[20%] left-[30%] flex-col px-8 py-8 w-[600px] h-[579px] rounded-[48px] bg-[#FFFFFF] flex`}>

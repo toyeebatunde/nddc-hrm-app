@@ -46,6 +46,15 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
         editFormState(fields, id)
     }
 
+    function settingAction(e, action, edit, create, endpoint, body, token, closer, loader, modal, trigger) {
+        if(action == "edit") {
+            edit(e, endpoint, body, token, closer, loader, modal, trigger)
+            return
+        }
+        create(e, endpoint, body, token, closer, loader, modal, trigger)
+        // console.log("works")
+    }
+
     return (
         <div className="">
             <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
@@ -56,7 +65,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
                     </div>
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                    <button ref={getModalButtonRef} onClick={() => { setModalState(true, "teamModal") }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Create new configuration</button>
+                    <button ref={getModalButtonRef} onClick={() => { settingEdit(true, "editSetting", { name: "", description: "", value: "", type: "", trigger: triggerReload, title: "Create Setting", action:"create", settingAction:settingAction, endPoint: `https://admapis-staging.payrail.co/v1/setting/create`}, 0) }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Create new configuration</button>
                 </section>
 
             </section>
@@ -81,7 +90,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
                                                 <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.enabled ? "Active" : "Inactive"}</td>
                                                 <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                                     <div className="w-[107px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", { name: item.name, description: item.description, value: item.value, type: item.type, trigger: triggerReload }, item.id) }} />
+                                                        <UserButton type="edit" onClick={() => { settingEdit(true, "editSetting", { name: item.name, description: item.description, value: item.value, type: item.type, trigger: triggerReload, action:"edit", settingAction:settingAction, endPoint: `https://admapis-staging.payrail.co/v1/setting/${item.id}/update`}, item.id) }} />
                                                     </div>
                                                 </td>
                                             </tr>

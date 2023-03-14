@@ -10,7 +10,7 @@ import UserButton from "./ButtonMaker"
 
 
 
-export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify, isLoading, setLoading }) {
+export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify, isLoading, setLoading, logout }) {
     const [isFull, setIsFull] = useState()
     const [permissions, setPermissions] = useState()
     const bodyRef = useRef()
@@ -93,19 +93,16 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px] min-h-fit pb-2">
+            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px]  h-screen pb-2">
                     {tabs.map((tab, index) => {
                         if (index == 1) {
                             let newSubs = tab.subTexts.filter((sub, index)=>{
                                 if(permissions?.includes(sub.permission)) {
                                     return sub
                                 }
-                            })
-                            const newHeight = newSubs.length * 50
-                            const aHeight = `hover:h-[${newHeight}px]` 
-                            const newFull = `h-[${newHeight}px]`                            
-                            console.log(aHeight)
+                            })                          
+                            
                             return <SideTabs  key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />                            
                         }
                         return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
@@ -113,12 +110,12 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                 </ul>
                 <div className=" flex w-full z-[260] bg-[#FAFBFC] fixed absolute left-0 bottom-[5px] h-[50px] justify-around">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
-                    <div className="flex flex-col">
+                    <button onClick={logout} className="flex flex-col">
                         Logout
                         <br />
                         <div className="font-[400] text-[12px] leading-[15.62px] font-pushPennyBook text-brand-yellow">
                             Change Password</div>
-                    </div>
+                    </button>
                 </div>
             </div>
             <div className="grow lg:w-[70%] overflow-auto lg:h-screen pb-[50px]">

@@ -7,7 +7,7 @@ import searchIcon from '../../../../public/icons/search-icon.svg'
 import closeIcon from '../../../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect } from "react"
 import tick from '../../../../public/icons/tick.svg'
-import RadioToggle from "../../../../components/radioToggle"
+// import RadioToggle from "../../../../components/radioToggle"
 import ConfigCards from "../../../../components/ConfigCards"
 import { configurationCards } from "../../../../components/Tabs"
 import ButtonTab from "../../../../components/ButtonTab"

@@ -17,7 +17,7 @@ import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
 import UserButton from '../../../../components/ButtonMaker'
 
-export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab }) {
+export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading }) {
     const [permissions, setPermissions] = useState([
         { name: false },
         { name: false },
@@ -69,7 +69,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
             }
         )
             .then(response => {
-                debugger
+                // debugger
                 setCreateRole(false)
                 triggerReload()
             })
@@ -79,6 +79,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
     }
 
     useEffect(() => {
+        setLoading(true)
         setActiveTab("Roles and Privileges")
         const decoded = jwt.decode(localStorage.getItem('token'))
         console.log(decoded)
@@ -89,6 +90,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
         setActiveState("1")
         if (data) {
             setRolesData(data)
+            setLoading(false)
         }
         if (error) {
             console.log(error)
@@ -199,7 +201,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                 </form>
             </section>
 
-            {/* <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} flex`}>
+            <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} flex`}>
                 <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
                     <table className="table-fixed w-full">
                         <thead>
@@ -228,7 +230,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                         </tbody>
                     </table>
                 </TableContainer>
-            </section> */}
+            </section>
 
             {/* <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.rolesModal ? "block" : "hidden"}`}>
                 <section className={`absolute bg-[#F9F9F9] z-50 top-[20%] left-[30%] flex-col px-8 py-8 w-[600px] h-[579px] rounded-[48px] bg-[#FFFFFF] flex`}>

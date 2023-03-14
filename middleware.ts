@@ -8,27 +8,6 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   const token = request.cookies.get("token")?.value
 
-  // const verifiedToken =
-  //   token &&
-  //   (await verifyAuth(token).catch((error) => {
-  //     console.log("an error occured")
-  //   }))
-
-  // if (request.nextUrl.pathname.startsWith("/dashboard")) {
-  //   // const token = request.cookies.get("token")
-
-  //   if (!verifiedToken) {
-  //     return NextResponse.rewrite(new URL('/', request.url))
-  //   }
-
-  //   if (verifiedToken) {
-  //     console.log(verifiedToken)
-  //     // return NextResponse.next()
-  //     return NextResponse.redirect(new URL("/dashboard/agency/agent=management", request.url))
-  //   }
-  // }
-
-
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     const token = request.cookies.get("token")
     const userToken = request.cookies.get("token")?.value

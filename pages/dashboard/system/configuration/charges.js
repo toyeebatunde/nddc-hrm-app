@@ -12,8 +12,8 @@ import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 import { deleteApi, createApi } from "../../../../components/Endpoints"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector }) {
-    const [chargeView, setChargeView] = useState({})
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading }) {
+    const [chargeView, setChargeView] = useState({lowerBound:"", upperBound:"", transactionType:"", chargeType:"", fee:""})
     const [view, setView] = useState(false)
     const [reload, setReload] = useState(true)
     const [callToken, setCallToken] = useState()
@@ -49,7 +49,13 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
         }
         setView(true)
         const currentView = chargeData.data.filter(charge => charge.id === id)
-        setChargeView(currentView[0])
+        setChargeView({...chargeView, 
+            lowerBound:currentView[0].lowerBound,
+            upperBound:currentView[0].upperBound,
+            transactionType:currentView[0].transactionType,
+            chargeType:currentView[0].chargeType,
+            fee:currentView[0].value,
+        })
     }
 
     function chargeEdit(modalState, modal, fields, id) {
@@ -115,7 +121,9 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                                             upperBound: item.upperBound, 
                                                             amount: item.amount, 
                                                             transactionType: item.transactionType, 
-                                                            chargeType: item.chargeType 
+                                                            chargeType: item.chargeType, 
+                                                            trigger: triggerReload,
+                                                            loadState: setLoading
                                                             }, item.id) }} />
                                                     </div>
                                                     <div className="w-[130px] h-[36px]">
@@ -125,7 +133,8 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                                             endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`, 
                                                             text:"Delete", 
                                                             trigger: triggerReload,
-                                                            onClick: deleteApi 
+                                                            onClick: deleteApi,
+                                                            loadState: setLoading 
                                                             }, item.id) }} />
                                                     </div>
                                                 </td>
@@ -212,7 +221,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                 </thead>
                                 <tbody className="mt-[10px]">
                                     <tr className="flex justify-around h-[50px]">
-                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.actor || "n/a"}</td>
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.actor ? chargeView.actor : "n/a"}</td>
                                         <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.value? chargeView.value : "n/a"}</td>
                                         <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                             <UserButton type="delete" />

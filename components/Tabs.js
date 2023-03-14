@@ -109,6 +109,8 @@ export const tabs = [
         height: "hover:h-[145px]",
         4: "[145px]",
         1: "[50px]",
+        2: "[85px]",
+        3: "[120px]",
         full: "h-[145px]"
     },
     {
@@ -130,13 +132,6 @@ export const tabs = [
                 inactive: '/icons/customer-management-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/customer-management",
-            },
-            {
-                text: "Fund Request",
-                active:'/icons/fund-request.svg',
-                inactive: '/icons/fund-request-inactive.svg',
-                data: "2",
-                link: "fundrequest",
             },
             {
                 text: "Value Added Services",

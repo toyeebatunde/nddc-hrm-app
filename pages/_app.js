@@ -9,6 +9,7 @@ import { ngrok, testEnv } from '../components/Endpoints'
 import Textfield from '../components/TextField'
 import ImageHolder from '../components/ImageHolder'
 import jwt from 'jsonwebtoken'
+import LoginLayout from '../components/LoginLayout'
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -16,17 +17,22 @@ export default function MyApp({ Component, pageProps }) {
   const [activeState, setActiveState] = useState("0")
   const [activeTab, setActiveTab] = useState()
   const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
+  const [newLoginDetails, setNewLoginDetails] = useState({ confirmPassword: "", password: "", code: "" })
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
+  const [newPasswordDisplay, setNewPasswordDisplay] = useState({ password: "password", confirmPassword: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
   const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
+  // console.log(router)
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
   const [entryValue, setEntryValue] = useState({ size: 5, page: 0 })
+  const [createPasswordCaution, setCreatePasswordCaution] = useState(false)
+  const [loginFail, setLoginFail] = useState(false)
 
 
   const Layout = Component.Layout || EmptyLayout
@@ -35,8 +41,12 @@ export default function MyApp({ Component, pageProps }) {
     setViewState(state)
   }
 
-  function setUserPrivilege(user) {
-
+  function changePasswordCaution() {
+    if(createPasswordCaution) {
+      setCreatePasswordCaution(false)
+      return
+    }
+    setCreatePasswordCaution(true)
   }
 
   function setTab(tab) {
@@ -87,25 +97,69 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function login(details) {
+    setIsLoading(true)
     // debugger
     axios.post(`${testEnv}v1/auth/login`, {
       "password": details.password,
       "username": details.username
     })
       .then(response => {
-        const decoded = jwt.decode(response.data.token)
-        setToken(true)
-        const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
-        Cookies.set("token", response.data.token)
-        Cookies.set("token", response.data.token)
-        // console.log(user)
-        Cookies.set("user", JSON.stringify(user))
-        localStorage.setItem('token', response.data.token)
-        localStorage.setItem('user', JSON.stringify(user))
-        router.push("/dashboard/agency/agent-management/agents")
+        // const decoded = jwt.decode(response.data.token)
+        // setToken(true)
+        // const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
+        // Cookies.set("token", response.data.token)
+        // Cookies.set("token", response.data.token)
+        // // console.log(user)
+        // Cookies.set("user", JSON.stringify(user))
+        // localStorage.setItem('token', response.data.token)
+        // localStorage.setItem('user', JSON.stringify(user))
+        // setIsLoading(false)
+        // router.push("/dashboard/analytics/agent-metrics")
+        // console.log(response.data)
       })
       .catch(response => {
-        debugger
+        console.log(response)
+      })
+  }
+
+  function logout() {  
+    setIsLoading(true)
+    // debugger 
+    localStorage.clear('token') 
+    localStorage.clear('user')
+    Cookies.remove('token') 
+    Cookies.remove('user') 
+    setIsLoading(false)
+    router.push("/")
+  }
+
+
+
+
+
+  function createPassword(details,caution, setDetails ) {
+    if(details.password !== details.confirmPassword) {
+      // debugger
+      caution()
+      return
+    }
+    // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
+    const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
+    console.log(url)
+    debugger
+    axios.patch(url,
+    {
+      "newPassword": details.password,
+      "confirmPassword": details.confirmPassword
+    }
+    )
+      .then(response => {
+        // debugger
+        setDetails({password:"", confirmPassword:"", code:""})
+        router.push("/success")
+      })
+      .catch(response => {
+        // debugger
         console.log(response)
       })
   }
@@ -146,6 +200,32 @@ export default function MyApp({ Component, pageProps }) {
       shower({ ...showState, [field.current.id]: "password" })
     }
   }
+
+  if(router.pathname === "/" || router.pathname.includes("/change-password") || router.pathname === "/success" || router.pathname === "/reset-password"){
+    return (
+      <LoginLayout>
+        <Component 
+        {...pageProps} 
+        login={login}
+        setPasswordDisplay={setPasswordDisplay}
+        showPassword={showPassword}
+        passwordDisplay={passwordDisplay}
+        changeForm={changeForm}
+        loginDetails={loginDetails}
+        setLoginDetails={setLoginDetails}
+        newPasswordDisplay={newPasswordDisplay}
+        setNewPasswordDisplay={setNewPasswordDisplay} 
+        newLoginDetails={newLoginDetails}
+        setNewLoginDetails={setNewLoginDetails}
+        createCaution={createPasswordCaution}
+        changer={changePasswordCaution}
+        createPassword={createPassword}
+        />
+      </LoginLayout>
+    )
+  }
+
+
   return (
 
     <LayoutAuthed
@@ -168,6 +248,7 @@ export default function MyApp({ Component, pageProps }) {
       setActiveTab={setTab}
       viewState={viewState}
       setView={setView}
+      logout={logout}
     >
       <Layout modals={modals} activeTab={activeTab} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState}>
         <Component
