@@ -1,7 +1,7 @@
 
 import UserButton from "../../../../../components/ButtonMaker"
 import ImageHolder from "../../../../../components/ImageHolder"
-import RadioToggle from "../../../../../components/radioToggle"
+import RadioToggle from "../../../../../components/RadioToggle"
 import { useState, useEffect } from "react"
 import Toggler from "../../../../../components/Toggle"
 import axios from "axios"
@@ -9,10 +9,11 @@ import useSWR from 'swr'
 import { useRouter } from "next/router"
 import { testEnv } from "../../../../../components/Endpoints"
 import dynamic from "next/dynamic"
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, convertToRaw } from "draft-js"
+// import { Editor } from 'react-draft-wysiwyg';
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html"
-// import draftToMarkdown from 'draftjs-to-markdown'
+// import {draftToMarkdown} from 'draftjs-to-markdown'
 import Textfield from "../../../../../components/TextField"
 
 
@@ -21,7 +22,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
     const [ticketData, setTicketData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)    
-    const [editorState, setEditorState] = useState({editorState: EditorState.createEmpty()})
+    const [editorState, setEditorState] = useState(()=>EditorState.createEmpty())
 
     useEffect(() => {
         // setLoading(true)
@@ -38,7 +39,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
     }, [data])
 
     function onEditorStateChange (editorState) {
-        setEditorState({editorState,})
+        setEditorState({editorState})
     }
 
     const Editor = dynamic(
@@ -76,7 +77,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
         setActiveTab(tab)
     }
 
-    console.log(draftToHtml(convertToRaw(editorState.editorState.getCurrentContent())))
+    // console.log(draftToHtml(convertToRaw(editorState.editorState.getCurrentContent())))
     // console.log(convertToRaw(editorState.editorState.getCurrentContent()))
 
 

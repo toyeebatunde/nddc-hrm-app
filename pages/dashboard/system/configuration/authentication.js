@@ -95,13 +95,9 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         setReload(!reload)
     }
 
-
-
     function onChange(e) {
         setEditAuth({ ...editAuth, [e.target.name]: e.target.value })
     }
-
-
 
     function changeView(e, type, id) {
         e.preventDefault()

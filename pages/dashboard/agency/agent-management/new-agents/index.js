@@ -18,7 +18,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
     useEffect(() => {
         setActiveTab("New Agents")
         setToken()
-        setActiveDashboard("Agent Management")
+        setActiveDashboard("AgentManagement")
         setActiveState("2")
         if (data) {
             setAgentData(data)

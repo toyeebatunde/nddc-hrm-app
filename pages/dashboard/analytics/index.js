@@ -7,20 +7,20 @@ import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
 import { useState, useEffect } from "react"
 import DateSelector from "../../../components/DateSelector"
 
-export default function AgentMetrics({setToken}) {
+export default function AgentMetrics({setToken, setDateRange, dateRange, week}) {
     const [isCalendar, setIsCalendar] = useState(false)
-    const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
+    // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
 
     useEffect(()=>{
         setToken()
     },[])
 
-    function getPreviousDay(date = new Date()) {
-        const previous = new Date(date.getTime());
-        previous.setDate(date.getDate() - 7);
+    // function getPreviousDay(date = new Date()) {
+    //     const previous = new Date(date.getTime());
+    //     previous.setDate(date.getDate() - 7);
 
-        return previous;
-    }
+    //     return previous;
+    // }
 
     const ninety = "90"
     return (
@@ -29,7 +29,7 @@ export default function AgentMetrics({setToken}) {
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     Metrics
                 </h4>
-                <DateSelector dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
+                <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
             </section>
             <section className="flex flex-col xl:flex-row items-center w-full  justify-between px-4 py-2 ">
                 <section className="w-full xl:grow h-[375px] flex flex-col items-center border border-[#dddddd] rounded-[8px]">

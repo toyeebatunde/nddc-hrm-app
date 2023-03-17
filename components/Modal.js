@@ -8,7 +8,7 @@ import apiToken from "./Token"
 import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading }) {
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading, closeEdge }) {
     const router = useRouter()
 
     const chargeSelectOptions = [
@@ -128,7 +128,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     "authModal",
                                     values.values.trigger
                                 )
-                            }} text="Save" type="gradient"/>
+                            }} text="Save" type="gradient" />
                         </div>
                     </section>
                 </form>
@@ -146,6 +146,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
     }
 
     if (modal.action) {
+        if(values.values.keyTwo == "status") {
+            closeEdge(true)
+        }
         return (
             <div className={`w-[350px] lg:rounded-[48px] lg:w-[529px] pb-[20px] flex flex-col items-center min-h-[403px] bg-white rounded-[15px]`}>
                 <div className="w-[133px] mt-[15px] h-[133px] flex justify-center items-center rounded-[50%] bg-[#F5F5F5]">
@@ -165,13 +168,18 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
                         <UserButton text="Cancel" onClick={(e) => {
                             if (values.values.cancelClick) {
-                                values.values.cancelClick(values.values.target,values.values.status,values.values.setter,values.values.keyOne,values.values.keyTwo,values.values.keyThree)
+                                values.values.cancelClick(values.values.target, values.values.status, values.values.setter, values.values.keyOne, values.values.keyTwo, values.values.keyThree)
+                                closeEdge(false)
                             }
                             modalCloser(false, "action")
+                            closeEdge(false)
                         }} />
                     </div>
-                    <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[126px]"} h-[46px]`}>
-                        <UserButton onClick={(e) => {values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) }} text={values.values.text || values.values.action} type="gradient" />
+                    <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[146px]"} h-[46px]`}>
+                        <UserButton onClick={(e) => { 
+                            values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) 
+                            closeEdge(false)
+                            }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>
@@ -183,7 +191,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
                     <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
-                    <button className="w-[40px] h-[40px] relative cursor-pointer">
+                    <button onClick={(e) => { modalCloser(false, "editCharges") }} className="w-[40px] h-[40px] relative cursor-pointer">
                         <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
                     </button>
                 </section>
@@ -191,29 +199,48 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
                     <section className="flex  flex-col lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="First Name" />
+                            <Textfield formEdit={formEdit} value={values.values.firstName} type="text" title="First Name" name="firstName" />
                         </div>
                         <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Last Name" />
+                            <Textfield formEdit={formEdit} value={values.values.lastName} type="text" title="Last Name" name="lastName" />
                         </div>
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Email" />
+                            <Textfield formEdit={formEdit} value={values.values.email} type="text" title="Email" name="email" />
                         </div>
                     </section>
                     <section className="flex flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="Assign Role" />
+                            <Textfield formEdit={formEdit} value={values.values.assignRole} type="select" selectOptions={values.values.selectOptions} title="Assign Role" name="assignRole" />
                         </div>
                     </section>
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" />
+                            <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "teamModal") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Send Invitations" type="gradient" />
+                            <UserButton text="Send Invitation" type="gradient"
+                                onClick={(e) => {
+                                    postApi(
+                                        e,
+                                        values.values.endPoint,
+                                        {
+                                            "firstname": values.values.firstName,
+                                            "lastname": values.values.lastName,
+                                            "email": values.values.email,
+                                            "role": values.values.assignRole,
+                                            "resetPasswordUrl": "/change-password",
+                                        },
+                                        localStorage.getItem('token'),
+                                        modalCloser,
+                                        setLoading,
+                                        "teamModal",
+                                        values.values.trigger
+                                    )
+                                }}
+                            />
                         </div>
                     </section>
                 </form>
@@ -277,8 +304,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     },
                                     localStorage.getItem('token'),
                                     modalCloser,
+                                    values.values.loadState,
                                     "editSetting",
-                                    setLoading
+                                    values.values.trigger
                                 )
                             }}
                                 text="Save" type="gradient" />
@@ -478,7 +506,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
         return (
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[90%] lg:w-[95%] justify-between">
-                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Edit Setting. <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">{values.values.title || "Edit Setting."} <span className="text-[#6E7883] text-[15px] lg:text-[26px] font-[500]">{values.values.name}</span></p>
                     <button onClick={(e) => { closeModal(e) }} className="w-[40px] h-[40px] relative cursor-pointer">
                         <ImageHolder id="closer" src="/icons/close-modal.svg" />
                     </button>
@@ -513,9 +541,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
-                                editApi(
+                                values.values.settingAction(
                                     e,
-                                    `https://admapis-staging.payrail.co/v1/setting/${values.id}/update`,
+                                    values.values.action,
+                                    editApi, 
+                                    createApi,
+                                    values.values.endPoint,
                                     {
                                         "value": values.values.value || "n/a",
                                         "type": values.values.type || "n/a",
@@ -527,7 +558,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     setLoading,
                                     "editSetting",
                                     values.values.trigger
-                                )
+                                )                            
 
                             }} text="Save" type="gradient" />
                         </div>

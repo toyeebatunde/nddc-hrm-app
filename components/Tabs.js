@@ -79,6 +79,7 @@ export const tabs = [
                 inactive: '/icons/user-management-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/user-management",
+                permission:"USER_MANAGEMENT",
             },
             {
                 text: "Configurations",
@@ -86,8 +87,10 @@ export const tabs = [
                 inactive: '/icons/configurations-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/configuration",
+                permission:"CONFIGURATIONS",
             },
             {
+                permission:"INSTITUTIONS",
                 text: "Institutions",
                 active:'/icons/institutions.svg',
                 inactive: '/icons/institutions-inactive.svg',
@@ -95,6 +98,7 @@ export const tabs = [
                 link: "/dashboard/system/institutions",
             },
             {
+                permission:"APPROVALS",
                 text: "Approvals",
                 active:'/icons/approvals.svg',
                 inactive: '/icons/approvals-inactive.svg',
@@ -103,20 +107,35 @@ export const tabs = [
             },
         ],
         height: "hover:h-[145px]",
+        1: "[50px]",
+        2: "[85px]",
+        3: "[120px]",
+        4: "[145px]",
+        5: "[170px]",
+        6: "[200px]",
+        7: "[230px]",
         full: "h-[145px]"
     },
     {
         text: "Agency",
         data: "2",
-        height: "hover:h-[270px]",
-        full: "h-[270px]",
+        height: "hover:h-[230px]",
+        1: "[50px]",
+        2: "[85px]",
+        3: "[120px]",
+        4: "[145px]",
+        5: "[170px]",
+        6: "[200px]",
+        7: "[230px]",
+        full: "h-[230px]",
         subTexts: [
             {
                 text: "Agent Management",
                 active:'/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "/dashboard/agency/agent-management/agents"
+                link: "/dashboard/agency/agent-management/agents",
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
             {
                 text: "Customer Management",
@@ -124,13 +143,7 @@ export const tabs = [
                 inactive: '/icons/customer-management-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/customer-management",
-            },
-            {
-                text: "Fund Request",
-                active:'/icons/fund-request.svg',
-                inactive: '/icons/fund-request-inactive.svg',
-                data: "2",
-                link: "fundrequest",
+                permission: ["VIEW_CUSTOMER_MANAGEMENT", "EDIT_CUSTOMER_MANAGEMENT"]
             },
             {
                 text: "Value Added Services",
@@ -138,6 +151,7 @@ export const tabs = [
                 inactive: '/icons/value-added-services-inactive.svg',
                 data: "2",
                 link: "valueaddedservices",
+                permission: ["VIEW_VALUE_ADDED_SERVICES", "EDIT_VALUE_ADDED_SERVICES"]
             },
             {
                 text: "Transactions",
@@ -145,6 +159,7 @@ export const tabs = [
                 inactive: '/icons/transactions-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/transactions",
+                permission: ["VIEW_TRANSACTIONS", "EDIT_TRANSACTIONS"]
             },
             {
                 text: "Settlement",
@@ -152,6 +167,7 @@ export const tabs = [
                 inactive: '/icons/settlement-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/settlement",
+                permission: ["VIEW_SETTLEMENTS", "EDIT_SETTLEMENTS"]
             },
             {
                 text: "Reconciliation",
@@ -159,6 +175,7 @@ export const tabs = [
                 inactive: '/icons/reconciliation-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/reconciliation",
+                permission: ["VIEW_RECONCILATION", "EDIT_RECONCILATION"]
             },
             {
                 text: "POS Terminals",
@@ -166,6 +183,7 @@ export const tabs = [
                 inactive: '/icons/pos-terminals-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/pos-terminals",
+                permission: ["VIEW_POS_TERMINAL", "EDIT_POS_TERMINAL"]
             },
         ]
     },
@@ -173,6 +191,13 @@ export const tabs = [
         text: "Insights and Reports",
         data: "3",
         height: "hover:h-[50px]",
+        1: "[50px]",
+        2: "[85px]",
+        3: "[120px]",
+        4: "[145px]",
+        5: "[170px]",
+        6: "[200px]",
+        7: "[230px]",
         full: "h-[50px]",
         subTexts: [
             {
@@ -181,12 +206,20 @@ export const tabs = [
                 inactive: '/icons/reports-inactive.svg',
                 data: "3",
                 link: "reports",
+                permission: ["VIEW_REPORTS", "EDIT_REPORTS"]
             },
         ]
     },
     {
         text: "Support",
         height: "hover:h-[120px]",
+        1: "[50px]",
+        2: "[85px]",
+        3: "[120px]",
+        4: "[145px]",
+        5: "[170px]",
+        6: "[200px]",
+        7: "[230px]",
         full: "h-[120px]",
         data: "4",
         subTexts: [
@@ -196,6 +229,7 @@ export const tabs = [
                 inactive: '/icons/ticket-management-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/ticket-management",
+                permission: ["EDIT_TICKET_MANAGEMENT"]
             },
             {
                 text: "Bulk Notification",
@@ -203,6 +237,7 @@ export const tabs = [
                 inactive: '/icons/bulk-notification-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/bulk-notification",
+                permission: ["EDIT_BULK_NOTIFICATION"]
             },
             {
                 text: "Audits",
@@ -210,31 +245,32 @@ export const tabs = [
                 inactive: '/icons/audits-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/audits",
+                permission: ["EDIT_AUDITS"]
             },
         ]
     },
-    {
-        text: "Loan",
-        height: "hover:h-[85px]",
-        full: "h-[85px]",
-        data: "5",
-        subTexts: [
-            {
-                text: "Loan Performance",
-                active:'/icons/loan-performance.svg',
-                inactive: '/icons/loan-performance-inactive.svg',
-                data: "5",
-                link: "loanperformance",
-            },
-            {
-                text: "Credit Call",
-                active:'/icons/credit-call.svg',
-                inactive: '/icons/credit-call-inactive.svg',
-                data: "5",
-                link: "creditcall",
-            },
-        ]
-    },
+    // {
+    //     text: "Loan",
+    //     height: "hover:h-[85px]",
+    //     full: "h-[85px]",
+    //     data: "5",
+    //     subTexts: [
+    //         {
+    //             text: "Loan Performance",
+    //             active:'/icons/loan-performance.svg',
+    //             inactive: '/icons/loan-performance-inactive.svg',
+    //             data: "5",
+    //             link: "loanperformance",
+    //         },
+    //         {
+    //             text: "Credit Call",
+    //             active:'/icons/credit-call.svg',
+    //             inactive: '/icons/credit-call-inactive.svg',
+    //             data: "5",
+    //             link: "creditcall",
+    //         },
+    //     ]
+    // },
 ]
 
 

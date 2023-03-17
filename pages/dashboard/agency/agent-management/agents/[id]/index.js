@@ -2,7 +2,7 @@
 
 import UserButton from "../../../../../../components/ButtonMaker"
 import ImageHolder from "../../../../../../components/ImageHolder"
-import RadioToggle from "../../../../../../components/radioToggle"
+// import RadioToggle from "../../../../../../components/radioToggle"
 import { useState, useEffect } from "react"
 import Toggler from "../../../../../../components/Toggle"
 import axios from "axios"
@@ -76,7 +76,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         if (data) {
             setAgentData(data)
             setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
-            setAccountStatus({ account: data.customerAccount.accountStatus, status: data.customerAccount.accountStatus == "ACTIVE" ? "on" : "off", api: false })
+            setAccountStatus({ account: data.customerAccount?.accountStatus, status: data.customerAccount?.accountStatus == "ACTIVE" ? "on" : "off", api: false })
             setLoading(false)
         }
         if (error) {
@@ -113,20 +113,27 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                 }, data.id)
             return
         }
-        // if (accountStatus.api) {
-        //     agentHandler(true, "action",
-        //         {
-        //             caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s account status`,
-        //             action: "delete",
-        //             endPoint: `${testEnv}v1/agent/${router.query.id}/change_activation_status?param=${accountStatus.status}`,
-        //             reason: false,
-        //             onClick: patchApi,
-        //             text: "Place on lien",
-        //             cancelClick: reverseLien,
-        //             trigger: triggerReload
-        //         }, data.id)
-        //     return
-        // }
+        if (accountStatus.api) {
+            agentHandler(true, "action",
+                {
+                    caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s account status`,
+                    action: "delete",
+                    endPoint: `${testEnv}v1/agent/${router.query.id}/change_activation_status?status=${accountStatus.status}`,
+                    reason: false,
+                    onClick: patchApi,
+                    text: "Update Status",
+                    cancelClick: reverseStatus,
+                    trigger: triggerReload,
+                    target:accountToggle,
+                    status: accountStatus,
+                    setter: setAccountStatus,
+                    keyOne:"account",
+                    keyTwo:"status",
+                    keyThree:"api",
+                }, data.id)
+            return
+        }
+        
     }, [lienStatus, accountStatus])
 
     function reverseLien() {
@@ -147,9 +154,13 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         // console.log(lienToggle.current.checked)
         setLienStatus({ ...lienStatus, lien: e.target.checked, status: e.target.checked ? "on" : "off", api: true, })
     };
-    const toggler = (e, handler, keyOne, keyTwo, keyThree) => {
+    const toggler = (e, handler, keyOne, keyTwo, keyThree, target) => {
         // console.log(lienToggle.current.checked)
-        setLienStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
+        if(target == "lien") {
+            setLienStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
+            return
+        }
+        setAccountStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
     };
 
     const approveCaution = "You are about to approve a KYC. Please note after approving it will go through the approval process"
@@ -268,13 +279,13 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between xl:w-full lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Account Status</h2>
                                                 <div>
-                                                    <Toggler toggleState={toggleStateOne} />
+                                                    <Toggler toggleRef={accountToggle} onClick={(e) => { toggler(e, accountStatus, "account", "status", "api", "account") }} id={router.query.id} toggled={accountStatus == undefined ? false : accountStatus.account} />
                                                 </div>
                                             </div>
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Lien Status</h2>
                                                 <div >
-                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggler(e, lienStatus, "lien", "status", "api") }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
+                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggler(e, lienStatus, "lien", "status", "api", "lien") }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
                                                 </div>
                                             </div>
                                         </div>

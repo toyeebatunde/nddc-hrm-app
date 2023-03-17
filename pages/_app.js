@@ -8,6 +8,8 @@ import Cookies from 'js-cookie'
 import { ngrok, testEnv } from '../components/Endpoints'
 import Textfield from '../components/TextField'
 import ImageHolder from '../components/ImageHolder'
+import jwt from 'jsonwebtoken'
+import LoginLayout from '../components/LoginLayout'
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -15,17 +17,57 @@ export default function MyApp({ Component, pageProps }) {
   const [activeState, setActiveState] = useState("0")
   const [activeTab, setActiveTab] = useState()
   const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
+  const [newLoginDetails, setNewLoginDetails] = useState({ confirmPassword: "", password: "", code: "" })
   const [passwordDisplay, setPasswordDisplay] = useState({ password: "password" })
+  const [newPasswordDisplay, setNewPasswordDisplay] = useState({ password: "password", confirmPassword: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
   const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
+  const [week, setWeek] = useState({
+    current: "Last 7 days",
+    oneBefore: getPreviousDay(1),
+    twoBefore: getPreviousDay(2),
+    threeBefore: getPreviousDay(3),
+    fourBefore: getPreviousDay(4),
+    fiveBefore: getPreviousDay(5),
+    sixBefore: getPreviousDay(6),
+    sevenBefore: getPreviousDay(7),
+  })
+  const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date(), search:false })
+
+//    function formatDate(date) {            
+//     var d = date.getUTCDate().toString(),           
+//         m = (date.getUTCMonth() + 1).toString(),    
+//         y = date.getUTCFullYear().toString(),       
+//         formatted = '';
+//     if (d.length === 1) {                           
+//         d = '0' + d;
+//     }
+//     if (m.length === 1) {                           
+//     }
+//     formatted = d + '-' + m + '-' + y;              
+//     return formatted;
+// }
+
+  function setDateSearchRange(e, set) {
+    // console.log(e)
+    if(set == "week") {
+      setWeek({...week, current:e.target.innerText})
+    }
+  }
+
+  function dateSearch() {}
+
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
+  // console.log(router)
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
   const [entryValue, setEntryValue] = useState({ size: 5, page: 0 })
+  const [passwordCaution, setCreatePasswordCaution] = useState(false)
+  const [loginFail, setLoginFail] = useState(false)
 
 
   const Layout = Component.Layout || EmptyLayout
@@ -34,8 +76,19 @@ export default function MyApp({ Component, pageProps }) {
     setViewState(state)
   }
 
-  function setUserPrivilege(user) {
+  function getPreviousDay(range, date = new Date()) {
+    const previous = new Date(date.getTime());
+    // console.log(previous)
+    previous.setDate(date.getDate() - range);
+    return previous;
+  }
 
+  function changePasswordCaution() {
+    if (passwordCaution) {
+      setCreatePasswordCaution(false)
+      return
+    }
+    setCreatePasswordCaution(true)
   }
 
   function setTab(tab) {
@@ -64,7 +117,7 @@ export default function MyApp({ Component, pageProps }) {
       setModals({ ...modals, isOpen: state, [modalToSet]: state })
       return
     }
-    console.log("closer")
+    // console.log("closer")
     setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
 
   }
@@ -85,19 +138,75 @@ export default function MyApp({ Component, pageProps }) {
     setEditForm({ ...editForm, values: { ...editForm.values, [e.target.name]: e.target.value } })
   }
 
-  function login(details) {
-
+  function login(details, caution) {
+    setIsLoading(true)
+    // debugger
     axios.post(`${testEnv}v1/auth/login`, {
-      password: details.password,
-      username: details.username
+      "password": details.password,
+      "username": details.username
     })
       .then(response => {
+        const decoded = jwt.decode(response.data.token)
         setToken(true)
+        const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
         Cookies.set("token", response.data.token)
+        Cookies.set("token", response.data.token)
+        // console.log(user)
+        Cookies.set("user", JSON.stringify(user))
         localStorage.setItem('token', response.data.token)
-        router.push("/dashboard/analytics")
+        localStorage.setItem('user', JSON.stringify(user))
+        setIsLoading(false)
+        router.push("/dashboard/analytics/agent-metrics")
+        // console.log(response.data)
       })
-      .catch(response => console.log(response))
+      .catch(response => {
+        // console.log(response.response.data)
+        if(response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {
+          caution()
+        }
+      })
+  }
+
+  function logout() {
+    setIsLoading(true)
+    // debugger 
+    localStorage.clear('token')
+    localStorage.clear('user')
+    Cookies.remove('token')
+    Cookies.remove('user')
+    setIsLoading(false)
+    router.push("/")
+  }
+
+  function loginCaution() {
+
+  }
+
+  function createPassword(details, caution, setDetails) {
+    if (details.password !== details.confirmPassword) {
+      // debugger
+      caution()
+      return
+    }
+    // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
+    const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
+    // console.log(url)
+    debugger
+    axios.patch(url,
+      {
+        "newPassword": details.password,
+        "confirmPassword": details.confirmPassword
+      }
+    )
+      .then(response => {
+        // debugger
+        setDetails({ password: "", confirmPassword: "", code: "" })
+        router.push("/success")
+      })
+      .catch(response => {
+        // debugger
+        // console.log(response)
+      })
   }
 
   function tokenTrue() {
@@ -121,10 +230,14 @@ export default function MyApp({ Component, pageProps }) {
       setEntryValue({ ...entryValue, page: e.target.value })
       return
     }
-     if (entry == "none") {
+    if (entry == "none") {
       setEntryValue({ ...entryValue, page: entryValue.page + 1 })
       return
-     }
+    }
+    if (entry == "rewind" && entryValue.page > 0) {
+      setEntryValue({ ...entryValue, page: entryValue.page - 1 })
+      return
+    }
 
   }
 
@@ -136,6 +249,32 @@ export default function MyApp({ Component, pageProps }) {
       shower({ ...showState, [field.current.id]: "password" })
     }
   }
+
+  if (router.pathname === "/" || router.pathname.includes("/change-password") || router.pathname === "/success" || router.pathname === "/reset-password") {
+    return (
+      <LoginLayout>
+        <Component
+          {...pageProps}
+          login={login}
+          setPasswordDisplay={setPasswordDisplay}
+          showPassword={showPassword}
+          passwordDisplay={passwordDisplay}
+          changeForm={changeForm}
+          loginDetails={loginDetails}
+          setLoginDetails={setLoginDetails}
+          newPasswordDisplay={newPasswordDisplay}
+          setNewPasswordDisplay={setNewPasswordDisplay}
+          newLoginDetails={newLoginDetails}
+          setNewLoginDetails={setNewLoginDetails}
+          createCaution={passwordCaution}
+          changer={changePasswordCaution}
+          createPassword={createPassword}
+        />
+      </LoginLayout>
+    )
+  }
+
+
   return (
 
     <LayoutAuthed
@@ -158,8 +297,15 @@ export default function MyApp({ Component, pageProps }) {
       setActiveTab={setTab}
       viewState={viewState}
       setView={setView}
+      logout={logout}
+      dateRange={dateRange}
+      week={week}
+      setDateRange={setDateRange}
+
+    
+
     >
-      <Layout modals={modals} activeTab={activeTab} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState}>
+      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -186,6 +332,9 @@ export default function MyApp({ Component, pageProps }) {
           setActiveTab={setTab}
           pageSelector={pageSelector}
           entryValue={entryValue}
+          dateRange={dateRange}
+          week={week}
+          setDateRange={setDateRange}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

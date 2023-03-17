@@ -2,7 +2,7 @@
 
 import UserButton from "../../../../../components/ButtonMaker"
 import ImageHolder from "../../../../../components/ImageHolder"
-import RadioToggle from "../../../../../components/radioToggle"
+import RadioToggle from "../../../../../components/RadioToggle"
 import { useState, useEffect } from "react"
 import Toggler from "../../../../../components/Toggle"
 import axios from "axios"
