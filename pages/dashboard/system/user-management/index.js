@@ -84,7 +84,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                             <ImageHolder src={searchIcon} />
                         </div>
                     </section>
-                    <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
+                    <section className="flex  w-[354px] mt-4 mdxl:mt-0 justify-between">
                         <p className="flex w-[45%] lg:w-[215px] h-[35px] items-center  font-500 text-[#6E7883] font-pushpennyMedium text-[16px]">Pending Invites · 0</p>
                         <button onClick={() => {
                             addTeamMateForm(true, "teamModal",
@@ -102,42 +102,41 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                 },
                                 0
                             )
-                        }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Invite a team mate</button>
+                        }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] lg:px-[2px]">
+                            + Invite a team mate
+                        </button>
                     </section>
 
                 </section>
             </section>
 
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} flex`}>
-                <section className="h-[674px] w-full md:w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-2 pr-4">
-                    <div className=" w-[250%] sm:w-[230%] md:w-[200%] mdxl:w-[180%] lg:w-[160%] xlg:w-[140%] xl:w-full h-[30px]">
-
-                        <table className="table-fixed w-[120%] md:w-full flex flex-col">
-                            <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400  flex w-[20%]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
-                                    <th className="font-400   flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">EMAIL DETAILS</th>
-                                    <th className="font-400   flex w-[15%] md:w-[10%] text-[12px] leading-[15.62px] font-pushpennyBook">ROLE</th>
-                                    <th className="font-400  flex w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody className="mt-6">
-                                {usersData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
-                                            <td className="font-pushpennyBook flex w-[15%] md:w-[10%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
-                                            <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                                <button>Change Privileges</button>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
+                    <table className="table-fixed w-full">
+                        <thead>
+                            <tr className="">
+                                <th className="font-400 text-start   w-[108px]  text-[12px] leading-[15.62px] font-pushpennyBook">NAME</th>
+                                <th className="font-400 text-start  w-[158px]  text-[12px] leading-[15.62px] font-pushpennyBook">EMAIL DETAILS</th>
+                                <th className="font-400 text-start  w-[205px] text-[12px] leading-[15.62px] font-pushpennyBook">ROLE</th>
+                                <th className="font-400 text-start w-[100px] pl-[20px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody className="mt-6">
+                            {usersData?.data.map((item, index) => {
+                                return (
+                                    <tr key={index} className="h-[50px]">
+                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
+                                        <td className="font-pushpennyBook   font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
+                                        <td className="font-pushpennyBook truncate inline-block w-[205px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
+                                        <td className="font-pushpennyBook pl-[20px] h-[40px]  items-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                            <button >Change Privileges</button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </TableContainer>
             </section>
 
 

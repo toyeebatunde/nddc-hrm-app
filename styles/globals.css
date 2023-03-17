@@ -30,12 +30,12 @@ input[type=password]::-ms-clear {
 
 
 
-.tab-parent {
+/* .tab-parent {
   height: 30px;
   transition: all linear 0.3s;
   transition-property: inherit;
-  /* border: 1px solid black; */
-}
+  border: 1px solid black;
+} */
 
 .create-role {
   left: 5200px;
@@ -47,7 +47,7 @@ input[type=password]::-ms-clear {
   left: 0;
 }
 
-.tab-parent:hover,
+/* .tab-parent:hover,
 .tab-parent.active {
   height: 80px;
 }
@@ -75,11 +75,10 @@ input[type=password]::-ms-clear {
 .tab-parent:hover:nth-child(1n+6),
 .tab-parent.active:nth-child(1n+6) {
   height: 80px;
-}
+} */
 
-.tab-parent:hover .tab-holder,
+/* .tab-parent:hover .tab-holder,
 .tab-holder.active {
-  /* display: none; */
   top: var(--setMargin);
 }
 
@@ -126,7 +125,7 @@ input[type=password]::-ms-clear {
 .tab-parent:hover .tab-holder:nth-child(1n+10),
 .tab-holder.active:nth-child(1n+10) {
   top: calc(var(--setMargin)*9);
-}
+} */
 
 /* .tab-holder {
   top: 0;
@@ -271,7 +270,6 @@ button.react-calendar__tile--now {
   border-bottom: 2px solid #161616;
   font-weight: 700;
   color: #161616;
-
 }
 
 .search-tab {

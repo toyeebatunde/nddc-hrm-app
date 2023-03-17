@@ -8,14 +8,25 @@ import splash from '../public/icons/splash.svg'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 
-export default function Home({ showPassword, login, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails }) {
+export default function Home({ showPassword, login, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, createCaution, changer }) {
   const passwordField = useRef()
   const router = useRouter()
   useEffect(() => { }, [passwordDisplay])
+  // console.log(router)
+
+  useEffect(() => {
+    if (createCaution) {
+      let timer = setTimeout(() => {
+        changer()
+      }, 2000)
+      return () => clearTimeout(timer);
+    }
+
+  }, [createCaution])
 
   return (
     <div className="w-full lg:w-[529px] h-full flex flex-col items-center p-[20px] h-full">
-      
+
 
       <div className='flex flex-col py-[5px] '>
         <section className='flex m-auto w-fit min-h-logo-height py-1 px-1 items-center'>
@@ -39,6 +50,12 @@ export default function Home({ showPassword, login, token, passwordDisplay, setP
               https://agencyadm.payrail.co
             </section>
 
+           
+              <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
+                {createCaution? "Incorrect Password or Username, try again." : ""}
+              </section>
+            
+
             <section className='w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
               <input value={loginDetails.username} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
 
@@ -52,7 +69,7 @@ export default function Home({ showPassword, login, token, passwordDisplay, setP
           </section>
           <section className='mt-[30px] gap-[20px] lg:gap-0 m-auto w-[425px] flex items-center justify-between'>
             <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span className='underline text-yellow'> Reset now </span></section>
-            <button onClick={() => { login(loginDetails) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
+            <button onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
           </section>
         </div>
       </div>

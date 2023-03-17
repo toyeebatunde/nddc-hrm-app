@@ -20,6 +20,11 @@ export default function TableContainer({ children, pageSelector, entryValue }) {
                 </div>
 
                 <div className="w-[83px] h-[51px] rounded-[25.5px] justify-center border-[#D1D1D1] border flex items-center">
+                    <button onClick={(e) => { pageSelector(e, "rewind") }} className='w-[40%] h-[100%] relative justify-center flex items-center'>
+                        <div className='w-[50%] relative h-[40%]'>
+                            <ImageHolder src='/icons/rewind.svg' />
+                        </div>
+                    </button>
                     <div className=' w-[40%] relative h-[100%] flex justify-center items-center leading-[28px] font-pushpennyBook text-[22px] font-[400]'>{entryValue.page + 1}</div>
                     <button onClick={(e) => { pageSelector(e, "none") }} className='w-[40%] h-[100%] relative justify-center flex items-center'>
                         <div className='w-[50%] relative h-[40%]'>

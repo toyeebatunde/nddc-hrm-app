@@ -9,25 +9,76 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab }) {
+export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, dateRange }) {
 
     const [agentData, setAgentData] = useState()
+    const [filteredData, setFilteredData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:agents, error:agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const router = useRouter()
 
     useEffect(() => {
         setActiveTab("Agents")
         setToken()
-        setActiveDashboard("Agent Management")
+        setActiveDashboard("AgentManagement")
         setActiveState("2")
-        if (data) {
-            setAgentData(data)
+        if (agents) {
+            setAgentData(agents)
         }
-        if (error) {
-            console.log(error)
+        if (agentsError) {
+            console.log(agentsError)
         }
-    }, [data])
+    }, [agents])
+
+    useEffect(() => {
+        // setActiveTab("Agents")
+        // setToken()
+        // setActiveDashboard("AgentManagement")
+        // setActiveState("2")
+        if (dateFiltered) {
+            setFilteredData(dateFiltered)
+        }
+        if (filteredError) {
+            console.log(filteredError)
+        }
+    }, [dateFiltered])
+
+    // useEffect(()=>{
+    //     if(dateRange.dateTo < dateRange.dateFrom) {
+    //         return
+    //     }
+    //     function formatDate(date) {            
+    //         var d = (date.getUTCDate() + 1).toString(),           
+    //             m = (date.getUTCMonth() + 1).toString(),    
+    //             y = date.getUTCFullYear().toString(),       
+    //             formatted = '';
+    //         if (d.length === 1) {                           
+    //             d = '0' + d;
+    //         }
+    //         if (m.length === 1) {                           
+    //         }
+    //         formatted = d + '-' + m + '-' + y;              
+    //         return formatted;
+    //     }
+    //     const from=formatDate(dateRange.dateFrom)
+    //     const to=formatDate(dateRange.dateTo)
+    //     console.log(from,"  ", to)           
+    // },[dateRange.dateTo, dateRange.dateFrom])
+
+    function formatDate(date) {            
+        var d = (date.getUTCDate() + 1).toString(),           
+            m = (date.getUTCMonth() + 1).toString(),    
+            y = date.getUTCFullYear().toString(),       
+            formatted = '';
+        if (d.length === 1) {                           
+            d = '0' + d;
+        }
+        if (m.length === 1) {                           
+        }
+        formatted = d + '-' + m + '-' + y;              
+        return formatted;
+    }
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
@@ -58,7 +109,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {data?.data.map((agent, index) => {
+                                {(agentData || filteredData)?.data.map((agent, index) => {
                                     return (
                                         <tr key={index} className=" justify-between h-[50px]">
                                             <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>

@@ -92,9 +92,9 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                                 </thead>
                                 <tbody className="mt-6">
                                     <tr>
-                                        <th colspan="1" className=""></th>
-                                        <th colspan="2" className="text-start">Agent Information</th>
-                                        <th colspan="3" className=""></th>
+                                        <th colSpan="1" className=""></th>
+                                        <th colSpan="2" className="text-start">Agent Information</th>
+                                        <th colSpan="3" className=""></th>
                                     </tr>
 
                                     {posData?.data.map((data, index) => {

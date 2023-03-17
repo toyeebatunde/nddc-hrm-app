@@ -2,15 +2,15 @@
 import { useState, useEffect, use } from "react"
 import DateSelector from "../../../components/DateSelector"
 
-export default function LoanMetrics({setToken}) {
-    const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
+export default function LoanMetrics({setToken, setDateRange, dateRange, week}) {
+    // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
 
-    function getPreviousDay(date = new Date()) {
-        const previous = new Date(date.getTime());
-        previous.setDate(date.getDate() - 7);
+    // function getPreviousDay(date = new Date()) {
+    //     const previous = new Date(date.getTime());
+    //     previous.setDate(date.getDate() - 7);
 
-        return previous;
-    }
+    //     return previous;
+    // }
 
     useEffect(()=>{
         setToken()
@@ -24,7 +24,7 @@ export default function LoanMetrics({setToken}) {
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     Metrics
                 </h4>
-                <DateSelector dateRange={dateRange} setDateRange={setDateRange} directionDown="/icons/direction-down.svg" />
+                <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} directionDown="/icons/direction-down.svg" />
             </section>
             <section className="flex flex-col items-center w-full xl:flex-row justify-between px-4 py-2">
                 <section className="w-full lg:grow h-[375px] px-2 pt-2 flex flex-col items-start border border-[#dddddd] rounded-[8px]">

@@ -8,7 +8,7 @@ import apiToken from "./Token"
 import { useRouter } from "next/router"
 
 
-export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading }) {
+export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading, closeEdge }) {
     const router = useRouter()
 
     const chargeSelectOptions = [
@@ -146,6 +146,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
     }
 
     if (modal.action) {
+        if(values.values.keyTwo == "status") {
+            closeEdge(true)
+        }
         return (
             <div className={`w-[350px] lg:rounded-[48px] lg:w-[529px] pb-[20px] flex flex-col items-center min-h-[403px] bg-white rounded-[15px]`}>
                 <div className="w-[133px] mt-[15px] h-[133px] flex justify-center items-center rounded-[50%] bg-[#F5F5F5]">
@@ -166,12 +169,17 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         <UserButton text="Cancel" onClick={(e) => {
                             if (values.values.cancelClick) {
                                 values.values.cancelClick(values.values.target, values.values.status, values.values.setter, values.values.keyOne, values.values.keyTwo, values.values.keyThree)
+                                closeEdge(false)
                             }
                             modalCloser(false, "action")
+                            closeEdge(false)
                         }} />
                     </div>
-                    <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[126px]"} h-[46px]`}>
-                        <UserButton onClick={(e) => { values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) }} text={values.values.text || values.values.action} type="gradient" />
+                    <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[146px]"} h-[46px]`}>
+                        <UserButton onClick={(e) => { 
+                            values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) 
+                            closeEdge(false)
+                            }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>

@@ -100,7 +100,6 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
 
     function updateInstitution(e, action, id) {
         e.preventDefault()
-
         if (action == "edit") {
             axios.put(`${testEnv}v1/institution/update/${id}`,
                 {
@@ -130,6 +129,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
             return
         }
 
+        debugger
         axios.post(`${testEnv}v1/institution/create`,
             {
                 "bankAccountName": institutionView.bankAccountName,
@@ -147,7 +147,8 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
             }
         )
             .then(response => {
-                // console.log(response)
+                debugger
+                console.log(response)
                 setView(false)
                 triggerReload()
             })

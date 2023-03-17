@@ -33,8 +33,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
     }, [data])
 
     useEffect(()=>{
-        mutate(`${testEnv}v1/setting/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
-        
+        mutate(`${testEnv}v1/setting/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)        
     }, [reload])
 
      function triggerReload() {

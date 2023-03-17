@@ -206,20 +206,20 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                     <table className="table-fixed w-full">
                         <thead>
                             <tr className=" justify-around">
-                                <th className="font-400 text-start  w-[20%]  text-[12px] leading-[15.62px] font-pushpennyBook"> ROLE NAME</th>
-                                <th className="font-400 text-start  w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                <th className="font-400 text-start  w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">CREATED BY</th>
-                                <th className="font-400 text-start  w-[20%] text-[12px] leading-[15.62px] font-pushpennyBook">TEAM MATES</th>
+                                <th className="font-400 text-start  w-[173px]  text-[12px] leading-[15.62px] font-pushpennyBook"> ROLE NAME</th>
+                                <th className="font-400 text-start  w-[95px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                <th className="font-400 text-start  w-[86px] text-[12px] leading-[15.62px] font-pushpennyBook">CREATED BY</th>
+                                <th className="font-400 text-start  w-[60px] text-[12px] leading-[15.62px] font-pushpennyBook">TEAM MATES</th>
                             </tr>
                         </thead>
                         <tbody className="mt-6">
                             {rolesData?.data.map((role, index) => {
                                 return (
                                     <tr key={index} className="h-[50px]">
-                                        <td className="font-pushpennyBook  w-[20%]  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
-                                        <td className="font-pushpennyBook  w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.description || "n/a"}</td>
-                                        <td className="font-pushpennyBook  w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
-                                        <td className="font-pushpennyBook  w-[20%] items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
+                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.description || "n/a"}</td>
+                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
+                                        <td className="font-pushpennyBook  items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                             {role.teamMembers}
                                         </td>
                                     </tr>
