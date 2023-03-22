@@ -141,7 +141,7 @@ export default function MyApp({ Component, pageProps }) {
 
   function login(details, caution) {
     setIsLoading(true)
-    // debugger
+    debugger
     axios.post(`${testEnv}v1/auth/login`, {
       "password": details.password,
       "username": details.username

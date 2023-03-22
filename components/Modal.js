@@ -148,7 +148,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
     }
 
     if (modal.action) {
-        if(values.values.keyTwo == "status") {
+        if (values.values.keyTwo == "status") {
             closeEdge(true)
         }
         return (
@@ -180,14 +180,14 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </div>
                     <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[146px]"} h-[46px]`}>
                         <UserButton onClick={(e) => {
-                            if(values.values.reason) {
-                                values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger, {"reason":values.values.reasontext})
+                            if (values.values.reason) {
+                                values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger, { "reason": values.values.reasontext })
                                 closeEdge(false)
-                                return 
-                            } 
-                            values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) 
+                                return
+                            }
+                            values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger)
                             closeEdge(false)
-                            }} text={values.values.text || values.values.action} type="gradient" />
+                        }} text={values.values.text || values.values.action} type="gradient" />
                     </div>
                 </div>
             </div>
@@ -229,8 +229,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                             <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "teamModal") }} />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Send Invitation" type="gradient"
+                            <UserButton disabled={values.values.firstName === "" || values.values.lastName === "" || values.values.email === "" || values.values.assignRole === "" || values.values.assignRole == "Select a Role"} text="Send Invitation" type="gradient"
                                 onClick={(e) => {
+                                    // console.log("not disabled")
                                     postApi(
                                         e,
                                         values.values.endPoint,
@@ -239,7 +240,6 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                             "lastname": values.values.lastName,
                                             "email": values.values.email,
                                             "role": values.values.assignRole,
-                                            "resetPasswordUrl": "/change-password",
                                         },
                                         localStorage.getItem('token'),
                                         modalCloser,
@@ -553,7 +553,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                 values.values.settingAction(
                                     e,
                                     values.values.action,
-                                    editApi, 
+                                    editApi,
                                     createApi,
                                     values.values.endPoint,
                                     {
@@ -567,7 +567,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     setLoading,
                                     "editSetting",
                                     values.values.trigger
-                                )                            
+                                )
 
                             }} text="Save" type="gradient" />
                         </div>

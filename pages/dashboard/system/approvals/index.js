@@ -72,16 +72,17 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                                             <td className="font-pushpennyBook  ml-[10px]  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.identifier ? approval.identifier : "n/a"}</td>
                                             <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
                                             <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
-                                                <div className="w-[137px] h-[36px]">
-                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"}
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "decline" : "edit"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "decline" : "edit"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="decline"
+                                                    onClick={() => { approvalHandler(true, "action", {caution: `You are about to decline a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
                                                      />
                                                 </div>
-                                                <div className="w-[137px] h-[36px]">
-                                                    <UserButton type={approval.approvalStatus == "PENDING" ? "accept" : "delete"}
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "accept" : "delete"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "accept" : "delete"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="accept"
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
                                                      />
                                                 </div>
+                                                <div className={`w-[167px] flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${approval.approvalStatus == "PENDING" ? "hidden" : ""}`}>{approval.approvalStatus == "DECLINE"? "DECLINED" : approval.approvalStatus}</div>
                                             </td>
                                         </tr>
                                     )

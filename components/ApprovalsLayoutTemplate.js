@@ -41,16 +41,17 @@ export default function ApprovalsLayoutTemplate({ modals, setModalState, childre
                 </div>
                 <div className="border-b-[0.5px] mt-auto z-10 border-[#979797]"></div>
             </section>
-            <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-full md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
+            <div className="w-full pt-2 px-4">
+            <section className={`px-[40px] mdxl:px-[10px] w-full md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                 <section className="w-full lg:w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                    <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                    <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search Approvals" />
                     <div className="w-[28px] h-[28px] relative">
                         <ImageHolder src="/icons/search-icon.svg" />
                     </div>
                 </section>
-
             </section>
-            <div className='w-full mt-[20px]'>
+            </div>
+            <div className='w-full mt-[10px]'>
             {children}
             </div>
         </div>
