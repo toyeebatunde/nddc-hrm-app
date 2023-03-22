@@ -22,6 +22,7 @@ function editApi(e, endpoint, body, token, modalCloser, loadState, modal, trigge
       loadState(false)
       console.log(error)
       modalCloser(false, modal)
+      triggerReload()
     })
 }
 
@@ -31,9 +32,9 @@ async function addCategory(e, posted, url, body) {
   mutate(url)
 }
 
-function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload) {
+function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload, auxiliaryFunc) {
   e.preventDefault()
-  // debugger
+  debugger
   // loadState(true)
   axios.post(endpoint, body, {
     headers: {
@@ -46,6 +47,7 @@ function postApi(e, endpoint, body, token, modalCloser, loadState, modal, trigge
       modalCloser(false, modal)
       // debugger
       triggerReload()
+      auxiliaryFunc? auxiliaryFunc(e, false) : null
     })
     .catch(error => {
       loadState(false)
@@ -80,11 +82,11 @@ async function createApi(e, endpoint, body, token, modalCloser, loadState, modal
 }
 
 
-function patchApi(e, endpoint, token, modalCloser, loadState, modal, triggerReload) {
+function patchApi(e, endpoint, token, modalCloser, loadState, modal, triggerReload, patch=null) {
   e.preventDefault()
   // loadState(true)
   // debugger
-  axios.patch(endpoint, null, {
+  axios.patch(endpoint, patch, {
     headers: {
       Authorization: `Bearer ${token}`
     }

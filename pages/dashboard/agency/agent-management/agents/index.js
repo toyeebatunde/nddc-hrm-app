@@ -3,20 +3,51 @@ import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
+import Textfield from "../../../../../components/TextField";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, dateRange }) {
+export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, dateRange, search, setSearch, setLoading }) {
+    const initialCustomerForm = {
+        agentId: "",
+        userName: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        gender: "",
+        dateCreated: "",
+        city: "",
+        state: "",
+        lga: "",
+        agentType: "",
+        agentClass: "",
+        aggregator: "",
+        bank: "",
+        accountNumber: "",
+        id:""
+    }
 
+    const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [agentData, setAgentData] = useState()
     const [filteredData, setFilteredData] = useState()
+    const [banksData, setBanksData] = useState({ codes: [], names: [] })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data:agents, error:agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
+    const [filter, setFilter] = useState(false)
     const router = useRouter()
+    const [dateSearch, setDateSearch] = useState({ dateFrom: "", dateTo: "" })
+
+
+    function formEdit(e) {
+        setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
+    }
 
     useEffect(() => {
         setActiveTab("Agents")
@@ -32,10 +63,10 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
     }, [agents])
 
     useEffect(() => {
-        // setActiveTab("Agents")
-        // setToken()
-        // setActiveDashboard("AgentManagement")
-        // setActiveState("2")
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (dateFiltered) {
             setFilteredData(dateFiltered)
         }
@@ -44,39 +75,130 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         }
     }, [dateFiltered])
 
-    // useEffect(()=>{
-    //     if(dateRange.dateTo < dateRange.dateFrom) {
-    //         return
-    //     }
-    //     function formatDate(date) {            
-    //         var d = (date.getUTCDate() + 1).toString(),           
-    //             m = (date.getUTCMonth() + 1).toString(),    
-    //             y = date.getUTCFullYear().toString(),       
-    //             formatted = '';
-    //         if (d.length === 1) {                           
-    //             d = '0' + d;
-    //         }
-    //         if (m.length === 1) {                           
-    //         }
-    //         formatted = d + '-' + m + '-' + y;              
-    //         return formatted;
-    //     }
-    //     const from=formatDate(dateRange.dateFrom)
-    //     const to=formatDate(dateRange.dateTo)
-    //     console.log(from,"  ", to)           
-    // },[dateRange.dateTo, dateRange.dateFrom])
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        // mutate(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`)
+        if (banks) {
+            let bankCodes = ["Bank Codes"]
+            let bankNames = ["Choose a Bank"]
+            banks.data.map((bank, index) => {
+                bankCodes.push(bank.institutionCode)
+                bankNames.push(bank.institutionName)
+                return
+            })
 
-    function formatDate(date) {            
-        var d = (date.getUTCDate() + 1).toString(),           
-            m = (date.getUTCMonth() + 1).toString(),    
-            y = date.getUTCFullYear().toString(),       
+            setBanksData({ ...banksData, codes: bankCodes, names: bankNames })
+        }
+        if (banksError) {
+            console.log(banksError)
+        }
+    }, [banks])
+
+    function editAgent() {
+        let bank = banksData.names.findIndex(bank => bank == agentEdit.editForm.bank)
+        debugger
+        // setLoading(true)
+        axios.put(`${testEnv}v1/agent/${agentEdit.editForm.id}/update`,
+            {
+                "agentIdentifier": agentEdit.editForm.agentId,
+                "userName": agentEdit.editForm.userName,
+                "firstName": agentEdit.editForm.firstName,
+                "lastName": agentEdit.editForm.lastName,
+                "email": agentEdit.editForm.email,
+                "phoneNumber": agentEdit.editForm.phone,
+                "address": agentEdit.editForm.address,
+                "gender": agentEdit.editForm.gender,
+                "city": agentEdit.editForm.city,
+                "state": agentEdit.editForm.state,
+                "lga": agentEdit.editForm.lga,
+                "agentType": agentEdit.editForm.agentType,
+                "classification": agentEdit.editForm.agentClass,
+                // "aggregator": "",
+                "bankInstitutionCode": banksData.codes[Number(bank)],
+                "bankAccountNumber": agentEdit.editForm.accountNumber
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        )
+            .then(response => {
+                debugger
+                console.log(response.data)
+                setLoading(false)
+                setCustomerEdit({ ...agentEdit, editView: false })
+            })
+            .catch(error => {
+                debugger
+                console.log(error)
+                setLoading(false)
+                setCustomerEdit({ ...agentEdit, editView: false })
+            })
+    }
+
+    function editInfo(agentIdentifier, userName, fName, lName, email, phone, address, gender, city, state, lga, agentType, agentClass, bank, accountNumber, id) {
+        setCustomerEdit({
+            ...agentEdit,
+            editView: true,
+            editForm: {
+                agentId: agentIdentifier,
+                userName: userName,
+                firstName: fName,
+                lastName: lName,
+                email: email,
+                phone: phone,
+                address: address,
+                gender: gender,
+                city: city,
+                state: state,
+                lga: lga,
+                agentType: agentType,
+                agentClass: agentClass,
+                aggregator: "",
+                bank: bank,
+                accountNumber: accountNumber,
+                id:id
+            }
+
+        })
+    }
+
+    useEffect(() => {
+        if (dateRange.dateTo < dateRange.dateFrom) {
+            return
+        }
+        function formatDate(date) {
+            var d = (date.getUTCDate() + 1).toString(),
+                m = (date.getUTCMonth() + 1).toString(),
+                y = date.getUTCFullYear().toString(),
+                formatted = '';
+            if (d.length === 1) {
+                d = '0' + d;
+            }
+            if (m.length === 1) {
+            }
+            formatted = d + '-' + m + '-' + y;
+            return formatted;
+        }
+        const from = formatDate(dateRange.dateFrom)
+        const to = formatDate(dateRange.dateTo)
+        console.log(from, "  ", to)
+    }, [dateRange.dateTo, dateRange.dateFrom])
+
+    function formatDate(date) {
+        var d = (date.getUTCDate() + 1).toString(),
+            m = (date.getUTCMonth() + 1).toString(),
+            y = date.getUTCFullYear().toString(),
             formatted = '';
-        if (d.length === 1) {                           
+        if (d.length === 1) {
             d = '0' + d;
         }
-        if (m.length === 1) {                           
+        if (m.length === 1) {
         }
-        formatted = d + '-' + m + '-' + y;              
+        formatted = d + '-' + m + '-' + y;
         return formatted;
     }
 
@@ -90,7 +212,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
     return (
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className="min-h-[674px] w-full  pt-4 pl-[5px]">
+                <section className={`min-h-[674px] w-full ${agentEdit.editView ? "hidden" : ""}  pt-4 pl-[5px]`}>
                     <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
 
                         <table className=" w-full">
@@ -109,7 +231,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {(agentData || filteredData)?.data.map((agent, index) => {
+                                {(search ? filteredData : agentData)?.data.map((agent, index) => {
                                     return (
                                         <tr key={index} className=" justify-between h-[50px]">
                                             <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
@@ -142,7 +264,26 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                             </td>
                                             <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                 <div className="w-[80px] h-[36px]">
-                                                    <UserButton type="edit" />
+                                                    <UserButton onClick={() => {
+                                                        editInfo(
+                                                            agent.agentIdentifier,
+                                                            agent.userName,
+                                                            agent.firstName,
+                                                            agent.lastName,
+                                                            agent.email,
+                                                            agent.phoneNumber,
+                                                            agent.address,
+                                                            agent.gender,
+                                                            agent.city,
+                                                            agent.state,
+                                                            agent.lga,
+                                                            agent.agentType,
+                                                            agent.classification,
+                                                            agent.bankInstitutionName,
+                                                            agent.bankAccountNumber,
+                                                            agent.id
+                                                        )
+                                                    }} type="edit" />
                                                 </div>
                                                 <div className="w-[88px] h-[36px]">
                                                     <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/${agent.id}`) }} />
@@ -155,6 +296,79 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                         </table>
 
                     </TableContainer>
+                </section>
+
+                <section className={`${agentEdit.editView ? "flex" : "hidden"} flex-col gap-[10px]`}>
+                    <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                        <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Edit Agent Details</h2>
+                    </div>
+                    <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
+                        <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="First Name" value={agentEdit.editForm.firstName} name="firstName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Last Name" value={agentEdit.editForm.lastName} name="lastName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Email address" value={agentEdit.editForm.email} name="email" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Phone Number" value={agentEdit.editForm.phone} name="phone" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Address" value={agentEdit.editForm.address} name="address" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="City" value={agentEdit.editForm.city} name="city" bg="bg-[white]" />
+                            </div>
+
+
+
+
+                        </section>
+                        <section className="w-full lg:w-[45%] flex flex-col gap-[20px] lg:justify-between">
+                            <section className="flex gap-[15px] flex-col">
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="State" value={agentEdit.editForm.state} name="state" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a type", "Super Agent", "Agent"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={banksData.names} formEdit={formEdit} title="Bank" value={agentEdit.editForm.bank} name="bank" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="Account Number" value={agentEdit.editForm.accountNumber} name="accountNumber" bg="bg-[white]" />
+                                </div>
+
+
+                            </section>
+                            <div className="w-full flex flex-col gap-[20px] lg:gap-0 md:flex-row md:justify-around h-fit rounded-[28px]">
+                                <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                    <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
+                                        e.preventDefault()
+                                        setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
+                                    }} />
+                                </div>
+                                <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                    <UserButton onClick={editAgent} type="gradient" text="Save" />
+                                </div>
+                            </div>
+                        </section>
+                    </form>
                 </section>
             </section>
         </div>

@@ -3,19 +3,21 @@ import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector }) {
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange }) {
 
     const [transactionsData, setTransactionsData] = useState()
+    const [filteredData, setFilteredData] = useState()
     const [transactionToView, setTransactionToView] = useState()
     const [viewState, setViewState] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/transaction/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:allTransactions, error:allTransactionsError } = useSWR(`${testEnv}v1/transaction/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const router = useRouter()
 
     useEffect(() => {
@@ -24,14 +26,27 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         setToken()
         setActiveDashboard("Transactions")
         setActiveState("2")
-        if (data) {
+        if (allTransactions) {
             setLoading(false)
-            setTransactionsData(data.data)
+            setTransactionsData(allTransactions.data)
         }
-        if (error) {
-            console.log(error)
+        if (allTransactionsError) {
+            console.log(allTransactionsError)
         }
-    }, [data])
+    }, [allTransactions])
+
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (dateFiltered) {
+            setFilteredData(dateFiltered.data)
+        }
+        if (filteredError) {
+            console.log(filteredError)
+        }
+    }, [dateFiltered])
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
@@ -62,7 +77,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {transactionsData?.map((transaction, index) => {
+                                {(search ? filteredData : transactionsData)?.map((transaction, index) => {
                                     return (
                                         <tr key={index} className="flex justify-between h-[60px]">
                                             <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>

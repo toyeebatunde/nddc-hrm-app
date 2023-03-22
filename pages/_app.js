@@ -24,6 +24,7 @@ export default function MyApp({ Component, pageProps }) {
   const [token, setToken] = useState(false)
   const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
+  const [search, setSearch] = useState(false)
   const [week, setWeek] = useState({
     current: "Last 7 days",
     oneBefore: getPreviousDay(1),
@@ -34,30 +35,30 @@ export default function MyApp({ Component, pageProps }) {
     sixBefore: getPreviousDay(6),
     sevenBefore: getPreviousDay(7),
   })
-  const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date(), search:false })
+  const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
 
-//    function formatDate(date) {            
-//     var d = date.getUTCDate().toString(),           
-//         m = (date.getUTCMonth() + 1).toString(),    
-//         y = date.getUTCFullYear().toString(),       
-//         formatted = '';
-//     if (d.length === 1) {                           
-//         d = '0' + d;
-//     }
-//     if (m.length === 1) {                           
-//     }
-//     formatted = d + '-' + m + '-' + y;              
-//     return formatted;
-// }
+  //    function formatDate(date) {            
+  //     var d = date.getUTCDate().toString(),           
+  //         m = (date.getUTCMonth() + 1).toString(),    
+  //         y = date.getUTCFullYear().toString(),       
+  //         formatted = '';
+  //     if (d.length === 1) {                           
+  //         d = '0' + d;
+  //     }
+  //     if (m.length === 1) {                           
+  //     }
+  //     formatted = d + '-' + m + '-' + y;              
+  //     return formatted;
+  // }
 
   function setDateSearchRange(e, set) {
     // console.log(e)
-    if(set == "week") {
-      setWeek({...week, current:e.target.innerText})
+    if (set == "week") {
+      setWeek({ ...week, current: e.target.innerText })
     }
   }
 
-  function dateSearch() {}
+  function dateSearch() { }
 
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
@@ -161,7 +162,7 @@ export default function MyApp({ Component, pageProps }) {
       })
       .catch(response => {
         // console.log(response.response.data)
-        if(response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {
+        if (response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {
           caution()
         }
       })
@@ -190,12 +191,14 @@ export default function MyApp({ Component, pageProps }) {
     }
     // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
     const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
+    const thePassword = details.password.replaceAll(" ","")
+    const theConfirmation = details.confirmPassword.replaceAll(" ","")
     // console.log(url)
-    debugger
+    // debugger
     axios.patch(url,
       {
-        "newPassword": details.password,
-        "confirmPassword": details.confirmPassword
+        "newPassword": thePassword,
+        "confirmPassword": theConfirmation
       }
     )
       .then(response => {
@@ -240,6 +243,20 @@ export default function MyApp({ Component, pageProps }) {
     }
 
   }
+
+  function formatDate(date) {            
+    var d = (date.getUTCDate() + 1).toString(),           
+        m = (date.getUTCMonth() + 1).toString(),    
+        y = date.getUTCFullYear().toString(),       
+        formatted = '';
+    if (d.length === 1) {                           
+        d = '0' + d;
+    }
+    if (m.length === 1) {                           
+    }
+    formatted = d + '-' + m + '-' + y;              
+    return formatted;
+}
 
 
   function showPassword(field, shower, showState) {
@@ -301,11 +318,11 @@ export default function MyApp({ Component, pageProps }) {
       dateRange={dateRange}
       week={week}
       setDateRange={setDateRange}
-
-    
-
+      search={search}
+      setSearch={setSearch}
+      formatDate={formatDate}
     >
-      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange}>
+      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange} search={search} setSearch={setSearch} formatDate={formatDate}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -335,6 +352,9 @@ export default function MyApp({ Component, pageProps }) {
           dateRange={dateRange}
           week={week}
           setDateRange={setDateRange}
+          search={search}
+          setSearch={setSearch}
+          formatDate={formatDate}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

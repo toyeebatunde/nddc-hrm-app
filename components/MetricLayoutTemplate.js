@@ -9,7 +9,7 @@ import { tabs } from "./Tabs"
 
 
 
-export default function MetricLayoutTemplate({ children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState, dateRange,week,setDateRange, setDateSearchRange }) {
+export default function MetricLayoutTemplate({ children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState, dateRange,week,setDateRange, setDateSearchRange, setSearch }) {
     // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date() })
     // const [activeTab, setActiveTab] = useState("")
     // const [week, setWeek] = useState({
@@ -110,8 +110,8 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     {tab ? tabs[tab].text : "Agency"}
                 </h4>
-                <div className={`${activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : "flex"} bord justify-end grow`}>
-                    <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} setDateSearchRange={setDateSearchRange} directionDown="/icons/direction-down.svg" />
+                <div className={`${activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : "flex"} justify-end grow`}>
+                    <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setDateSearchRange={setDateSearchRange} directionDown="/icons/direction-down.svg" />
                 </div>
             </section>
             <section className={`h-[44px] ${activeAgency == "AgentManagement" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex" : activeAgency == "TicketManagement" ? "flex" : "hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
