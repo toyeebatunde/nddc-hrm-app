@@ -4,7 +4,7 @@ import { months } from "./Tabs"
 
 
 
-export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week}) {
+export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week, setSearch}) {
 
     function getFormattedDate(date, week) {
         let year = date.getFullYear()
@@ -17,7 +17,7 @@ export default function DateSelector({dateRange, setDateSearchRange, setDateRang
         return (`${months[month]} ${day}, ${year}`)
     }
     return(
-        <section className="flex justify-between w-full sm:w-[72%] md:w-[60%] mdxl:w-[55%] lg:w-[65%] xlg:w-[50%] xl:w-[45%]">
+        <section className="flex justify-between w-full sm:w-[72%] md:w-[405px]">
                     <div className="w-[144px] group  border flex h-[50px] px-2 rounded-[8px] justify-between items-center border-gray">
                         <div className="font-[500] text-[16px] leading-[26px] cursor-pointer font-pushpennyMedium">{week.current}</div>
                         <div className="flex justify-center items-center w-[24px] h-[24px]">
@@ -49,10 +49,10 @@ export default function DateSelector({dateRange, setDateSearchRange, setDateRang
                         <div className=" min-h-[400px] w-[890px] z-[90] absolute min-w-[100%] hidden group-hover:flex -ml-[625px] mt-[49px] bg-white">
                             <div className="w-[880px] min-h-[400px] pb-[4px] z-[70] bg-brand-light-yellow rounded-[10px] border border-gray top-[9px] flex justify-between pt-[10px] pl-[70px] pr-[5px] box-border">
                                 <div className="w-[394px] min-h-[395px] rounded-[10px] border bg-white border-gray flex justify-center">
-                                    <TheCalendar dateRangeParam={"dateFrom"} dateRange={dateRange} setDateRange={setDateRange} />
+                                    <TheCalendar dateRangeParam={"dateFrom"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} />
                                 </div>
                                 <div className="w-[394px] min-h-[395px] rounded-[10px] border bg-white border-gray flex justify-center">
-                                    <TheCalendar dateRangeParam={"dateTo"} dateRange={dateRange} setDateRange={setDateRange} />
+                                    <TheCalendar dateRangeParam={"dateTo"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} />
                                 </div>
                             </div>
                         </div>

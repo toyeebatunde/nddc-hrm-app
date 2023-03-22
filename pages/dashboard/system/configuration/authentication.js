@@ -6,12 +6,13 @@ import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
 import axios from 'axios'
 import useSWR, { mutate } from 'swr'
-import { ngrok, testEnv, deleteApi, createApi, editApi } from "../../../../components/Endpoints"
+import { ngrok, testEnv, deleteApi, createApi, editApi, patchApi } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 
 export default function Authentication({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setActiveTab, setLoading }) {
-    const initialAuthEdit = { code: "", description: "", type: "Choose a Category" }
+    const initialAuthEdit = { code: "", description: "", type: "" }
     const [editAuth, setEditAuth] = useState(initialAuthEdit)
+    // const[authView, setAuthView] = useState(initialAuthEdit)
     const [view, setView] = useState(false)
     const [authData, setAuthData] = useState()
     const [codeCategories, setCodeCategories] = useState()
@@ -22,7 +23,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
     const { data: auths, error: authError } = useSWR(`${testEnv}v1/code/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: codeCats, error: codeCatError } = useSWR(`${testEnv}v1/code/category/all?pageNo=0&pageSize=10`, fetching)
 
-    const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
+    const deleteCaution = "You are about to delete an authentication, note after deleting it will go through approval process"
 
 
     useEffect(() => {
@@ -37,6 +38,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         if (codeCats) {
             setCodeCategories(codeCats)
             const catList = codeCats?.data.map(item => item.name)
+            catList.unshift("choose a category")
             setCodeCategoryNames(catList)
         }
 
@@ -44,46 +46,40 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
 
     function authHandler(e, action, id) {
         e.preventDefault()
-        let categoryData = codeCategories.data.filter(code => {
-            if (code.name == editAuth.type) {
-                code.deletedOn = code.dateCreated
-                code.dateCreated = code.dateCreated
-                return code
-            }
-        })
-        // console.log(JSON.stringify(categoryData[0]))
-        let catJson = JSON.stringify(categoryData[0])
-        if(action == "edit") {
+        let categoryData = codeCategories.data.filter(code => code.name == editAuth.type)
+               
+        if (action == "edit") {
             debugger
-            axios.put(`${testEnv}v1/code/update/${id}`,{
+            axios.put(`${testEnv}v1/code/update/${id}`, {
                 "code": editAuth.code,
-                "codeCategory": {catJson},
+                "codeCategory": categoryData[0].id,
                 "description": editAuth.description,
                 "extraInfo": "none"
-            }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } } )
-            .then((response)=>{
-                triggerReload()
-            })
-            .catch(error=>{
-                console.log(error)
-            })
+            }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+                .then((response) => {
+                    triggerReload()
+                    changeView(e, false)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
 
             return
         }
 
         debugger
-        axios.post(`${testEnv}v1/code/create`,{
+        axios.post(`${testEnv}v1/code/create`, {
             "code": editAuth.code,
-            "codeCategory": {catJson},
+            "codeCategory": categoryData[0].id,
             "description": editAuth.description,
             "extraInfo": "none"
-        }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } } )
-        .then((response)=>{
-            triggerReload()
-        })
-        .catch(error=>{
-            console.log(error)
-        })
+        }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then((response) => {
+                triggerReload()
+            })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
     useEffect(() => {
@@ -109,12 +105,11 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         if (type == "edit") {
             setView({ view: true, action: type, id: id })
             const currentView = authData.data.filter(auth => auth.id === id)
-            setEditAuth({ ...editAuth, code: currentView[0].code, type: currentView[0].type, description: currentView[0].description })
+            setEditAuth({ ...editAuth, code: currentView[0].code, type: "", description: currentView[0].description })
             return
         }
         if (type == "create") {
             setView({ view: true, action: type })
-            // const currentView = authData.data.filter(auth => auth.id === id)
             setEditAuth(initialAuthEdit)
             return
         }
@@ -125,7 +120,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         editFormState(fields, id)
     }
 
-    function dateFormatter (stamp) {
+    function dateFormatter(stamp) {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
@@ -168,14 +163,15 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                                         <tr key={index} className=" h-[50px]">
                                             <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.code}</td>
                                             <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description}</td>
-                                            <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.type}</td>
+                                            <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.codeCategory?.name || "n/a"}</td>
                                             <td className="font-pushpennyBook  flex  justify-start">
-                                                <div className="w-[107px] h-[36px]">
+                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[107px] h-[36px]`}>
                                                     <UserButton type="edit" onClick={(e) => { changeView(e, "edit", item.id) }} />
                                                 </div>
-                                                <div className="w-[130px] h-[36px]">
-                                                    <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: deleteApi, trigger: triggerReload }, item.id) }} />
+                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[130px] h-[36px]`}>
+                                                    <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: patchApi, trigger: triggerReload, reason: true, reasontext: "" }, item.id) }} />
                                                 </div>
+                                                <div className={`w-[237px] border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
                                             </td>
                                         </tr>
                                     )
@@ -237,7 +233,17 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                             <div className="w-[134px] h-[35px]">
                                 <UserButton
                                     // onClick={() => { authEdit(true, "action", { caution: "Ensure the name of category suites what you want achieve", action: "delete", endpoint: `https://admapis-staging.payrail.co/v1/code/category/create` }, 0) }}
-                                    onClick={() => { authEdit(true, "authModal", { name: "", description: "", trigger: triggerReload }, "0") }}
+                                    onClick={() => {
+                                        authEdit(true, "authModal",
+                                            {
+                                                name: "",
+                                                description: "",
+                                                trigger: triggerReload,
+                                                changeView:changeView
+                                            },
+                                            "0"
+                                            )
+                                    }}
                                     type="gradient" text="+Add New"
                                 />
                             </div>

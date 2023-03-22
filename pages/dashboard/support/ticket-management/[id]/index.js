@@ -2,7 +2,7 @@
 import UserButton from "../../../../../components/ButtonMaker"
 import ImageHolder from "../../../../../components/ImageHolder"
 import RadioToggle from "../../../../../components/RadioToggle"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Toggler from "../../../../../components/Toggle"
 import axios from "axios"
 import useSWR from 'swr'
@@ -10,42 +10,63 @@ import { useRouter } from "next/router"
 import { testEnv } from "../../../../../components/Endpoints"
 import dynamic from "next/dynamic"
 import { EditorState, convertToRaw } from "draft-js"
-// import { Editor } from 'react-draft-wysiwyg';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html"
-// import {draftToMarkdown} from 'draftjs-to-markdown'
 import Textfield from "../../../../../components/TextField"
+import EditorComponent from '../../../../../components/EditorComponent'
+// import { Editor } from 'react-draft-wysiwyg';
+// import {draftToMarkdown} from 'draftjs-to-markdown'
 
 
 export default function Ticket({ modals, setModalState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
     const [ticketData, setTicketData] = useState()
+    const [messagesData, setMessagesData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)    
-    const [editorState, setEditorState] = useState(()=>EditorState.createEmpty())
+    const { data:ticket, error:ticketError } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)    
+    const { data:ticketMessages, error:ticketMessagesError } = useSWR(`${testEnv}v1/ticket/${router.query.id}/messages`, fetching)    
+    const [editorState, setEditorState] = useState(EditorState.createEmpty())
 
     useEffect(() => {
         // setLoading(true)
         setToken()
         setActiveDashboard("TicketManagement")
         setActiveState("4")
-        if (data) {
+        if (ticket) {
             setLoading(false)
-            setTicketData(data)
+            setTicketData(ticket)
         }
-        if (error) {
-            console.log(error)
+        if (ticketError) {
+            console.log(ticketError)
         }
-    }, [data])
+    }, [ticket])
+
+    useEffect(() => {
+        // setLoading(true)
+        // setToken()
+        // setActiveDashboard("TicketManagement")
+        // setActiveState("4")
+        if (ticketMessages) {
+            setLoading(false)
+            setMessagesData(ticketMessages)
+        }
+        if (ticketMessagesError) {
+            console.log(ticketMessagesError)
+        }
+    }, [ticketMessages])
+
+    
 
     function onEditorStateChange (editorState) {
-        setEditorState({editorState})
+        setEditorState(editorState)
     }
 
-    const Editor = dynamic(
-        () => import('react-draft-wysiwyg').then(mod => mod.Editor),
-        { ssr: false }
-    )
+    
+
+    // const Editor = dynamic(
+    //     () => import('react-draft-wysiwyg').then(mod => mod.Editor),
+    //     { ssr: false }
+    // )
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
@@ -77,8 +98,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
         setActiveTab(tab)
     }
 
-    // console.log(draftToHtml(convertToRaw(editorState.editorState.getCurrentContent())))
-    // console.log(convertToRaw(editorState.editorState.getCurrentContent()))
+    // console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())))
+    // console.log(convertToRaw(editorState.getCurrentContent()))
 
 
     return (
@@ -93,13 +114,15 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                 <section className="flex flex-col w-full lg:w-[60%] gap-[10px]">
                     <div className="flex flex-col gap-[10px]">
                         <div className="w-full min-h-[460px] rounded-[10px] border-[#F3F3F3] flex-col border">
-                            <Editor
+                            {/* <Editor
                                 toolbarClassName="rounded-[10px]"
                                 wrapperClassName=" min-h-[460px]"
-                                editorClassName=""
-                                editorState={editorState.editorState}
+                                // editorClassName=""
+                                editorState={editorState}
                                 onEditorStateChange={onEditorStateChange}
-                            />
+                            /> */}
+
+                            <EditorComponent initialContent={editorState} onContentChange={onEditorStateChange} />
                         </div>
                         <div className="flex justify-between items-center flex-col lg:flex-row lg:flex-wrap items-center gap-[10px] w-full min-h-[57px]">
                             <input type="file" id="images" accept="image/*" required />

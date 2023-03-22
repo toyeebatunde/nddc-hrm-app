@@ -28,7 +28,9 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     Metrics
                 </h4>
+                <div className=" grow flex justify-end">
                 <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
+                </div>
             </section>
             <section className="flex flex-col xl:flex-row items-center w-full  justify-between px-4 py-2 ">
                 <section className="w-full xl:grow h-[375px] flex flex-col items-center border border-[#dddddd] rounded-[8px]">

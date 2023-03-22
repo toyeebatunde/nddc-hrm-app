@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import ApprovalsLayoutTemplate from "../../../../components/ApprovalsLayoutTemplate"
 import axios from "axios"
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import { testEnv } from "../../../../components/Endpoints"
 import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
@@ -11,6 +11,7 @@ import { patchApi } from "../../../../components/Endpoints"
 
 export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab }) {
     const [createRole, setCreateRole] = useState(false)
+    const [reload, setReload] = useState(true)
     const [approvalsData, setApprovalsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/approval/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
@@ -32,11 +33,18 @@ export default function Approval({ modals, setModalState, editFormState, setActi
         }
     }, [data])
 
+    useEffect(()=>{
+        mutate(`${testEnv}v1/approval/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)        
+    }, [reload])
+
     function approvalHandler(modalState, modal, fields, id) {
         setModalState(modalState, modal)
         editFormState(fields, id)
     }
 
+    function triggerReload() {
+        setReload(!reload)
+    }
 
 
     return (
@@ -66,12 +74,12 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                                             <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
                                                 <div className="w-[137px] h-[36px]">
                                                     <UserButton type={approval.approvalStatus == "PENDING" ? "decline" : "edit"}
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "decline" : "edit"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?${approval.approvalStatus == "PENDING" ? "decline" : "edit"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit" }, data.id) }}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "decline" : "edit"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "decline" : "edit"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
                                                      />
                                                 </div>
                                                 <div className="w-[137px] h-[36px]">
                                                     <UserButton type={approval.approvalStatus == "PENDING" ? "accept" : "delete"}
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "accept" : "delete"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "accept" : "delete"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete" }, data.id) }}
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to ${approval.approvalStatus == "PENDING" ? "accept" : "delete"} a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=${approval.approvalStatus == "PENDING" ? "accept" : "delete"}`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
                                                      />
                                                 </div>
                                             </td>

@@ -482,7 +482,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                     <td className="font-pushpennyBook  font-[400] text-[12px] leading-[18px] text-[#6E7883]">{item.name.toUpperCase()}</td>
                                                     <td className="font-pushpennyBook  w-[100px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name] ? agentData?.kyc[item.name] : "n/a"}</td>
                                                     <td className="font-pushpennyBook  w-[100px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "UploadedDate"] ? dateFormatter(agentData?.kyc[item.name + "UploadedDate"]) : "n/a"}</td>
-                                                    <td className="font-pushpennyBook  w-[60px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[60px]  truncate  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
 
                                                     <td className="font-pushpennyBook flex items-start">
                                                         <div className="w-[49%] h-[36px]">
@@ -503,7 +503,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                         <UserButton type="image" text="view image" bg="bg-[black]" onClick={() => { agentHandler(true, "imageView", { image: agentData.kyc[item.name + "Base64Img"] }, data.id) }} />
                                                     </td>
                                                     <td className="font-pushpennyBook  w-[100px]  font-[400] text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "UploadedDate"] ? dateFormatter(agentData?.kyc[item.name + "UploadedDate"]) : "n/a"}</td>
-                                                    <td className="font-pushpennyBook  w-[53px]  font-[400] text-[12px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[53px]  font-[400] text-[12px] truncate leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
 
                                                     <td className="font-pushpennyBook flex items-start">
                                                         <div className="w-[49%] h-[36px]">

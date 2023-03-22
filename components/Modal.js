@@ -126,8 +126,10 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                     modalCloser,
                                     setLoading,
                                     "authModal",
-                                    values.values.trigger
+                                    values.values.trigger,
+                                    values.values.changeView
                                 )
+                                console.log("changed")
                             }} text="Save" type="gradient" />
                         </div>
                     </section>
@@ -161,8 +163,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     {values.values.caution}
                 </h2>
                 <div className={`w-[330px] ${values.values.reason ? "" : "hidden"} lg:w-[378px] mt-[20px] h-[80px] rounded-[15px] lg:rounded-[28px] relative bg-[#F3F3F3]`}>
-                    <h2 className="absolute font-pushpennyMedium ml-[15px] text-[10px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">Reason for action</h2>
-                    <textarea className="h-full w-full rounded-[15px] lg:rounded-[28px] bg-[#F3F3F3] h-[76px] lg: w-[full] outline-none px-[10px] py-[10px] w-full"></textarea>
+                    {/* <h2 className="absolute font-pushpennyMedium ml-[15px] text-[10px] top-[-7px] h-[13px] text-[#6E7883] bg-[#F3F3F3] px-[3px]">Reason for action</h2> */}
+                    {/* <textarea className="h-full w-full rounded-[15px] lg:rounded-[28px] bg-[#F3F3F3] h-[76px] lg: w-[full] outline-none px-[10px] py-[10px] w-full"></textarea> */}
+                    <Textfield name="reasontext" formEdit={formEdit} value={values.values.reasontext} type="textbox" />
                 </div>
                 <div className="mt-[30px] w-[330px] lg:w-[370px] flex justify-between">
                     <div className='w-[126px] h-[46px] border rounded-[28px] border-[#777777]'>
@@ -176,7 +179,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         }} />
                     </div>
                     <div className={`${values.values.text == "Reset PASSWORD" ? "w-[190px]" : "w-[146px]"} h-[46px]`}>
-                        <UserButton onClick={(e) => { 
+                        <UserButton onClick={(e) => {
+                            if(values.values.reason) {
+                                values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger, {"reason":values.values.reasontext})
+                                closeEdge(false)
+                                return 
+                            } 
                             values.values.onClick(e, values.values.endPoint, localStorage.getItem('token'), modalCloser, setLoading, "action", values.values.trigger) 
                             closeEdge(false)
                             }} text={values.values.text || values.values.action} type="gradient" />
@@ -282,7 +290,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield charType="number" type="text" title="Fee" name="amount" formEdit={formEdit} value={values.values.amount || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield charType="number" type="text" title="Fee" name="amount" formEdit={formEdit} value={values.values.amount || 0} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
 
@@ -292,11 +300,12 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
+                                // debugger
                                 editApi(
                                     e,
                                     `https://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
                                     {
-                                        "amount": Number(values.values.value),
+                                        "amount": Number(values.values.amount),
                                         "chargeType": values.values.chargeType,
                                         "lowerBound": Number(values.values.lowerBound),
                                         "transactionType": values.values.transactionType,

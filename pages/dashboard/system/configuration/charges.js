@@ -7,13 +7,13 @@ import UserButton from "../../../../components/ButtonMaker"
 import Textfield from "../../../../components/TextField"
 import apiToken from "../../../../components/Token"
 import axios from 'axios'
-import useSWR, {mutate} from 'swr'
+import useSWR, { mutate } from 'swr'
 import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
-import { deleteApi, createApi } from "../../../../components/Endpoints"
+import { deleteApi, createApi, editApi } from "../../../../components/Endpoints"
 
 export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading }) {
-    const [chargeView, setChargeView] = useState({lowerBound:"", upperBound:"", transactionType:"", chargeType:"", fee:""})
+    const [chargeView, setChargeView] = useState({id:"", lowerBound: "", upperBound: "", transactionType: "", chargeType: "", fee: "", approvalStatus:"" })
     const [view, setView] = useState(false)
     const [reload, setReload] = useState(true)
     const [callToken, setCallToken] = useState()
@@ -34,7 +34,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
         }
     }, [data])
 
-    useEffect(()=>{
+    useEffect(() => {
         mutate(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
 
@@ -49,18 +49,25 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
         }
         setView(true)
         const currentView = chargeData.data.filter(charge => charge.id === id)
-        setChargeView({...chargeView, 
-            lowerBound:currentView[0].lowerBound,
-            upperBound:currentView[0].upperBound,
-            transactionType:currentView[0].transactionType,
-            chargeType:currentView[0].chargeType,
-            fee:currentView[0].value,
+        setChargeView({
+            ...chargeView,
+            id:id,
+            lowerBound: currentView[0].lowerBound,
+            upperBound: currentView[0].upperBound,
+            transactionType: currentView[0].transactionType,
+            chargeType: currentView[0].chargeType,
+            fee: currentView[0].value,
+            approvalStatus: currentView[0].approvalStatus
         })
     }
 
     function chargeEdit(modalState, modal, fields, id) {
         setModalState(modalState, modal)
         editFormState(fields, id)
+    }
+
+    function editChargeView(e) {
+        setChargeView({ ...chargeView, [e.target.name]: e.target.value })
     }
 
 
@@ -74,77 +81,85 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                     </div>
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0">
-                    <button onClick={() => { chargeEdit(true, "createCharges", {
-                         lowerBound: 0, 
-                         upperBound: 0, 
-                         amount: 0, 
-                         transactionType: "TRANSFER", 
-                         chargeType: "FLAT",
-                         trigger: triggerReload,
-                         onClick: createApi  
-                         }, "0") }}  
-                         className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
+                    <button onClick={() => {
+                        chargeEdit(true, "createCharges", {
+                            lowerBound: 0,
+                            upperBound: 0,
+                            amount: 0,
+                            transactionType: "TRANSFER",
+                            chargeType: "FLAT",
+                            trigger: triggerReload,
+                            onClick: createApi
+                        }, "0")
+                    }}
+                        className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Add new charges</button>
                 </section>
 
             </section>
             <section className={`py-2 w-full mt-[20px] px-4 ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "block"}`}>
                 <section className="min-h-[674px] w-full  pt-4 pl-2 pr-4">
-                    
+
                     <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
-                            <table className="table-fixed w-full flex flex-col">
-                                <thead>
-                                    <tr className="flex justify-around">
-                                        <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
-                                        <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                        <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
-                                        <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
-                                        <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                        <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="mt-6">
-                                    {chargeData?.data.map((item, index) => {
-                                        return (
-                                            <tr key={index} className="flex justify-around h-[50px]">
-                                                <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
-                                                <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
-                                                <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
-                                                <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
-                                                <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
-                                                <td className="font-pushpennyBook  flex w-[373px] justify-between">
-                                                    <div className="w-[115px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
-                                                    </div>
-                                                    <div className="w-[107px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { chargeEdit(true, "editCharges", { 
-                                                            lowerBound: item.lowerBound, 
-                                                            upperBound: item.upperBound, 
-                                                            amount: item.amount, 
-                                                            transactionType: item.transactionType, 
-                                                            chargeType: item.chargeType, 
-                                                            trigger: triggerReload,
-                                                            loadState: setLoading
-                                                            }, item.id) }} />
-                                                    </div>
-                                                    <div className="w-[130px] h-[36px]">
-                                                        <UserButton type="delete" onClick={() => { chargeEdit(true, "action", { 
-                                                            caution: deleteCaution, 
-                                                            action: "delete", 
-                                                            endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`, 
-                                                            text:"Delete", 
+                        <table className="table-fixed w-full flex flex-col">
+                            <thead>
+                                <tr className="flex justify-around">
+                                    <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
+                                    <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                    <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
+                                    <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
+                                    <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                    <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody className="mt-6">
+                                {chargeData?.data.map((item, index) => {
+                                    return (
+                                        <tr key={index} className="flex justify-around h-[50px]">
+                                            <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                            <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                            <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                            <td className={`font-pushpennyBook  flex w-[373px] ${item.approvalStatus == "PENDING" ? "gap-[25px]" : "justify-between"}`}>
+                                                <div className="w-[115px] h-[36px]">
+                                                    <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
+                                                </div>
+                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[100px] h-[36px]`}>
+                                                    <UserButton type="edit"
+                                                        onClick={() => {
+                                                            chargeEdit(true, "editCharges", {
+                                                                lowerBound: item.lowerBound,
+                                                                upperBound: item.upperBound,
+                                                                amount: item.value,
+                                                                transactionType: item.transactionType,
+                                                                chargeType: item.chargeType,
+                                                                trigger: triggerReload,
+                                                                loadState: setLoading
+                                                            }, item.id)
+                                                        }} />
+                                                </div>
+                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[117px] h-[36px]`}>
+                                                    <UserButton type="delete" onClick={() => {
+                                                        chargeEdit(true, "action", {
+                                                            caution: deleteCaution,
+                                                            action: "delete",
+                                                            endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`,
+                                                            text: "Delete",
                                                             trigger: triggerReload,
                                                             onClick: deleteApi,
-                                                            loadState: setLoading 
-                                                            }, item.id) }} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
+                                                            loadState: setLoading
+                                                        }, item.id)
+                                                    }} />
+                                                </div>
+                                                <div className={`grow border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
 
-                                </tbody>
-                            </table>
-                        
+                            </tbody>
+                        </table>
+
                     </TableContainer>
                 </section>
             </section>
@@ -162,36 +177,58 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
 
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Lower Bound" bg="bg-white" value={chargeView.lowerBound} />
+                                    <Textfield formEdit={editChargeView} name="lowerBound" type="text" title="Lower Bound" bg="bg-white" value={chargeView.lowerBound} />
                                 </div>
                             </section>
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Upper Bound" bg="bg-white" value={chargeView.upperBound} />
+                                    <Textfield formEdit={editChargeView} name="upperBound" type="text" title="Upper Bound" bg="bg-white" value={chargeView.upperBound} />
                                 </div>
                             </section>
                             <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Transaction Type" bg="bg-white" value={chargeView.transactionType} />
+                                    <Textfield formEdit={editChargeView} name="transactionType" type="text" title="Transaction Type" bg="bg-white" value={chargeView.transactionType} />
                                 </div>
                             </section>
                             <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Charge Type" bg="bg-white" value={chargeView.chargeType} />
+                                    <Textfield formEdit={editChargeView} name="chargeType" type="text" title="Charge Type" bg="bg-white" value={chargeView.chargeType} />
                                 </div>
                             </section>
                             <section className="flex flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                                 <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                                    <Textfield type="text" title="Fee" bg="bg-white" value={chargeView.fee || "N/A"} />
+                                    <Textfield formEdit={editChargeView} name="fee" type="text" title="Fee" bg="bg-white" value={chargeView.fee || ""} />
                                 </div>
                             </section>
 
-                            <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                            <section className={`flex justify-between mt-[15px] w-[90%] self-center ${chargeView.approvalStatus == "PENDING" ? "hidden" : ""} relative w-full`}>
                                 <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                                    <UserButton text="Edit" type="gradient" />
+                                    <UserButton onClick={(e) => {
+                                        debugger
+                                        editApi(
+                                            e,
+                                            `https://admapis-staging.payrail.co/v1/charge/update/${chargeView.id}`,
+                                            {
+                                                "amount": Number(chargeView.fee),
+                                                "chargeType": chargeView.chargeType,
+                                                "lowerBound": Number(chargeView.lowerBound),
+                                                "transactionType": chargeView.transactionType,
+                                                "upperBound": Number(chargeView.upperBound)
+                                            },
+                                            localStorage.getItem('token'),
+                                            changeView,
+                                            setLoading,
+                                            "editSetting",
+                                           triggerReload
+                                        )
+                                    }} text="Edit" type="gradient" />
                                 </div>
-                                <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                                    <UserButton text="Save" bg="bg-[#DDDDDD]" textColor="text-[white]" />
+                                <div className={`w-[126px] h-[47px] lg:w-[186px] lg:h-[57px] `}>
+                                    <UserButton onClick={(e)=>{
+                                        e.preventDefault()
+                                        changeView()
+                                    }} 
+                                        text="Save" bg="bg-[#DDDDDD]" textColor="text-[white]" />
                                 </div>
                             </section>
                         </form>
@@ -222,7 +259,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                 <tbody className="mt-[10px]">
                                     <tr className="flex justify-around h-[50px]">
                                         <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.actor ? chargeView.actor : "n/a"}</td>
-                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.value? chargeView.value : "n/a"}</td>
+                                        <td className="font-pushpennyBook  flex w-[33%] font-400  text-[18px] leading-[14px] text-[#6E7883]">{chargeView.value ? chargeView.value : "n/a"}</td>
                                         <td className="font-pushpennyBook  flex w-[33%]  justify-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                             <UserButton type="delete" />
                                         </td>

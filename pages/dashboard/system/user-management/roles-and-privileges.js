@@ -153,7 +153,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                         </section>
                     </section>
 
-                    <section className="flex flex-col">
+                    <section className="flex flex-col w-full lg:w-[60%]">
                         <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">System</p>
                             <RadioToggle parent={"System"} label={"User management"} permissions={permissions} setPermissions={setRolePermissions} position={0} access={{ yes: "USER_MANAGEMENT", no: false }} />
@@ -217,7 +217,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                                 return (
                                     <tr key={index} className="h-[50px]">
                                         <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
-                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.description || "n/a"}</td>
+                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.roleType || "n/a"}</td>
                                         <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
                                         <td className="font-pushpennyBook  items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
                                             {role.teamMembers}

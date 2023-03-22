@@ -60,8 +60,8 @@ export default function SubLayoutTemplate({ modals, setModalState, children, act
                     System
                 </h4>
             </section>
-            <section className={`h-[44px] flex w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <div className={`flex w-full ${activeAgency == "Configurations" ? "justify-between" : "justify-start gap-[100px]"} relative`}>
+            <section className={`h-[44px] flex flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                <div className={`flex w-full ${activeAgency == "Configurations" ? "justify-start gap-[50px]" : "justify-start gap-[100px]"} relative`}>
                     {activeAgency == "Configurations" ? tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) : userTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) }
                     {/* {tabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setTab} /></div>)} */}
                 </div>
