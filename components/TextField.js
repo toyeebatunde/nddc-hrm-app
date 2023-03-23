@@ -65,4 +65,12 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
             </div>
         )
     }
+    if (type == "readonly") {
+        return (
+            <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
+                <input readOnly type={charType || "text"} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
+            </div>
+        )
+    }
 }

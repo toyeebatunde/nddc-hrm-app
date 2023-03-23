@@ -305,7 +305,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                     <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
                         <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                                <Textfield type="readonly" formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
