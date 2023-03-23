@@ -253,7 +253,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                 </h2>
                                             </td>
                                             <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.lastLoginDate) || ""}</td>
+                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
                                             <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
                                                 <h2>
                                                     {agent.state}
@@ -305,7 +305,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                     <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
                         <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                                <Textfield type="readonly" formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />

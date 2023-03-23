@@ -68,11 +68,11 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
 
             <section className="min-h-[674px] mt-[20px] w-full pt-4 pl-2 pr-4">
                 <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
-                    <table className="table-fixed px-[15px] w-full">
+                    <table className="table-fixed w-full">
                         <thead>
                             <tr className="">
-                                <th className="font-400 w-[160px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
-                                <th className="font-400 w-[132px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">CATEGORY</th>
+                                <th className="font-400 w-[70px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                <th className="font-400 w-[70px]  text-start text-[12px] leading-[15.62px] font-pushpennyBook">CATEGORY</th>
                                 <th className="font-400 w-[106px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">UNIQUE ID</th>
                                 <th className="font-400 w-[90px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">CLIENT</th>
                                 <th className="font-400 w-[70px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">SUBJECT</th>

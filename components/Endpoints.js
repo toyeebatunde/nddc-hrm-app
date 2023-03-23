@@ -34,7 +34,7 @@ async function addCategory(e, posted, url, body) {
 
 function postApi(e, endpoint, body, token, modalCloser, loadState, modal, triggerReload, auxiliaryFunc) {
   e.preventDefault()
-  debugger
+  // debugger
   // loadState(true)
   axios.post(endpoint, body, {
     headers: {

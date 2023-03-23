@@ -25,7 +25,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
     const [rolesData, setRolesData] = useState()
     const [roleNames, setRoleNames] = useState(["", ""])
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: users, error: usersError } = useSWR(`${testEnv}v1/user/all?pageNo=0&pageSize=10`, fetching)
+    const { data: users, error: usersError } = useSWR(`${testEnv}v1/user/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: roles, error: rolesError } = useSWR(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=15`, fetching)
     // const router = useRouter()
 
@@ -43,17 +43,35 @@ export default function UserManagement({ modals, setModalState, editFormState, s
             setLoading(false)
             setUsersData(users)
         }
+        // if (roles) {
+        //     setRolesData(roles)
+        //     const rolesList = roles?.data.map(item => item.name)
+        //     rolesList.unshift("Select a Role")
+        //     setRoleNames(rolesList)
+        // }
+    }, [users])
+
+    useEffect(() => {
+        // setLoading(true)
+        // setActiveTab("Team")
+        // setToken()
+        // setActiveDashboard("UserManagement")
+        // setActiveState("1")
+        // if (users) {
+        //     setLoading(false)
+        //     setUsersData(users)
+        // }
         if (roles) {
             setRolesData(roles)
             const rolesList = roles?.data.map(item => item.name)
             rolesList.unshift("Select a Role")
             setRoleNames(rolesList)
         }
-    }, [users, roles])
+    }, [roles])
 
 
     useEffect(() => {
-        mutate(`${testEnv}v1/user/all?pageNo=0&pageSize=10`)
+        mutate(`${testEnv}v1/user/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
 
     function triggerReload() {
@@ -93,7 +111,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                     lastName: "",
                                     email: "",
                                     assignRole: "",
-                                    resetPasswordUrl: "/change-password",
+                                    // resetPasswordUrl: "/change-password",
                                     endPoint: `${testEnv}v1/user/add_user`,
                                     onClick: postApi,
                                     trigger: triggerReload,
