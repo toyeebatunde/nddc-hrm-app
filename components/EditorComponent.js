@@ -13,9 +13,8 @@ const Editor = dynamic(
 const EditorComponent = ({ initialContent, onContentChange }) => {
     const [content, setContent] = useState(initialContent);
 
-    // console.log(convertToRaw(editorState.editorState.getCurrentContent()))
     // console.log(draftToHtml(convertToRaw(content.getCurrentContent())))
-    // console.log(convertToRaw(content.getCurrentContent()))
+    // console.log((convertToRaw(content.getCurrentContent())).blocks[0].text)
 
     const memoizedEditor = useMemo(() => (
         <Editor

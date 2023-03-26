@@ -23,8 +23,8 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
     const [ticketData, setTicketData] = useState()
     const [messagesData, setMessagesData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data:ticket, error:ticketError } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)    
-    const { data:ticketMessages, error:ticketMessagesError } = useSWR(`${testEnv}v1/ticket/${router.query.id}/messages`, fetching)    
+    const { data: ticket, error: ticketError } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)
+    const { data: ticketMessages, error: ticketMessagesError } = useSWR(`${testEnv}v1/ticket/${router.query.id}/messages`, fetching)
     const [editorState, setEditorState] = useState(EditorState.createEmpty())
 
     useEffect(() => {
@@ -55,13 +55,13 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
         }
     }, [ticketMessages])
 
-    
 
-    function onEditorStateChange (editorState) {
+
+    function onEditorStateChange(editorState) {
         setEditorState(editorState)
     }
 
-    
+
 
     // const Editor = dynamic(
     //     () => import('react-draft-wysiwyg').then(mod => mod.Editor),
@@ -135,45 +135,50 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                         </div>
                     </div>
 
-                    <div className="w-full min-h-[471px] border border-[#F3F3F3] rounded-[10px] flex flex-col items-center gap-[50px] pt-[10px]">
-                        <div className="border-b border-[#6E7883] h-[52px] w-[90%] flex">
-                            <div className="w-full lg:w-[322px] min-h-[41px] justify-between flex">
-                                <div className="flex gap-[10px]">
-                                    <div className="w-[24px] relative h-[24px]">
-                                        <ImageHolder src="/icons/user-circle.svg" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <h2 className="font-pushpennyBook text-[14px] font-[400] leading-[22px]">
-                                            John Jeff
-                                        </h2>
-                                        <h2 className="font-pushpennyBook text-[#6F6F6F] text-[12px] font-[400] leading-[18px]">
-                                            Customer Support
+                    {messagesData?.data.map((message, index) => {
+                        return (
+                            <div key={index} className="w-full min-h-[471px] border border-[#F3F3F3] rounded-[10px] flex flex-col items-center gap-[50px] pt-[10px]">
+                                <div className="border-b border-[#6E7883] h-[52px] w-[90%] flex">
+                                    <div className="w-full lg:w-[322px] min-h-[41px] justify-between flex">
+                                        <div className="flex gap-[10px]">
+                                            <div className="w-[24px] relative h-[24px]">
+                                                <ImageHolder src="/icons/user-circle.svg" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <h2 className="font-pushpennyBook w-[120px] truncate text-[14px] font-[400] leading-[22px]">
+                                                    {message.messageby}
+                                                </h2>
+                                                <h2 className="font-pushpennyBook text-[#6F6F6F] text-[12px] font-[400] leading-[18px]">
+                                                    {message.messageRole}
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <h2 className="text-[#8C8C8C] text-[12px] font-[400] leading-[18px] font-pushpennyBook">
+                                            31/03/2022 {`(`}10:38{`)`}
                                         </h2>
                                     </div>
                                 </div>
-                                <h2 className="text-[#8C8C8C] text-[12px] font-[400] leading-[18px] font-pushpennyBook">
-                                    31/03/2022 {`(`}10:38{`)`}
-                                </h2>
+                                {message.text}
+                                <div className="bg-[#F3F3F3] rounded-b-[10px] mt-auto px-[20px] items-center w-full flex justify-end gap-[5px] h-[24px]">
+                                    <div className="relative w-[13px] h-[13px]">
+                                        <ImageHolder src="/icons/ticket-star.svg" />
+                                    </div>
+                                    <div className="relative w-[13px] h-[13px]">
+                                        <ImageHolder src="/icons/ticket-star.svg" />
+                                    </div>
+                                    <div className="relative w-[13px] h-[13px]">
+                                        <ImageHolder src="/icons/ticket-star.svg" />
+                                    </div>
+                                    <div className="relative w-[13px] h-[13px]">
+                                        <ImageHolder src="/icons/ticket-star.svg" />
+                                    </div>
+                                    <div className="relative w-[13px] h-[13px]">
+                                        <ImageHolder src="/icons/ticket-star.svg" />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="bg-[#F3F3F3] rounded-b-[10px] mt-auto px-[20px] items-center w-full flex justify-end gap-[5px] h-[24px]">
-                            <div className="relative w-[13px] h-[13px]">
-                                <ImageHolder src="/icons/ticket-star.svg" />
-                            </div>
-                            <div className="relative w-[13px] h-[13px]">
-                                <ImageHolder src="/icons/ticket-star.svg" />
-                            </div>
-                            <div className="relative w-[13px] h-[13px]">
-                                <ImageHolder src="/icons/ticket-star.svg" />
-                            </div>
-                            <div className="relative w-[13px] h-[13px]">
-                                <ImageHolder src="/icons/ticket-star.svg" />
-                            </div>
-                            <div className="relative w-[13px] h-[13px]">
-                                <ImageHolder src="/icons/ticket-star.svg" />
-                            </div>
-                        </div>
-                    </div>
+                        )
+                    })}
                 </section>
                 <section className="flex lg:w-[35%] flex-col w-full">
                     <div className="flex flex-col w-full h-[440px] gap-[10px]">
@@ -227,7 +232,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                 <UserButton type="gradient" text="Reply" />
                             </div>
                             <div className="h-full rounded-[300px] w-[171px]">
-                                <UserButton bg="bg-[#e8e8e8]" text="Close" />
+                                <UserButton onClick={() => router.back()} bg="bg-[#e8e8e8]" text="Close" />
                             </div>
                         </div>
                     </div>

@@ -54,7 +54,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield selectOptions={["SUPER_AGENT", "AGENT", "PAYRAIL"]} name="actorType" formEdit={formEdit} value={values.values.actorType} type="select" title="Actor Type" />
+                            <Textfield selectOptions={["Choose an actor type","SUPER_AGENT", "AGENT", "PAYRAIL"]} name="actorType" formEdit={formEdit} value={values.values.actorType} type="select" title="Actor Type" />
                         </div>
                     </section>
 

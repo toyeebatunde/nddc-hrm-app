@@ -133,7 +133,7 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`min-h-[674px] w-full ${customerEdit.editView ? "hidden" : "flex"}  pt-4 pl-[5px]`}>
                     <div className={`w-full ${customerEdit.editView ? "hidden" : "flex"}`}>
-                        <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
+                        <TableContainer pageSelector={pageSelector} color="bg-[white]" entryValue={entryValue}>
 
                             <table className="table-fixed px-[5px] w-full flex flex-col">
                                 <thead>

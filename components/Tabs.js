@@ -150,7 +150,7 @@ export const tabs = [
                 active:'/icons/value-added-services.svg',
                 inactive: '/icons/value-added-services-inactive.svg',
                 data: "2",
-                link: "valueaddedservices",
+                link: "/dashboard/agency/vas",
                 permission: ["VIEW_VALUE_ADDED_SERVICES", "EDIT_VALUE_ADDED_SERVICES"]
             },
             {
