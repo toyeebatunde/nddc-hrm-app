@@ -1,11 +1,11 @@
 import Textfield from "./TextField"
 import ImageHolder from "./ImageHolder"
 
-export default function TableContainer({ children, pageSelector, entryValue }) {
+export default function TableContainer({ children, pageSelector, entryValue, color="bg-brand-light-yellow" }) {
     return (
         <div className="w-full flex gap-[10px] flex-col">
             <div className="w-full  overflow-x-auto">                
-                    <div className="w-[1115px] px-[20px] xl:w-full pt-[20px] bg-brand-light-yellow rounded-[10px] pt-[10px] min-h-[674px]">
+                    <div className={`w-[1115px] px-[20px] xl:w-full pt-[20px] ${color} border border-[#DDDDDD] rounded-[10px] pt-[10px] min-h-[674px]`}>
                         {children}
                     </div>
                 

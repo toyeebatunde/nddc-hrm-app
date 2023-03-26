@@ -100,26 +100,26 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                 <section className="min-h-[674px] w-full  pt-4 pl-2 pr-4">
 
                     <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
-                        <table className="table-fixed w-full flex flex-col">
+                        <table className="table-fixed w-full">
                             <thead>
-                                <tr className="flex justify-around">
-                                    <th className="font-400   flex w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
-                                    <th className="font-400    flex w-[31px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
-                                    <th className="font-400   flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
-                                    <th className="font-400  flex w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
-                                    <th className="font-400  flex w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                    <th className="font-400  flex w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
+                                <tr className="">
+                                    <th className="font-400 text-start   w-[145px]  text-[12px] leading-[15.62px] font-pushpennyBook">TRANSACTION TYPE</th>
+                                    <th className="font-400 text-start   w-[100px] text-[12px] leading-[15.62px] font-pushpennyBook">TYPE</th>
+                                    <th className="font-400 text-start   w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">LOWER BOUND</th>
+                                    <th className="font-400 text-start   w-[110px] text-[12px] leading-[15.62px] font-pushpennyBook">UPPER BOUND</th>
+                                    <th className="font-400 text-start   w-[70px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                    <th className="font-400 text-start   w-[373px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
                                 {chargeData?.data.map((item, index) => {
                                     return (
-                                        <tr key={index} className="flex justify-around h-[50px]">
-                                            <td className="font-pushpennyBook  flex w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
-                                            <td className="font-pushpennyBook  flex w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
-                                            <td className="font-pushpennyBook  flex w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                        <tr key={index} className="  h-[50px]">
+                                            <td className="font-pushpennyBook   w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                            <td className="font-pushpennyBook   w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                            <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                            <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                            <td className="font-pushpennyBook   w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
                                             <td className={`font-pushpennyBook  flex w-[373px] ${item.approvalStatus == "PENDING" ? "gap-[25px]" : "justify-between"}`}>
                                                 <div className="w-[115px] h-[36px]">
                                                     <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
