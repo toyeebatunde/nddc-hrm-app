@@ -66,12 +66,17 @@ export default function MyApp({ Component, pageProps }) {
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
-  const [entryValue, setEntryValue] = useState({ size: 5, page: 0 })
+  const [entryValue, setEntryValue] = useState({ size: 10, page: 0 })
   const [passwordCaution, setCreatePasswordCaution] = useState(false)
   const [loginFail, setLoginFail] = useState(false)
+  const [searchField, setSearchField] = useState("")
 
 
   const Layout = Component.Layout || EmptyLayout
+
+  function setSearchParam(e) {
+    setSearchField(e.target.value)
+  }
 
   function setView(state) {
     setViewState(state)
@@ -82,6 +87,10 @@ export default function MyApp({ Component, pageProps }) {
     // console.log(previous)
     previous.setDate(date.getDate() - range);
     return previous;
+  }
+
+  function resetPage() {
+    setEntryValue({...entryValue, size: 5, page: 0})
   }
 
   function changePasswordCaution() {
@@ -286,6 +295,7 @@ export default function MyApp({ Component, pageProps }) {
           createCaution={passwordCaution}
           changer={changePasswordCaution}
           createPassword={createPassword}
+          
         />
       </LoginLayout>
     )
@@ -322,7 +332,7 @@ export default function MyApp({ Component, pageProps }) {
       setSearch={setSearch}
       formatDate={formatDate}
     >
-      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange} search={search} setSearch={setSearch} formatDate={formatDate}>
+      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange} search={search} setSearch={setSearch} setSearchParam={setSearchParam} searchField={searchField} formatDate={formatDate}>
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -349,12 +359,14 @@ export default function MyApp({ Component, pageProps }) {
           setActiveTab={setTab}
           pageSelector={pageSelector}
           entryValue={entryValue}
+          resetPage={resetPage}
           dateRange={dateRange}
           week={week}
           setDateRange={setDateRange}
           search={search}
           setSearch={setSearch}
           formatDate={formatDate}
+          searchField={searchField}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

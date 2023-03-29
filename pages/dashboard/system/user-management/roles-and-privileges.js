@@ -17,7 +17,7 @@ import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
 import UserButton from '../../../../components/ButtonMaker'
 
-export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading }) {
+export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage }) {
     const [permissions, setPermissions] = useState([
         { name: false },
         { name: false },
@@ -77,6 +77,10 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                 console.log(error)
             })
     }
+
+    useEffect(()=>{
+        resetPage()
+    },[])
 
     useEffect(() => {
         setLoading(true)
