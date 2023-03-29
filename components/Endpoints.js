@@ -85,7 +85,7 @@ async function createApi(e, endpoint, body, token, modalCloser, loadState, modal
 function patchApi(e, endpoint, token, modalCloser, loadState, modal, triggerReload, patch=null) {
   e.preventDefault()
   // loadState(true)
-  // debugger
+  debugger
   axios.patch(endpoint, patch, {
     headers: {
       Authorization: `Bearer ${token}`

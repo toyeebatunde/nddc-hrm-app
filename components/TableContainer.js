@@ -14,7 +14,7 @@ export default function TableContainer({ children, pageSelector, entryValue, col
                 <div className="flex items-center gap-[10px]">
                     <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">Show</h2>
                     <div className="w-[83px] h-[51px] rounded-[25.5px] border-[#D1D1D1] border">
-                        <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[5, 10, 15]} />
+                        <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[10, 15,5]} />
                     </div>
                     <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">entries</h2>
                 </div>

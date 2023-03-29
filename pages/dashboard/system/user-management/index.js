@@ -17,7 +17,7 @@ import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
 import { postApi } from '../../../../components/Endpoints'
 
-export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading }) {
+export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage }) {
     // const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
     const [reload, setReload] = useState(true)
@@ -50,6 +50,10 @@ export default function UserManagement({ modals, setModalState, editFormState, s
         //     setRoleNames(rolesList)
         // }
     }, [users])
+
+    useEffect(()=>{
+        resetPage()
+    },[])
 
     useEffect(() => {
         // setLoading(true)

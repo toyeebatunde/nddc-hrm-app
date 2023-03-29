@@ -1,19 +1,17 @@
 
 
-import UserButton from "../../../../../components/ButtonMaker"
-import ImageHolder from "../../../../../components/ImageHolder"
+import UserButton from "../../../../../../components/ButtonMaker"
+import ImageHolder from "../../../../../../components/ImageHolder"
 // import RadioToggle from "../../../../../../components/radioToggle"
 import { useState, useEffect } from "react"
-import Toggler from "../../../../../components/Toggle"
+import Toggler from "../../../../../../components/Toggle"
 import axios from "axios"
 import useSWR, { mutate } from 'swr'
 import { useRouter } from "next/router"
-import { testEnv } from "../../../../../components/Endpoints"
-import { editApi, patchApi, deleteApi } from "../../../../../components/Endpoints"
+import { testEnv } from "../../../../../../components/Endpoints"
+import { editApi, patchApi, deleteApi } from "../../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
-import Cookies from "js-cookie"
-import { cookies } from 'next/headers'
 
 
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
@@ -25,17 +23,11 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     const [viewTransaction, setViewTransaction] = useState(false)
     const lienToggle = useRef()
     const accountToggle = useRef()
+
     const [agentData, setAgentData] = useState()
     const [reload, setReload] = useState(true)
-    const [id, setId] = useState()
-
-    useEffect(()=>{
-        const newId = localStorage.getItem('id')
-        setId(newId)
-    }, [])
-    // const [agentServerDetails, setAgentServerDetails] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/${id}`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
     // const kycs = ["bvn", "nin", "contractNo", "tin", "rcNumber"]
     // const kycImages = ["cac", "selfie", "idCard"]
     const kycImages = [
@@ -76,12 +68,8 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         },
     ]
 
-    // useEffect(()=>{
-    //     setAgentServerDetails(agentDetails)
-    // },[])
-
     useEffect(() => {
-        setLoading(true)        
+        // setLoading(true)        
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -97,7 +85,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     }, [data])
 
     useEffect(() => {
-        mutate(`${testEnv}v1/agent/${id}`)
+        mutate(`${testEnv}v1/agent/${router.query.id}`)
     }, [reload])
 
     function triggerReload() {
@@ -110,7 +98,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                 {
                     caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s lien status`,
                     action: "delete",
-                    endPoint: `${testEnv}v1/agent/${id}/lien?param=${lienStatus.status}`,
+                    endPoint: `${testEnv}v1/agent/${router.query.id}/lien?param=${lienStatus.status}`,
                     reason: false,
                     onClick: patchApi,
                     text: "Update Lien",
@@ -130,7 +118,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                 {
                     caution: `You are about to change ${agentData.agent.firstName} ${agentData.agent.lastName}'s account status`,
                     action: "delete",
-                    endPoint: `${testEnv}v1/agent/${id}/change_activation_status?status=${accountStatus.status}`,
+                    endPoint: `${testEnv}v1/agent/${router.query.id}/change_activation_status?status=${accountStatus.status}`,
                     reason: false,
                     onClick: patchApi,
                     text: "Update Status",
@@ -202,7 +190,6 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     }
 
 
-
     return (
         <div className={`flex relative flex-col items-start pt-[60px] overflow-hidden w-full`}>
             <section className={`w-full flex px-4 justify-between ${modals.isOpen ? "blur-sm" : "blur-none"} `}>
@@ -252,7 +239,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                     <h2 className="font-pushpennyBook text-[18px] font-[400] text-[#6E7883] leading-[15px]">{agentData?.wallet?.externalBankName || "n/a"}</h2>
                                 </div>
                                 <div className="w-[95%] flex self-center h-[36px]">
-                                    <UserButton type="transaction" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/transaction-history`) }} />
+                                    <UserButton type="transaction" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/${router.query.id}/transaction-history?agent=${router.query.id}`) }} />
                                 </div>
                             </div>
                         </div>
@@ -292,13 +279,13 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between xl:w-full lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Account Status</h2>
                                                 <div>
-                                                    <Toggler toggleRef={accountToggle} onClick={(e) => { toggler(e, accountStatus, "account", "status", "api", "account") }} id={id} toggled={accountStatus == undefined ? false : accountStatus.account} />
+                                                    <Toggler toggleRef={accountToggle} onClick={(e) => { toggler(e, accountStatus, "account", "status", "api", "account") }} id={router.query.id} toggled={accountStatus == undefined ? false : accountStatus.account} />
                                                 </div>
                                             </div>
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Lien Status</h2>
                                                 <div >
-                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggler(e, lienStatus, "lien", "status", "api", "lien") }} id={id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
+                                                    <Toggler toggleRef={lienToggle} onClick={(e) => { toggler(e, lienStatus, "lien", "status", "api", "lien") }} id={router.query.id} toggled={lienStatus == undefined ? false : lienStatus.lien} />
                                                 </div>
                                             </div>
                                         </div>
@@ -309,7 +296,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                     agentHandler(true, "action", {
                                                         caution: `You are about to RESET PASSWORD OF ${agentData.agent.firstName} ${agentData.agent.lastName}'s account`,
                                                         action: "delete",
-                                                        endPoint: `${testEnv}v1/agent/${id}/reset_password`,
+                                                        endPoint: `${testEnv}v1/agent/${router.query.id}/reset_password`,
                                                         reason: false,
                                                         onClick: patchApi,
                                                         trigger: triggerReload,
@@ -323,7 +310,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                     agentHandler(true, "action", {
                                                         caution: `You are about to RESET PIN OF ${agentData.agent.firstName} ${agentData.agent.lastName}'s account`,
                                                         action: "delete",
-                                                        endPoint: `${testEnv}v1/agent/${id}/reset_pin`,
+                                                        endPoint: `${testEnv}v1/agent/${router.query.id}/reset_pin`,
                                                         reason: false,
                                                         onClick: patchApi,
                                                         trigger: triggerReload,
@@ -363,7 +350,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                 agentHandler(true, "action", {
                                                     caution: `You are about to delete ${agentData.agent.firstName} ${agentData.agent.lastName}'s device information`,
                                                     action: "delete",
-                                                    endPoint: `${testEnv}v1/agent/${id}/device/${device.id}`,
+                                                    endPoint: `${testEnv}v1/agent/${router.query.id}/device/${device.id}`,
                                                     reason: false,
                                                     onClick: deleteApi,
                                                     trigger: triggerReload,
@@ -380,7 +367,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                     </div>
                 </div>
                 <div className="flex flex-col w-full mt-[20px] lg:mt-0 lg:w-[50%]">
-                    <div className="flex min-h-[250px] xl:min-h-[513px] justify-between flex-col xl:flex-row w-full">
+                    <div className="flex min-h-[250px] xl:h-[513px] justify-between flex-col xl:flex-row w-full">
                         <div className="w-full xl:w-[49%] xl:h-full">
                             <div className="w-full min-h-[513px] gap-[7px] flex flex-col">
                                 <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
@@ -438,31 +425,31 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full xl:w-[49%] mt-[20px] xl:mt-0 xl:h-full">
+                        <div className="w-full xl:w-[49%] mt-[20px] xl:mt-0  xl:h-full">
                             {agentData?.subAgents.length < 1 ? "" : (
                                 agentData?.subAgents.map((agent, index) => {
                                     return (
-                                        <div key={index} className={`w-full min-h-[213px] gap-[7px] mt-[15px] flex flex-col`}>
+                                        <div className={`w-full min-h-[213px] gap-[7px] flex flex-col`}>
                                             <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                                                 <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Sub-agent Information</h2>
                                             </div>
                                             <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.id}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[0] ? agentData?.subAgents[0] : "n/a"}</h2>
                                                 </div>
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Name</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.firstName} {agent.lastName}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[1] ? agentData?.subAgents[1] : "n/a"}</h2>
                                                 </div>
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Phone</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.phoneNumber}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[2] ? agentData?.subAgents[2] : "n/a"}</h2>
                                                 </div>
 
-                                                {/* <div className="h-[36px] self-center mt-[20px] w-[236px]">
+                                                <div className="h-[36px] self-center mt-[20px] w-[236px]">
                                                     <UserButton type="view" text="View agent" />
-                                                </div> */}
+                                                </div>
 
                                             </div>
                                         </div>
@@ -538,24 +525,4 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
             </section>
         </div>
     )
-    
 }
-
-
-// export const getServerSideProps = async(context) => {   
-//     console.log(context.req.cookies.token)
-//     const res = await fetch(`https://agencyadm-api.payrail.co/v1/agent/${context.params.id}`,
-//     {
-//         method: "GET",
-//         headers: {
-//             "Authorization":`Bearer ${context.req.cookies.token}`
-//         }
-//     }
-//     )
-//     const agentDetails = await res.json()
-//     return {
-//         props: {
-//             agentDetails
-//         }
-//     }
-// }

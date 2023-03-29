@@ -50,6 +50,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
             edit(e, endpoint, body, token, closer, loader, modal, trigger)
             return
         }
+        // debugger
         create(e, endpoint, body, token, closer, loader, modal, trigger)
         // console.log("works")
     }
@@ -64,7 +65,7 @@ export default function Settings({ modals, setActiveState, setActiveDashboard, s
                     </div>
                 </section>
                 <section className="flex w-[354px] mt-4 mdxl:mt-0 justify-between">
-                    <button ref={getModalButtonRef} onClick={() => { settingEdit(true, "editSetting", { name: "", description: "", value: "", type: "", trigger: triggerReload, title: "Create Setting", action: "create", settingAction: settingAction, endPoint: `https://admapis-staging.payrail.co/v1/setting/create` }, 0) }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Create new configuration</button>
+                    <button ref={getModalButtonRef} onClick={() => { settingEdit(true, "editSetting", { name: "", description: "", value: "", type: "", trigger: triggerReload, title: "Create Setting", action: "create", settingAction: settingAction, endPoint: `${testEnv}v1/setting/create` }, 0) }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">+ Create new configuration</button>
                 </section>
 
             </section>

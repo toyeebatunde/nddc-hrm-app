@@ -3,17 +3,20 @@ import MetricLayoutTemplate from "../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
+import TableContainer from "../../../components/TableContainer";
 
-export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
+export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, formatDate, dateRange, search }) {
 
-    const [settlementData, setSettlementData] = useState()
+    const [reconciliationData, setReconciliationData] = useState()
+    const [filteredData, setFilteredData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: recon, error:reconError } = useSWR(`${testEnv}v1/reconciliation/current?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
 
 
     useEffect(() => {
@@ -21,14 +24,27 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
         setView(false)
         setActiveDashboard("Reconciliation")
         setActiveState("2")
-        if (data) {
+        if (recon) {
             setLoading(false)
-            setSettlementData(data)
+            setReconciliationData(recon)
         }
-        if (error) {
-            console.log(error)
+        if (reconError) {
+            console.log(reconError)
         }
-    }, [data])
+    }, [recon])
+
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        mutate(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (dateFiltered) {
+            setFilteredData(dateFiltered.data)
+        }
+        if (filteredError) {
+            console.log(filteredError)
+        }
+    }, [dateFiltered])
 
 
     const dateFormatter = (stamp) => {
@@ -68,28 +84,28 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
                                     <th colSpan="2" className="">Commissions</th>
                                     <th className="w-[161px] "></th>
                                 </tr>
-                                
 
-                                {/* {customerData?.data.map((customer, index) => {
+                                {/* {(search ? filteredData : transactionsData)?.map((transaction, index) => {
                                     return (
-                                        <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
-                                            <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
-                                            <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
-                                            <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
-                                            <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
-
-                                            <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
-                                            <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
-                                                <div className="w-[80px] h-[36px]">
-                                                    <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
-                                                </div>
+                                        <tr key={index} className="flex justify-between h-[60px]">
+                                            <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>
+                                            <td className="font-pushpennyBook w-[148px] truncate inline-block  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.tranRef}</td>
+                                            <td className="font-pushpennyBook truncate inline-block w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>
+                                            <td className="font-pushpennyBook flex w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.userName}</td>
+                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceName}</td>
+                                            <td className="font-pushpennyBook truncate inline-block w-[165px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.externalServiceReference || "n/a"}</td>
+                                            <td className="font-pushpennyBook flex w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
+                                            <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge}</td>
+                                            <td className="font-pushpennyBook flex w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
+                                            <td className="font-pushpennyBook flex w-[88px]  flex items-start">
                                                 <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
                                                 </div>
                                             </td>
                                         </tr>
                                     )
                                 })} */}
+                                
                             </tbody>
                         </table>
 

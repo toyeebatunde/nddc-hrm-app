@@ -12,6 +12,8 @@ import { testEnv } from "../../../../../../components/Endpoints"
 import { editApi, patchApi, deleteApi } from "../../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
+import Cookies from "js-cookie"
+import { cookies } from 'next/headers'
 
 
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
@@ -23,9 +25,9 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     const [viewTransaction, setViewTransaction] = useState(false)
     const lienToggle = useRef()
     const accountToggle = useRef()
-
     const [agentData, setAgentData] = useState()
     const [reload, setReload] = useState(true)
+    // const [agentServerDetails, setAgentServerDetails] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/agent/${router.query.id}`, fetching)
     // const kycs = ["bvn", "nin", "contractNo", "tin", "rcNumber"]
@@ -68,8 +70,12 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         },
     ]
 
+    // useEffect(()=>{
+    //     setAgentServerDetails(agentDetails)
+    // },[])
+
     useEffect(() => {
-        // setLoading(true)        
+        setLoading(true)        
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -367,7 +373,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                     </div>
                 </div>
                 <div className="flex flex-col w-full mt-[20px] lg:mt-0 lg:w-[50%]">
-                    <div className="flex min-h-[250px] xl:h-[513px] justify-between flex-col xl:flex-row w-full">
+                    <div className="flex min-h-[250px] xl:min-h-[513px] justify-between flex-col xl:flex-row w-full">
                         <div className="w-full xl:w-[49%] xl:h-full">
                             <div className="w-full min-h-[513px] gap-[7px] flex flex-col">
                                 <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
@@ -425,31 +431,31 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full xl:w-[49%] mt-[20px] xl:mt-0  xl:h-full">
+                        <div className="w-full xl:w-[49%] mt-[20px] xl:mt-0 xl:h-full">
                             {agentData?.subAgents.length < 1 ? "" : (
                                 agentData?.subAgents.map((agent, index) => {
                                     return (
-                                        <div className={`w-full min-h-[213px] gap-[7px] flex flex-col`}>
+                                        <div key={index} className={`w-full min-h-[213px] gap-[7px] mt-[15px] flex flex-col`}>
                                             <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
                                                 <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Sub-agent Information</h2>
                                             </div>
                                             <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Agent ID</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[0] ? agentData?.subAgents[0] : "n/a"}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.id}</h2>
                                                 </div>
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Name</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[1] ? agentData?.subAgents[1] : "n/a"}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.firstName} {agent.lastName}</h2>
                                                 </div>
                                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Phone</h2>
-                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agentData?.subAgents[2] ? agentData?.subAgents[2] : "n/a"}</h2>
+                                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.phoneNumber}</h2>
                                                 </div>
 
-                                                <div className="h-[36px] self-center mt-[20px] w-[236px]">
+                                                {/* <div className="h-[36px] self-center mt-[20px] w-[236px]">
                                                     <UserButton type="view" text="View agent" />
-                                                </div>
+                                                </div> */}
 
                                             </div>
                                         </div>
@@ -525,4 +531,24 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
             </section>
         </div>
     )
+    
 }
+
+
+// export const getServerSideProps = async(context) => {   
+//     console.log(context.req.cookies.token)
+//     const res = await fetch(`https://agencyadm-api.payrail.co/v1/agent/${context.params.id}`,
+//     {
+//         method: "GET",
+//         headers: {
+//             "Authorization":`Bearer ${context.req.cookies.token}`
+//         }
+//     }
+//     )
+//     const agentDetails = await res.json()
+//     return {
+//         props: {
+//             agentDetails
+//         }
+//     }
+// }

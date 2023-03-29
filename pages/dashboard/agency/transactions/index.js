@@ -17,7 +17,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const [viewState, setViewState] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data:allTransactions, error:allTransactionsError } = useSWR(`${testEnv}v1/transaction/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/transaction/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const router = useRouter()
 
     useEffect(() => {
@@ -39,7 +39,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
-        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        mutate(`${testEnv}v1/transaction/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (dateFiltered) {
             setFilteredData(dateFiltered.data)
         }
@@ -83,8 +83,8 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                             <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>
                                             <td className="font-pushpennyBook w-[148px] truncate inline-block  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.tranRef}</td>
                                             <td className="font-pushpennyBook truncate inline-block w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>
-                                            <td className="font-pushpennyBook flex w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.phoneNumber}</td>
-                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceNAme}</td>
+                                            <td className="font-pushpennyBook flex w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.userName}</td>
+                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceName}</td>
                                             <td className="font-pushpennyBook truncate inline-block w-[165px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.externalServiceReference || "n/a"}</td>
                                             <td className="font-pushpennyBook flex w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
                                             <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge}</td>

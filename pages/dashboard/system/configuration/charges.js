@@ -12,7 +12,7 @@ import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 import { deleteApi, createApi, editApi } from "../../../../components/Endpoints"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading }) {
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading, resetPage }) {
     const [chargeView, setChargeView] = useState({id:"", lowerBound: "", upperBound: "", transactionType: "", chargeType: "", fee: "", approvalStatus:"" })
     const [view, setView] = useState(false)
     const [reload, setReload] = useState(true)
@@ -22,6 +22,10 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
     const { data, error } = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
+
+    useEffect(()=>{
+        resetPage()
+    },[])
 
     useEffect(() => {
         setActiveTab("Charges")

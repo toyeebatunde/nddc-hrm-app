@@ -2,7 +2,7 @@
 import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../../../components/ButtonMaker";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
@@ -10,7 +10,16 @@ import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, dateRange, search, setSearch, setLoading }) {
+export default function Agents({
+    modals, setToken,
+    setActiveDashboard,
+    setActiveState,
+    entryValue, pageSelector,
+    setActiveTab, dateRange,
+    search, setSearch,
+    setLoading, searchField,
+    resetSearchParams
+}) {
     const initialCustomerForm = {
         agentId: "",
         userName: "",
@@ -29,20 +38,24 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         aggregator: "",
         bank: "",
         accountNumber: "",
-        id:""
+        id: ""
     }
 
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [agentData, setAgentData] = useState()
     const [filteredData, setFilteredData] = useState()
+    const [searchedField, setSearchedField] = useState()
     const [banksData, setBanksData] = useState({ codes: [], names: [] })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
     const router = useRouter()
-    const [dateSearch, setDateSearch] = useState({ dateFrom: "", dateTo: "" })
+    const [currentData, setCurrentData] = useState()
+    // const searchField = useRef()
 
 
     function formEdit(e) {
@@ -51,6 +64,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
 
     useEffect(() => {
         setActiveTab("Agents")
+        resetSearchParams()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -79,7 +93,21 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
-        // mutate(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`)
+        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (searchBarData) {
+            setSearchedField(searchBarData)
+        }
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
+
+
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        mutate(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`)
         if (banks) {
             let bankCodes = ["Bank Codes"]
             let bankNames = ["Choose a Bank"]
@@ -160,33 +188,33 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                 aggregator: "",
                 bank: bank,
                 accountNumber: accountNumber,
-                id:id
+                id: id
             }
 
         })
     }
 
-    useEffect(() => {
-        if (dateRange.dateTo < dateRange.dateFrom) {
-            return
-        }
-        function formatDate(date) {
-            var d = (date.getUTCDate() + 1).toString(),
-                m = (date.getUTCMonth() + 1).toString(),
-                y = date.getUTCFullYear().toString(),
-                formatted = '';
-            if (d.length === 1) {
-                d = '0' + d;
-            }
-            if (m.length === 1) {
-            }
-            formatted = d + '-' + m + '-' + y;
-            return formatted;
-        }
-        const from = formatDate(dateRange.dateFrom)
-        const to = formatDate(dateRange.dateTo)
-        console.log(from, "  ", to)
-    }, [dateRange.dateTo, dateRange.dateFrom])
+    // useEffect(() => {
+    //     if (dateRange.dateTo < dateRange.dateFrom) {
+    //         return
+    //     }
+    //     function formatDate(date) {
+    //         var d = (date.getUTCDate() + 1).toString(),
+    //             m = (date.getUTCMonth() + 1).toString(),
+    //             y = date.getUTCFullYear().toString(),
+    //             formatted = '';
+    //         if (d.length === 1) {
+    //             d = '0' + d;
+    //         }
+    //         if (m.length === 1) {
+    //         }
+    //         formatted = d + '-' + m + '-' + y;
+    //         return formatted;
+    //     }
+    //     const from = formatDate(dateRange.dateFrom)
+    //     const to = formatDate(dateRange.dateTo)
+    //     // console.log(from, "  ", to)
+    // }, [dateRange.dateTo, dateRange.dateFrom])
 
     function formatDate(date) {
         var d = (date.getUTCDate() + 1).toString(),
@@ -231,7 +259,143 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {(search ? filteredData : agentData)?.data.map((agent, index) => {
+                                {searchField == "" ?
+                                    (search ? filteredData : agentData)?.data.map((agent, index) => {
+                                        return (
+                                            <tr key={index} className=" justify-between h-[50px]">
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
+                                                <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
+                                                <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
+
+                                                    {agent.firstName} <br></br>
+                                                    {agent.lastName}
+
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
+                                                <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.status}
+                                                    </h2>
+
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.state}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.lga}
+                                                    </h2>
+                                                </td>
+                                                <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
+                                                    <div className="w-[80px] h-[36px]">
+                                                        <UserButton onClick={() => {
+                                                            editInfo(
+                                                                agent.agentIdentifier,
+                                                                agent.userName,
+                                                                agent.firstName,
+                                                                agent.lastName,
+                                                                agent.email,
+                                                                agent.phoneNumber,
+                                                                agent.address,
+                                                                agent.gender,
+                                                                agent.city,
+                                                                agent.state,
+                                                                agent.lga,
+                                                                agent.agentType,
+                                                                agent.classification,
+                                                                agent.bankInstitutionName,
+                                                                agent.bankAccountNumber,
+                                                                agent.id
+                                                            )
+                                                        }} type="edit" />
+                                                    </div>
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            localStorage.setItem('id', agent.id)
+                                                            setLoading(true)
+                                                            router.push(`/dashboard/agency/agent-management/agents/agent`)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }) :
+                                    searchBarData?.data.map((agent, index) => {
+                                        return (
+                                            <tr key={index} className=" justify-between h-[50px]">
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
+                                                <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
+                                                <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
+
+                                                    {agent.firstName} <br></br>
+                                                    {agent.lastName}
+
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
+                                                <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.status}
+                                                    </h2>
+
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.state}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.lga}
+                                                    </h2>
+                                                </td>
+                                                <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
+                                                    <div className="w-[80px] h-[36px]">
+                                                        <UserButton onClick={() => {
+                                                            editInfo(
+                                                                agent.agentIdentifier,
+                                                                agent.userName,
+                                                                agent.firstName,
+                                                                agent.lastName,
+                                                                agent.email,
+                                                                agent.phoneNumber,
+                                                                agent.address,
+                                                                agent.gender,
+                                                                agent.city,
+                                                                agent.state,
+                                                                agent.lga,
+                                                                agent.agentType,
+                                                                agent.classification,
+                                                                agent.bankInstitutionName,
+                                                                agent.bankAccountNumber,
+                                                                agent.id
+                                                            )
+                                                        }} type="edit" />
+                                                    </div>
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            localStorage.setItem('id', agent.id)
+                                                            setLoading(true)
+                                                            router.push(`/dashboard/agency/agent-management/agents/agent`)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                                {/* {(search ? filteredData : agentData)?.data.map((agent, index) => {
                                     return (
                                         <tr key={index} className=" justify-between h-[50px]">
                                             <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
@@ -243,14 +407,15 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                 {agent.lastName}
 
                                             </td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">+2347039429722</td>
+                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
                                             <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
                                                 <h2>
-                                                    Activated
+                                                    {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
                                                 </h2>
                                                 <h2>
-                                                    Inactive
+                                                    {agent.status}
                                                 </h2>
+
                                             </td>
                                             <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
                                             <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
@@ -286,12 +451,17 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                     }} type="edit" />
                                                 </div>
                                                 <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/agent-management/agents/${agent.id}`) }} />
+                                                    <UserButton type="view" text="View" onClick={() => {
+                                                        localStorage.setItem('id', agent.id)
+                                                        setLoading(true)
+                                                        router.push(`/dashboard/agency/agent-management/agents/agent`)
+                                                    }}
+                                                    />
                                                 </div>
                                             </td>
                                         </tr>
                                     )
-                                })}
+                                })} */}
                             </tbody>
                         </table>
 

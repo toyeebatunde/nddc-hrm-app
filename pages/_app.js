@@ -66,12 +66,21 @@ export default function MyApp({ Component, pageProps }) {
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
-  const [entryValue, setEntryValue] = useState({ size: 5, page: 0 })
+  const [entryValue, setEntryValue] = useState({ size: 10, page: 0 })
   const [passwordCaution, setCreatePasswordCaution] = useState(false)
   const [loginFail, setLoginFail] = useState(false)
+  const [searchField, setSearchField] = useState("")
 
 
   const Layout = Component.Layout || EmptyLayout
+
+  function setSearchParam(e) {
+    setSearchField(e.target.value)
+  }
+  function resetSearchParams() {
+    setSearchField("")
+    setDateRange({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
+  }
 
   function setView(state) {
     setViewState(state)
@@ -82,6 +91,10 @@ export default function MyApp({ Component, pageProps }) {
     // console.log(previous)
     previous.setDate(date.getDate() - range);
     return previous;
+  }
+
+  function resetPage() {
+    setEntryValue({ ...entryValue, size: 5, page: 0 })
   }
 
   function changePasswordCaution() {
@@ -148,8 +161,9 @@ export default function MyApp({ Component, pageProps }) {
     })
       .then(response => {
         const decoded = jwt.decode(response.data.token)
+        console.log(decoded)
         setToken(true)
-        const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
+        const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(',') }
         Cookies.set("token", response.data.token)
         Cookies.set("token", response.data.token)
         // console.log(user)
@@ -191,8 +205,8 @@ export default function MyApp({ Component, pageProps }) {
     }
     // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
     const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
-    const thePassword = details.password.replaceAll(" ","")
-    const theConfirmation = details.confirmPassword.replaceAll(" ","")
+    const thePassword = details.password.replaceAll(" ", "")
+    const theConfirmation = details.confirmPassword.replaceAll(" ", "")
     // console.log(url)
     // debugger
     axios.patch(url,
@@ -244,19 +258,19 @@ export default function MyApp({ Component, pageProps }) {
 
   }
 
-  function formatDate(date) {            
-    var d = (date.getUTCDate() + 1).toString(),           
-        m = (date.getUTCMonth() + 1).toString(),    
-        y = date.getUTCFullYear().toString(),       
-        formatted = '';
-    if (d.length === 1) {                           
-        d = '0' + d;
+  function formatDate(date) {
+    var d = (date.getUTCDate() + 1).toString(),
+      m = (date.getUTCMonth() + 1).toString(),
+      y = date.getUTCFullYear().toString(),
+      formatted = '';
+    if (d.length === 1) {
+      d = '0' + d;
     }
-    if (m.length === 1) {                           
+    if (m.length === 1) {
     }
-    formatted = d + '-' + m + '-' + y;              
+    formatted = d + '-' + m + '-' + y;
     return formatted;
-}
+  }
 
 
   function showPassword(field, shower, showState) {
@@ -286,6 +300,7 @@ export default function MyApp({ Component, pageProps }) {
           createCaution={passwordCaution}
           changer={changePasswordCaution}
           createPassword={createPassword}
+
         />
       </LoginLayout>
     )
@@ -321,8 +336,27 @@ export default function MyApp({ Component, pageProps }) {
       search={search}
       setSearch={setSearch}
       formatDate={formatDate}
+      resetSearchParams={resetSearchParams}
     >
-      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange} search={search} setSearch={setSearch} formatDate={formatDate}>
+      <Layout
+        modals={modals}
+        activeTab={activeTab}
+        setDateSearchRange={setDateSearchRange}
+        setActiveTab={setTab}
+        activeAgency={activeDashboard}
+        setView={setView}
+        viewState={viewState}
+        activeState={activeState}
+        dateRange={dateRange}
+        week={week}
+        setDateRange={setDateRange}
+        search={search}
+        setSearch={setSearch}
+        setSearchParam={setSearchParam}
+        searchField={searchField}
+        formatDate={formatDate}
+        resetSearchParams={resetSearchParams}
+      >
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -349,12 +383,15 @@ export default function MyApp({ Component, pageProps }) {
           setActiveTab={setTab}
           pageSelector={pageSelector}
           entryValue={entryValue}
+          resetPage={resetPage}
           dateRange={dateRange}
           week={week}
           setDateRange={setDateRange}
           search={search}
           setSearch={setSearch}
           formatDate={formatDate}
+          searchField={searchField}
+          resetSearchParams={resetSearchParams}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

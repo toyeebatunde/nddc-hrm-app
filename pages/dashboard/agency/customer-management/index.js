@@ -10,7 +10,7 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
+export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, dateRange, search, searchField, formatDate, resetSearchParams }) {
 
     const initialCustomerForm = {
         customerId: "",
@@ -32,8 +32,12 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
     const router = useRouter()
     const [customerEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [customerData, setCustomerData] = useState()
+    const [filteredData, setFilteredData] = useState()
+    const [searchedField, setSearchedField] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/customer/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: customers, error: customersError } = useSWR(`${testEnv}v1/customer/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/customer/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/customer/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     function formEdit(e) {
         setCustomerEdit({ ...customerEdit, editForm: { ...customerEdit.editForm, [e.target.name]: e.target.value } })
@@ -44,14 +48,43 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
         setView(false)
         setActiveDashboard("CustomerManagement")
         setActiveState("2")
-        if (data) {
+        resetSearchParams()
+        if (customers) {
             setLoading(false)
-            setCustomerData(data)
+            setCustomerData(customers)
         }
-        if (error) {
-            console.log(error)
+        if (customersError) {
+            console.log(customersError)
         }
-    }, [data])
+    }, [customers])
+
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (dateFiltered) {
+            setFilteredData(dateFiltered)
+        }
+        if (filteredError) {
+            console.log(filteredError)
+        }
+    }, [dateFiltered])
+
+    useEffect(() => {
+        // if(dateRange.dateTo < dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (searchBarData) {
+            setSearchedField(searchBarData)
+        }
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
+
+
 
     function editCustomer() {
         // editApi()
@@ -147,7 +180,8 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
                                     </tr>
                                 </thead>
                                 <tbody className="mt-6 ">
-                                    {customerData?.data.map((customer, index) => {
+                                    { searchField == "" ?
+                                    (search ? filteredData : customerData)?.data.map((customer, index) => {
                                         return (
                                             <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
                                                 <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
@@ -166,7 +200,28 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
                                                 </td>
                                             </tr>
                                         )
-                                    })}
+                                    }) :
+                                    searchBarData?.data.map((customer, index) => {
+                                        return (
+                                            <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
+                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
+                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
+                                                <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
+                                                <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
+
+                                                <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
+                                                <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
+                                                    <div className="w-[80px] h-[36px]">
+                                                        <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
+                                                    </div>
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })                                    
+                                    }
                                 </tbody>
                             </table>
 
