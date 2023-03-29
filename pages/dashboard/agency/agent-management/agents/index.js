@@ -10,7 +10,16 @@ import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
 
-export default function Agents({ modals, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, dateRange, search, setSearch, setLoading, searchField }) {
+export default function Agents({
+    modals, setToken,
+    setActiveDashboard,
+    setActiveState,
+    entryValue, pageSelector,
+    setActiveTab, dateRange,
+    search, setSearch,
+    setLoading, searchField,
+    resetSearchParams
+}) {
     const initialCustomerForm = {
         agentId: "",
         userName: "",
@@ -55,6 +64,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
 
     useEffect(() => {
         setActiveTab("Agents")
+        resetSearchParams()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -70,7 +80,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
-        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (dateFiltered) {
             setFilteredData(dateFiltered)
         }
@@ -83,7 +93,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
-        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
             setSearchedField(searchBarData)
         }
@@ -97,7 +107,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
-        // mutate(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`)
+        mutate(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`)
         if (banks) {
             let bankCodes = ["Bank Codes"]
             let bankNames = ["Choose a Bank"]
@@ -249,7 +259,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {searchedField == "" ?
+                                {searchField == "" ?
                                     (search ? filteredData : agentData)?.data.map((agent, index) => {
                                         return (
                                             <tr key={index} className=" justify-between h-[50px]">
@@ -316,7 +326,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                 </td>
                                             </tr>
                                         )
-                                    }) : 
+                                    }) :
                                     searchBarData?.data.map((agent, index) => {
                                         return (
                                             <tr key={index} className=" justify-between h-[50px]">
@@ -324,10 +334,10 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                 <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
                                                 <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
                                                 <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
-    
+
                                                     {agent.firstName} <br></br>
                                                     {agent.lastName}
-    
+
                                                 </td>
                                                 <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
                                                 <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
@@ -337,7 +347,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                     <h2>
                                                         {agent.status}
                                                     </h2>
-    
+
                                                 </td>
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
@@ -383,7 +393,7 @@ export default function Agents({ modals, setToken, setActiveDashboard, setActive
                                                 </td>
                                             </tr>
                                         )
-                                    }) 
+                                    })
                                 }
                                 {/* {(search ? filteredData : agentData)?.data.map((agent, index) => {
                                     return (

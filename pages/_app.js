@@ -77,6 +77,10 @@ export default function MyApp({ Component, pageProps }) {
   function setSearchParam(e) {
     setSearchField(e.target.value)
   }
+  function resetSearchParams() {
+    setSearchField("")
+    setDateRange({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
+  }
 
   function setView(state) {
     setViewState(state)
@@ -90,7 +94,7 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function resetPage() {
-    setEntryValue({...entryValue, size: 5, page: 0})
+    setEntryValue({ ...entryValue, size: 5, page: 0 })
   }
 
   function changePasswordCaution() {
@@ -200,8 +204,8 @@ export default function MyApp({ Component, pageProps }) {
     }
     // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
     const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
-    const thePassword = details.password.replaceAll(" ","")
-    const theConfirmation = details.confirmPassword.replaceAll(" ","")
+    const thePassword = details.password.replaceAll(" ", "")
+    const theConfirmation = details.confirmPassword.replaceAll(" ", "")
     // console.log(url)
     // debugger
     axios.patch(url,
@@ -253,19 +257,19 @@ export default function MyApp({ Component, pageProps }) {
 
   }
 
-  function formatDate(date) {            
-    var d = (date.getUTCDate() + 1).toString(),           
-        m = (date.getUTCMonth() + 1).toString(),    
-        y = date.getUTCFullYear().toString(),       
-        formatted = '';
-    if (d.length === 1) {                           
-        d = '0' + d;
+  function formatDate(date) {
+    var d = (date.getUTCDate() + 1).toString(),
+      m = (date.getUTCMonth() + 1).toString(),
+      y = date.getUTCFullYear().toString(),
+      formatted = '';
+    if (d.length === 1) {
+      d = '0' + d;
     }
-    if (m.length === 1) {                           
+    if (m.length === 1) {
     }
-    formatted = d + '-' + m + '-' + y;              
+    formatted = d + '-' + m + '-' + y;
     return formatted;
-}
+  }
 
 
   function showPassword(field, shower, showState) {
@@ -295,7 +299,7 @@ export default function MyApp({ Component, pageProps }) {
           createCaution={passwordCaution}
           changer={changePasswordCaution}
           createPassword={createPassword}
-          
+
         />
       </LoginLayout>
     )
@@ -331,8 +335,27 @@ export default function MyApp({ Component, pageProps }) {
       search={search}
       setSearch={setSearch}
       formatDate={formatDate}
+      resetSearchParams={resetSearchParams}
     >
-      <Layout modals={modals} activeTab={activeTab} setDateSearchRange={setDateSearchRange} setActiveTab={setTab} activeAgency={activeDashboard} setView={setView} viewState={viewState} activeState={activeState} dateRange={dateRange} week={week} setDateRange={setDateRange} search={search} setSearch={setSearch} setSearchParam={setSearchParam} searchField={searchField} formatDate={formatDate}>
+      <Layout
+        modals={modals}
+        activeTab={activeTab}
+        setDateSearchRange={setDateSearchRange}
+        setActiveTab={setTab}
+        activeAgency={activeDashboard}
+        setView={setView}
+        viewState={viewState}
+        activeState={activeState}
+        dateRange={dateRange}
+        week={week}
+        setDateRange={setDateRange}
+        search={search}
+        setSearch={setSearch}
+        setSearchParam={setSearchParam}
+        searchField={searchField}
+        formatDate={formatDate}
+        resetSearchParams={resetSearchParams}
+      >
         <Component
           login={login}
           setActiveDashboard={setActiveDashboard}
@@ -367,6 +390,7 @@ export default function MyApp({ Component, pageProps }) {
           setSearch={setSearch}
           formatDate={formatDate}
           searchField={searchField}
+          resetSearchParams={resetSearchParams}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">
