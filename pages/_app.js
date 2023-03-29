@@ -161,8 +161,9 @@ export default function MyApp({ Component, pageProps }) {
     })
       .then(response => {
         const decoded = jwt.decode(response.data.token)
+        console.log(decoded)
         setToken(true)
-        const user = { role: decoded?.role, permissions: decoded?.permissions?.split(',') }
+        const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(',') }
         Cookies.set("token", response.data.token)
         Cookies.set("token", response.data.token)
         // console.log(user)
