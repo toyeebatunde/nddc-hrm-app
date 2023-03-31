@@ -44,7 +44,7 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
         },
         {
             name: "KYC Pending approvals",
-            url: "/agency/agent-management/pending-approval"
+            url: "/dashboard/agency/agent-management/pending-approvals"
         },
     ]
     const transactionTabs = [
@@ -110,7 +110,7 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     {tab ? tabs[tab].text : "Agency"}
                 </h4>
-                <div className={`${activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : "flex"} justify-end grow`}>
+                <div className={`${activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : viewState ? "hidden" : "flex"} justify-end grow`}>
                     <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setDateSearchRange={setDateSearchRange} directionDown="/icons/direction-down.svg" />
                 </div>
             </section>

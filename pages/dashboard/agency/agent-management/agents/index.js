@@ -18,7 +18,9 @@ export default function Agents({
     setActiveTab, dateRange,
     search, setSearch,
     setLoading, searchField,
-    resetSearchParams
+    resetSearchParams,
+    setView,
+    viewState
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -294,7 +296,8 @@ export default function Agents({
                                                 </td>
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
-                                                        <UserButton onClick={() => {
+                                                        <UserButton onClick={() => {   
+                                                            setView(true)        
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -309,10 +312,11 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
+                                                            
                                                         }} type="edit" />
                                                     </div>
                                                     <div className="w-[88px] h-[36px]">
@@ -362,6 +366,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -376,7 +381,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -395,73 +400,7 @@ export default function Agents({
                                         )
                                     })
                                 }
-                                {/* {(search ? filteredData : agentData)?.data.map((agent, index) => {
-                                    return (
-                                        <tr key={index} className=" justify-between h-[50px]">
-                                            <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
-                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
-                                            <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
-
-                                                {agent.firstName} <br></br>
-                                                {agent.lastName}
-
-                                            </td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
-                                            <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
-                                                <h2>
-                                                    {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
-                                                </h2>
-                                                <h2>
-                                                    {agent.status}
-                                                </h2>
-
-                                            </td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
-                                            <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
-                                                <h2>
-                                                    {agent.state}
-                                                </h2>
-                                                <h2>
-                                                    {agent.lga}
-                                                </h2>
-                                            </td>
-                                            <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
-                                                <div className="w-[80px] h-[36px]">
-                                                    <UserButton onClick={() => {
-                                                        editInfo(
-                                                            agent.agentIdentifier,
-                                                            agent.userName,
-                                                            agent.firstName,
-                                                            agent.lastName,
-                                                            agent.email,
-                                                            agent.phoneNumber,
-                                                            agent.address,
-                                                            agent.gender,
-                                                            agent.city,
-                                                            agent.state,
-                                                            agent.lga,
-                                                            agent.agentType,
-                                                            agent.classification,
-                                                            agent.bankInstitutionName,
-                                                            agent.bankAccountNumber,
-                                                            agent.id
-                                                        )
-                                                    }} type="edit" />
-                                                </div>
-                                                <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => {
-                                                        localStorage.setItem('id', agent.id)
-                                                        setLoading(true)
-                                                        router.push(`/dashboard/agency/agent-management/agents/agent`)
-                                                    }}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })} */}
+                                
                             </tbody>
                         </table>
 
@@ -512,7 +451,7 @@ export default function Agents({
                                     <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
-                                    <Textfield type="select" selectOptions={["Choose a type", "Super Agent", "Agent"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
@@ -530,6 +469,7 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />
                                 </div>

@@ -18,7 +18,8 @@ export default function Agents({
     setActiveTab, dateRange,
     search, setSearch,
     setLoading, searchField,
-    resetSearchParams
+    resetSearchParams,
+    setView
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -295,6 +296,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -309,7 +311,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -362,6 +364,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -376,7 +379,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -512,7 +515,7 @@ export default function Agents({
                                     <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
-                                    <Textfield type="select" selectOptions={["Choose a type", "Super Agent", "Agent"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
@@ -530,6 +533,7 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />
                                 </div>
