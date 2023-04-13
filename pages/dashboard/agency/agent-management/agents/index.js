@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
+import jwt from "jsonwebtoken";
 
 export default function Agents({
     modals, setToken,
@@ -92,9 +93,10 @@ export default function Agents({
     }, [dateFiltered])
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
+        // if(dateRange.dateTo > dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
+        // console.log(dateRange)
         mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
             setSearchedField(searchBarData)
@@ -232,7 +234,7 @@ export default function Agents({
         return formatted;
     }
 
-    const dateFormatter = (stamp) => {
+    function dateFormatter (stamp) {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }

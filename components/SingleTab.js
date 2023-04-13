@@ -33,7 +33,7 @@ export default function SingleTab({ text, index, dataSet, position, activeDashbo
     return (
         <>
             <Link href={`${link}`}>
-                <div id={index} onClick={(e) => {switchBoard(e, index, dataSet), closeSideBar() }} onMouseOver={manageHoverState} onMouseOut={manageHoverState} className={`flex relative justify-start ${position == 0 ?" " : "mt-[5px]"} w-full h-[25px] items-center font-pushPennyMedium font-[500] text-[13px] leading-[24px] `}>
+                <div id={index} onClick={(e) => {switchBoard(e, index, dataSet), closeSideBar() }} onMouseOver={manageHoverState} onMouseOut={manageHoverState} className={`flex relative borde justify-start ${position == 0 ?" " : "mt-[5px]"} w-full h-[25px] items-center font-pushPennyMedium font-[500] text-[13px] leading-[24px] `}>
                     <div className={`w-[24px] h-[24px] relative agent-metrics bg-cover`}>
                         <ImageHolder src={checkActive(activeDashboard) ? text.active : text.inactive} />
                     </div>

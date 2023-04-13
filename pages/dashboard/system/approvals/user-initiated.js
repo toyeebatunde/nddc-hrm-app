@@ -9,12 +9,13 @@ import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
 import { patchApi } from "../../../../components/Endpoints"
 
-export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab }) {
+export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab, searchField, resetSearchParams }) {
     const [createRole, setCreateRole] = useState(false)
     const [reload, setReload] = useState(false)
     const [approvalsData, setApprovalsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/approval/initiations?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: initiated, error: initiatedError } = useSWR(`${testEnv}v1/approval/initiations?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/approval/search/initiations?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
 
@@ -22,16 +23,23 @@ export default function Approval({ modals, setModalState, editFormState, setActi
     useEffect(() => {
         setActiveTab("My Initiation")
         setToken()
+        resetSearchParams()
         // setLoading(true)
         setActiveDashboard("Approvals")
         setActiveState("1")
 
-        if (data) {
+        if (initiated) {
             // setLoading(false)
-            setApprovalsData(data)
+            setApprovalsData(initiated)
 
         }
-    }, [data])
+    }, [initiated])
+
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
     useEffect(() => {
         mutate(`${testEnv}v1/approval/initiations?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
@@ -66,30 +74,56 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                             </tr>
                         </thead>
                         <tbody className="mt-6">
-                            {approvalsData?.data.map((approval, index) => {
-                                return (
-                                    <tr key={index} className="flex px-[5px] items-center border-b border-[#979797] gap-[25px] h-[60px]">
-                                        <td className="font-pushpennyBook  flex w-[68px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.code}</td>
-                                        <td className="font-pushpennyBook  flex w-[140px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.operation}</td>
-                                        <td className="font-pushpennyBook  truncate inline-block max-w-[100px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.initiatedBy}</td>
-                                        <td className="font-pushpennyBook  ml-[10px]  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.identifier ? approval.identifier : "n/a"}</td>
-                                        <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
-                                        <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
-                                            <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
-                                                <UserButton type="decline"
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
-                                                />
-                                            </div>
-                                            <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
-                                                <UserButton type="accept"
-                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
-                                                />
-                                            </div>
-                                            <div className={`w-[167px] flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${approval.approvalStatus == "PENDING" ? "hidden" : ""}`}>{approval.approvalStatus == "DECLINE" ? "DECLINED" : approval.approvalStatus}</div>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                            {searchField == "" ?
+                                approvalsData?.data.map((approval, index) => {
+                                    return (
+                                        <tr key={index} className="flex px-[5px] items-center border-b border-[#979797] gap-[25px] h-[60px]">
+                                            <td className="font-pushpennyBook  flex w-[68px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.code}</td>
+                                            <td className="font-pushpennyBook  flex w-[140px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.operation}</td>
+                                            <td className="font-pushpennyBook  truncate inline-block max-w-[100px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.initiatedBy}</td>
+                                            <td className="font-pushpennyBook  ml-[10px]  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.identifier ? approval.identifier : "n/a"}</td>
+                                            <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
+                                            <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="decline"
+                                                        onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
+                                                    />
+                                                </div>
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="accept"
+                                                        onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
+                                                    />
+                                                </div>
+                                                <div className={`w-[167px] flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${approval.approvalStatus == "PENDING" ? "hidden" : ""}`}>{approval.approvalStatus == "DECLINE" ? "DECLINED" : approval.approvalStatus}</div>
+                                            </td>
+                                        </tr>
+                                    )
+                                }) :
+                                searchBarData?.data.map((approval, index) => {
+                                    return (
+                                        <tr key={index} className="flex px-[5px] items-center border-b border-[#979797] gap-[25px] h-[60px]">
+                                            <td className="font-pushpennyBook  flex w-[68px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.code}</td>
+                                            <td className="font-pushpennyBook  flex w-[140px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.operation}</td>
+                                            <td className="font-pushpennyBook  truncate inline-block max-w-[100px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.initiatedBy}</td>
+                                            <td className="font-pushpennyBook  ml-[10px]  flex w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.identifier ? approval.identifier : "n/a"}</td>
+                                            <td className="font-pushpennyBook  flex w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
+                                            <td className="font-pushpennyBook  flex w-[373px] gap-[20px]">
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="decline"
+                                                        onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a change from ${approval.initiatedBy} • ${approval.description}`, action: "decline", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Decline" : "Edit", trigger: triggerReload }, data.id) }}
+                                                    />
+                                                </div>
+                                                <div className={`w-[137px] h-[36px] ${approval.approvalStatus == "PENDING" ? "" : "hidden"}`}>
+                                                    <UserButton type="accept"
+                                                        onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a change from ${approval.initiatedBy} • ${approval.description}`, action: "approve", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: approval.approvalStatus == "PENDING" ? "Accept" : "Delete", trigger: triggerReload }, data.id) }}
+                                                    />
+                                                </div>
+                                                <div className={`w-[167px] flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${approval.approvalStatus == "PENDING" ? "hidden" : ""}`}>{approval.approvalStatus == "DECLINE" ? "DECLINED" : approval.approvalStatus}</div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
 
                         </tbody>
                     </table>

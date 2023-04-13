@@ -9,7 +9,7 @@ import useSWR, { mutate } from 'swr'
 import { ngrok, testEnv, deleteApi, createApi, editApi, patchApi } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 
-export default function Authentication({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setActiveTab, setLoading }) {
+export default function Authentication({ modals, setToken, setActiveDashboard, setActiveState, activeTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setActiveTab, setLoading, searchField, resetSearchParams, setSearchParam }) {
     const initialAuthEdit = { code: "", description: "", type: "" }
     const [editAuth, setEditAuth] = useState(initialAuthEdit)
     // const[authView, setAuthView] = useState(initialAuthEdit)
@@ -22,12 +22,14 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
     const poster = (url, body) => axios.post(url, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: auths, error: authError } = useSWR(`${testEnv}v1/code/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: codeCats, error: codeCatError } = useSWR(`${testEnv}v1/code/category/all?pageNo=0&pageSize=10`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/code/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete an authentication, note after deleting it will go through approval process"
 
 
     useEffect(() => {
         setActiveTab("Authentication")
+        resetSearchParams()
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
@@ -44,10 +46,16 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
 
     }, [auths, codeCats])
 
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
+
     function authHandler(e, action, id) {
         e.preventDefault()
         let categoryData = codeCategories.data.filter(code => code.name == editAuth.type)
-               
+
         if (action == "edit") {
             debugger
             axios.put(`${testEnv}v1/code/update/${id}`, {
@@ -132,7 +140,7 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
         <div className="">
             <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${view ? "hidden" : "flex"} flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                 <section className="w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                    <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                    <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search authentication" />
                     <div className="w-[28px] h-[28px] relative">
                         <ImageHolder src="/icons/search-icon.svg" />
                     </div>
@@ -158,24 +166,44 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {authData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className=" h-[50px]">
-                                            <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.code}</td>
-                                            <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description}</td>
-                                            <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.codeCategory?.name || "n/a"}</td>
-                                            <td className="font-pushpennyBook  flex  justify-start">
-                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[107px] h-[36px]`}>
-                                                    <UserButton type="edit" onClick={(e) => { changeView(e, "edit", item.id) }} />
-                                                </div>
-                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[130px] h-[36px]`}>
-                                                    <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: patchApi, trigger: triggerReload, reason: true, reasontext: "" }, item.id) }} />
-                                                </div>
-                                                <div className={`w-[237px] border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
+                                {searchField == "" ?
+                                    authData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className=" h-[50px]">
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.code}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.codeCategory?.name || "n/a"}</td>
+                                                <td className="font-pushpennyBook  flex  justify-start">
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[107px] h-[36px]`}>
+                                                        <UserButton type="edit" onClick={(e) => { changeView(e, "edit", item.id) }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[130px] h-[36px]`}>
+                                                        <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: patchApi, trigger: triggerReload, reason: true, reasontext: "" }, item.id) }} />
+                                                    </div>
+                                                    <div className={`w-[237px] border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }) :
+                                    searchBarData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className=" h-[50px]">
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.code}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.description}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.codeCategory?.name || "n/a"}</td>
+                                                <td className="font-pushpennyBook  flex  justify-start">
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[107px] h-[36px]`}>
+                                                        <UserButton type="edit" onClick={(e) => { changeView(e, "edit", item.id) }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[130px] h-[36px]`}>
+                                                        <UserButton type="delete" onClick={() => { authEdit(true, "action", { caution: deleteCaution, action: "delete", endPoint: `https://admapis-staging.payrail.co/v1/code/${item.id}/delete`, text: "Delete", onClick: patchApi, trigger: triggerReload, reason: true, reasontext: "" }, item.id) }} />
+                                                    </div>
+                                                    <div className={`w-[237px] border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
 
                             </tbody>
                         </table>
@@ -239,10 +267,10 @@ export default function Authentication({ modals, setToken, setActiveDashboard, s
                                                 name: "",
                                                 description: "",
                                                 trigger: triggerReload,
-                                                changeView:changeView
+                                                changeView: changeView
                                             },
                                             "0"
-                                            )
+                                        )
                                     }}
                                     type="gradient" text="+Add New"
                                 />

@@ -161,15 +161,17 @@ export default function MyApp({ Component, pageProps }) {
     })
       .then(response => {
         const decoded = jwt.decode(response.data.token)
-        console.log(decoded)
+        // console.log(decoded)
         setToken(true)
-        const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(',') }
+        const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(','),exp: decoded?.exp }
+        // const exp = { exp: decoded?.exp }
         Cookies.set("token", response.data.token)
-        Cookies.set("token", response.data.token)
+        // Cookies.set("token", response.data.token)
         // console.log(user)
         Cookies.set("user", JSON.stringify(user))
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(user))
+        // localStorage.setItem('exp', JSON.stringify(exp))
         setIsLoading(false)
         router.push("/dashboard/analytics/agent-metrics")
         // console.log(response.data)
@@ -267,6 +269,7 @@ export default function MyApp({ Component, pageProps }) {
       d = '0' + d;
     }
     if (m.length === 1) {
+      m = '0' + m;
     }
     formatted = d + '-' + m + '-' + y;
     return formatted;
@@ -392,6 +395,7 @@ export default function MyApp({ Component, pageProps }) {
           formatDate={formatDate}
           searchField={searchField}
           resetSearchParams={resetSearchParams}
+          setSearchParam={setSearchParam}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

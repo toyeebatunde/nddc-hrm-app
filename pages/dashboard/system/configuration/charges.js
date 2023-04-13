@@ -12,35 +12,42 @@ import { ngrok, testEnv } from "../../../../components/Endpoints"
 import TableContainer from "../../../../components/TableContainer"
 import { deleteApi, createApi, editApi } from "../../../../components/Endpoints"
 
-export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading, resetPage }) {
-    const [chargeView, setChargeView] = useState({id:"", lowerBound: "", upperBound: "", transactionType: "", chargeType: "", fee: "", approvalStatus:"" })
+export default function Charges({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, setModalState, getModalButtonRef, closeModals, editFormState, entryValue, pageSelector, setLoading, resetPage, searchField, resetSearchParams, setSearchParam }) {
+    const [chargeView, setChargeView] = useState({ id: "", lowerBound: "", upperBound: "", transactionType: "", chargeType: "", fee: "", approvalStatus: "" })
     const [view, setView] = useState(false)
     const [reload, setReload] = useState(true)
     const [callToken, setCallToken] = useState()
     const [chargeData, setChargeData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: chargeApiData, error: chargeDataError } = useSWR(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/user/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const deleteCaution = "You are about to delete a charge, note after deleting it will go through approval process"
 
-    useEffect(()=>{
+    useEffect(() => {
         resetPage()
-    },[])
+    }, [])
 
     useEffect(() => {
         setActiveTab("Charges")
+        resetSearchParams()
         setToken()
         setActiveDashboard("Configurations")
         setActiveState("1")
-        if (data) {
-            setChargeData(data)
-
+        if (chargeApiData) {
+            setChargeData(chargeApiData)
         }
-    }, [data])
+    }, [chargeApiData])
 
     useEffect(() => {
         mutate(`${testEnv}v1/charge/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
+
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
     function triggerReload() {
         setReload(!reload)
@@ -55,7 +62,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
         const currentView = chargeData.data.filter(charge => charge.id === id)
         setChargeView({
             ...chargeView,
-            id:id,
+            id: id,
             lowerBound: currentView[0].lowerBound,
             upperBound: currentView[0].upperBound,
             transactionType: currentView[0].transactionType,
@@ -79,7 +86,7 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
         <div className="">
             <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${view ? "hidden" : "flex"} flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                 <section className="w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                    <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                    <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search charges" />
                     <div className="w-[28px] h-[28px] relative">
                         <ImageHolder src="/icons/search-icon.svg" />
                     </div>
@@ -116,50 +123,96 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {chargeData?.data.map((item, index) => {
-                                    return (
-                                        <tr key={index} className="  h-[50px]">
-                                            <td className="font-pushpennyBook   w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
-                                            <td className="font-pushpennyBook   w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
-                                            <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
-                                            <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
-                                            <td className="font-pushpennyBook   w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
-                                            <td className={`font-pushpennyBook  flex w-[373px] ${item.approvalStatus == "PENDING" ? "gap-[25px]" : "justify-between"}`}>
-                                                <div className="w-[115px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
-                                                </div>
-                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[100px] h-[36px]`}>
-                                                    <UserButton type="edit"
-                                                        onClick={() => {
-                                                            chargeEdit(true, "editCharges", {
-                                                                lowerBound: item.lowerBound,
-                                                                upperBound: item.upperBound,
-                                                                amount: item.value,
-                                                                transactionType: item.transactionType,
-                                                                chargeType: item.chargeType,
+                                {searchField == "" ?
+                                    chargeData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className="  h-[50px]">
+                                                <td className="font-pushpennyBook   w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                                <td className="font-pushpennyBook   w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                                <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                                <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                                <td className="font-pushpennyBook   w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                                <td className={`font-pushpennyBook  flex w-[373px] ${item.approvalStatus == "PENDING" ? "gap-[25px]" : "justify-between"}`}>
+                                                    <div className="w-[115px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[100px] h-[36px]`}>
+                                                        <UserButton type="edit"
+                                                            onClick={() => {
+                                                                chargeEdit(true, "editCharges", {
+                                                                    lowerBound: item.lowerBound,
+                                                                    upperBound: item.upperBound,
+                                                                    amount: item.value,
+                                                                    transactionType: item.transactionType,
+                                                                    chargeType: item.chargeType,
+                                                                    trigger: triggerReload,
+                                                                    loadState: setLoading
+                                                                }, item.id)
+                                                            }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[117px] h-[36px]`}>
+                                                        <UserButton type="delete" onClick={() => {
+                                                            chargeEdit(true, "action", {
+                                                                caution: deleteCaution,
+                                                                action: "delete",
+                                                                endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`,
+                                                                text: "Delete",
                                                                 trigger: triggerReload,
+                                                                onClick: deleteApi,
                                                                 loadState: setLoading
                                                             }, item.id)
                                                         }} />
-                                                </div>
-                                                <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[117px] h-[36px]`}>
-                                                    <UserButton type="delete" onClick={() => {
-                                                        chargeEdit(true, "action", {
-                                                            caution: deleteCaution,
-                                                            action: "delete",
-                                                            endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`,
-                                                            text: "Delete",
-                                                            trigger: triggerReload,
-                                                            onClick: deleteApi,
-                                                            loadState: setLoading
-                                                        }, item.id)
-                                                    }} />
-                                                </div>
-                                                <div className={`grow border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
+                                                    </div>
+                                                    <div className={`grow border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }) :
+                                    searchBarData?.data.map((item, index) => {
+                                        return (
+                                            <tr key={index} className="  h-[50px]">
+                                                <td className="font-pushpennyBook   w-[145px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.transactionType}</td>
+                                                <td className="font-pushpennyBook   w-[31px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.chargeType}</td>
+                                                <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.lowerBound}</td>
+                                                <td className="font-pushpennyBook   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.upperBound}</td>
+                                                <td className="font-pushpennyBook   w-[70px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.value == null ? "N/A" : item.value}</td>
+                                                <td className={`font-pushpennyBook  flex w-[373px] ${item.approvalStatus == "PENDING" ? "gap-[25px]" : "justify-between"}`}>
+                                                    <div className="w-[115px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => { changeView(item.id) }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[100px] h-[36px]`}>
+                                                        <UserButton type="edit"
+                                                            onClick={() => {
+                                                                chargeEdit(true, "editCharges", {
+                                                                    lowerBound: item.lowerBound,
+                                                                    upperBound: item.upperBound,
+                                                                    amount: item.value,
+                                                                    transactionType: item.transactionType,
+                                                                    chargeType: item.chargeType,
+                                                                    trigger: triggerReload,
+                                                                    loadState: setLoading
+                                                                }, item.id)
+                                                            }} />
+                                                    </div>
+                                                    <div className={`${item.approvalStatus == "PENDING" ? "hidden" : ""} w-[117px] h-[36px]`}>
+                                                        <UserButton type="delete" onClick={() => {
+                                                            chargeEdit(true, "action", {
+                                                                caution: deleteCaution,
+                                                                action: "delete",
+                                                                endPoint: `https://admapis-staging.payrail.co/v1/charge/${item.id}/delete`,
+                                                                text: "Delete",
+                                                                trigger: triggerReload,
+                                                                onClick: deleteApi,
+                                                                loadState: setLoading
+                                                            }, item.id)
+                                                        }} />
+                                                    </div>
+                                                    <div className={`grow border flex items-center justify-center h-[36px] font-[400] font-pushPenny bg-[black] text-[white] rounded-[24px] text-[18px] ${item.approvalStatus == "PENDING" ? "" : "hidden"}`}>Approval Pending</div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
 
                             </tbody>
                         </table>
@@ -223,15 +276,15 @@ export default function Charges({ modals, setToken, setActiveDashboard, setActiv
                                             changeView,
                                             setLoading,
                                             "editSetting",
-                                           triggerReload
+                                            triggerReload
                                         )
                                     }} text="Edit" type="gradient" />
                                 </div>
                                 <div className={`w-[126px] h-[47px] lg:w-[186px] lg:h-[57px] `}>
-                                    <UserButton onClick={(e)=>{
+                                    <UserButton onClick={(e) => {
                                         e.preventDefault()
                                         changeView()
-                                    }} 
+                                    }}
                                         text="Save" bg="bg-[#DDDDDD]" textColor="text-[white]" />
                                 </div>
                             </section>

@@ -17,7 +17,7 @@ import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
 import UserButton from '../../../../components/ButtonMaker'
 
-export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage }) {
+export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage, searchField, resetSearchParams, setSearchParam }) {
     const [permissions, setPermissions] = useState([
         { name: false },
         { name: false },
@@ -41,6 +41,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
     const [rolesData, setRolesData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/role/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     // const router = useRouter()
 
 
@@ -78,13 +79,14 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
             })
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         resetPage()
-    },[])
+    }, [])
 
     useEffect(() => {
         setLoading(true)
         setActiveTab("Roles and Privileges")
+        resetSearchParams()
         const decoded = jwt.decode(localStorage.getItem('token'))
         console.log(decoded)
         const permissions = decoded?.permissions?.split(',')
@@ -104,6 +106,12 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
     useEffect(() => {
         mutate(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
+    
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
     function triggerReload() {
         setReload(!reload)
@@ -125,7 +133,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
             <section className={`px-4 w-full justify-center ${modals.isOpen ? "blur-sm" : "blur-none"} flex`}>
                 <section className={`px-[40px] w-fit md:w-full flex flex-col items-center mdxl:justify-between mdxl:flex-row mdxl:px-[10px] bg-[#F3F3F3] rounded-[48px] pt-2 pb-2 mt-8 h-fit lg:h-[61px]`}>
                     <section className=" w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                        <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                        <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search roles" />
                         <div className="w-[28px] h-[28px] relative">
                             <ImageHolder src={searchIcon} />
                         </div>
@@ -217,18 +225,32 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                             </tr>
                         </thead>
                         <tbody className="mt-6">
-                            {rolesData?.data.map((role, index) => {
-                                return (
-                                    <tr key={index} className="h-[50px]">
-                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
-                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.roleType || "n/a"}</td>
-                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
-                                        <td className="font-pushpennyBook  items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                            {role.teamMembers}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                            {searchField == "" ?
+                                rolesData?.data.map((role, index) => {
+                                    return (
+                                        <tr key={index} className="h-[50px]">
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.roleType || "n/a"}</td>
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
+                                            <td className="font-pushpennyBook  items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                {role.teamMembers}
+                                            </td>
+                                        </tr>
+                                    )
+                                }) :
+                                searchBarData?.data.map((role, index) => {
+                                    return (
+                                        <tr key={index} className="h-[50px]">
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.name}</td>
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.roleType || "n/a"}</td>
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{role.createdBy || "n/a"}</td>
+                                            <td className="font-pushpennyBook  items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                {role.teamMembers}
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
 
 
                         </tbody>

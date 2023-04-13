@@ -3,7 +3,7 @@ import { useState, useRef} from "react"
 import ButtonTab from "./ButtonTab"
 import ImageHolder from "./ImageHolder"
 
-export default function ApprovalsLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab, activeAgency, activeState }) {
+export default function ApprovalsLayoutTemplate({ modals, setModalState, children, activeTab, setActiveTab, activeAgency, activeState, setSearchParam }) {
     // const [activeTab, setActiveTab] = useState("")
 
     // function setTab(tab) {
@@ -60,7 +60,7 @@ export default function ApprovalsLayoutTemplate({ modals, setModalState, childre
             <div className="w-full pt-2 px-4">
             <section className={`px-[40px] mdxl:px-[10px] w-full md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                 <section className="w-full lg:w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                    <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search Approvals" />
+                    <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search Approvals" />
                     <div className="w-[28px] h-[28px] relative">
                         <ImageHolder src="/icons/search-icon.svg" />
                     </div>

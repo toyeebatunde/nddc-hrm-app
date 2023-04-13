@@ -10,7 +10,7 @@ import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
 
-export default function Agents({
+export default function PendingKYC({
     modals, setToken,
     setActiveDashboard,
     setActiveState,
@@ -106,11 +106,11 @@ export default function Agents({
 
 
 
-    
 
-   
 
-   
+
+
+
 
     function formatDate(date) {
         var d = (date.getUTCDate() + 1).toString(),
@@ -149,8 +149,8 @@ export default function Agents({
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {searchField == "" ?
-                                    (search ? filteredData : agentData)?.data.map((agent, index) => {
+                                {/* {searchField == "" ?
+                                    (search ? filteredData : agents)?.data.map((agent, index) => {
                                         return (
                                             <tr key={index} className=" justify-between border-b h-[63px]">
                                                 <td className="font-pushpennyBook font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
@@ -188,6 +188,27 @@ export default function Agents({
                                             </tr>
                                         )
                                     })
+                                } */}
+                                {
+                                    agents?.data.map((agent, index) => {
+                                        return (
+                                            <tr key={index} className=" justify-between border-b h-[63px]">
+                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
+                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentName}</td>
+                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentClass}</td>
+                                                <td className="font-pushpennyBook gap-[5px] w-[175px] flex h-[63px] items-center items-start">
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            localStorage.setItem('id', agent.id)
+                                                            setLoading(true)
+                                                            router.push(`/dashboard/agency/agent-management/agents/agent`)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
                                 }
                             </tbody>
                         </table>
@@ -199,4 +220,4 @@ export default function Agents({
     )
 }
 
-Agents.Layout = MetricLayoutTemplate
+PendingKYC.Layout = MetricLayoutTemplate
