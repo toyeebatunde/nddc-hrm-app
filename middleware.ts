@@ -22,14 +22,10 @@ export async function middleware(request: NextRequest) {
     if (token && (JSON.parse(request.cookies.get("user").value)).role) {
       // const acceptUser = (JSON.parse(request.cookies.get("user").value))
       // if(acceptUser.role)
-      return NextResponse.next()   }
+      return NextResponse.next()
+    }
 
     return NextResponse.rewrite(new URL('/', request.url))
   }
 
 }
-
-
-// export const config = {
-//   matcher: ['/dashboard', '/login']
-// }

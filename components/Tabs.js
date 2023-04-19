@@ -119,7 +119,7 @@ export const tabs = [
     {
         text: "Agency",
         data: "2",
-        height: "hover:h-[230px]",
+        // height: "hover:h-[260px]",
         1: "[50px]",
         2: "[85px]",
         3: "[120px]",
@@ -127,7 +127,8 @@ export const tabs = [
         5: "[170px]",
         6: "[200px]",
         7: "[230px]",
-        full: "h-[230px]",
+        8: "[260px]",
+        // full: "h-[230px]",
         subTexts: [
             {
                 text: "Agent Management",
@@ -176,6 +177,14 @@ export const tabs = [
                 data: "2",
                 link: "/dashboard/agency/reconciliation",
                 permission: ["VIEW_RECONCILATION", "EDIT_RECONCILATION"]
+            },
+            {
+                text: "Payment",
+                active:'/icons/payment.svg',
+                inactive: '/icons/payment-inactive.svg',
+                data: "2",
+                link: "/dashboard/agency/payment",
+                permission: ["VIEW_PAYMENT", "EDIT_PAYMENT"]
             },
             {
                 text: "POS Terminals",

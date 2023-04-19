@@ -54,7 +54,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                     </section>
                     <section className="flex flex-col lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield selectOptions={["Choose an actor type","SUPER_AGENT", "AGENT", "PAYRAIL"]} name="actorType" formEdit={formEdit} value={values.values.actorType} type="select" title="Actor Type" />
+                            <Textfield selectOptions={["Choose an actor type", "SUPER_AGENT", "AGENT", "PAYRAIL"]} name="actorType" formEdit={formEdit} value={values.values.actorType} type="select" title="Actor Type" />
                         </div>
                     </section>
 
@@ -198,7 +198,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
         return (
             <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[634px] bg-white rounded-[15px]`}>
                 <section className="flex w-[95%] lg:w-[70%] lg:mr-[40px] lg:self-end justify-between">
-                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Invite a team mate</p>
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">{values.values.heading || "Invite a team mate"}</p>
                     <button onClick={(e) => { modalCloser(false, "editCharges") }} className="w-[40px] h-[40px] relative cursor-pointer">
                         <ImageHolder id="closer" onClick={(e) => { closeModal(e) }} src="/icons/close-modal.svg" />
                     </button>
@@ -207,13 +207,13 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
                     <section className="flex  flex-col lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
-                            <Textfield formEdit={formEdit} value={values.values.firstName} type="text" title="First Name" name="firstName" />
+                            <Textfield type={values.values.privileges ? "readonly" : "text"} formEdit={formEdit} value={values.values.firstName} title="First Name" name="firstName" />
                         </div>
                         <div className="flex items-center justify-center w-[90%] lg:w-[232px] h-[62px] relative rounded-[28.5px]">
-                            <Textfield formEdit={formEdit} value={values.values.lastName} type="text" title="Last Name" name="lastName" />
+                            <Textfield formEdit={formEdit} value={values.values.lastName} type={values.values.privileges ? "readonly" : "text"} title="Last Name" name="lastName" />
                         </div>
                     </section>
-                    <section className="flex  flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                    <section className={`${values.values.privileges ? "hidden" : "flex"}  flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]`}>
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
                             <Textfield formEdit={formEdit} value={values.values.email} type="text" title="Email" name="email" />
                         </div>
@@ -226,28 +226,48 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
                     <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
                         <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton text="Cancel" onClick={(e) => { modalCloser(false, "teamModal") }} />
+                            <UserButton text={values.values.privileges ? "Delete user" : "Cancel"}
+                                onClick={values.values.privileges ?
+                                    (e) => {
+                                        // console.log("not disabled")
+                                        deleteApi(
+                                            e,
+                                            values.values.endPoint,
+                                            localStorage.getItem('token'),
+                                            modalCloser,
+                                            setLoading,
+                                            "teamModal",
+                                            values.values.trigger
+                                        )
+                                    }
+                                    : (e) => { modalCloser(false, "teamModal") }}
+                            />
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
-                            <UserButton disabled={values.values.firstName === "" || values.values.lastName === "" || values.values.email === "" || values.values.assignRole === "" || values.values.assignRole == "Select a Role"} text="Send Invitation" type="gradient"
-                                onClick={(e) => {
-                                    // console.log("not disabled")
-                                    postApi(
-                                        e,
-                                        values.values.endPoint,
-                                        {
-                                            "firstname": values.values.firstName,
-                                            "lastname": values.values.lastName,
-                                            "email": values.values.email,
-                                            "role": values.values.assignRole,
-                                        },
-                                        localStorage.getItem('token'),
-                                        modalCloser,
-                                        setLoading,
-                                        "teamModal",
-                                        values.values.trigger
-                                    )
-                                }}
+                            <UserButton disabled={values.values.firstName === "" || values.values.lastName === "" || values.values.assignRole === "" || values.values.assignRole == "Select a Role" || values.values.email === ""} text={values.values.privileges ? "Update Role" : "Send Invitation"} type="gradient"
+                                onClick={values.values.privileges ?
+                                    (e) => {
+                                        console.log("no update endpoint")
+                                    } :
+                                    (e) => {
+                                        // console.log("not disabled")
+                                        postApi(
+                                            e,
+                                            values.values.endPoint,
+                                            {
+                                                "firstname": values.values.firstName,
+                                                "lastname": values.values.lastName,
+                                                "email": values.values.email,
+                                                "role": values.values.assignRole,
+                                            },
+                                            localStorage.getItem('token'),
+                                            modalCloser,
+                                            setLoading,
+                                            "teamModal",
+                                            values.values.trigger
+                                        )
+                                    }
+                                }
                             />
                         </div>
                     </section>

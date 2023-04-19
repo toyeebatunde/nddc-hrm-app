@@ -18,7 +18,8 @@ export default function Agents({
     setActiveTab, dateRange,
     search, setSearch,
     setLoading, searchField,
-    resetSearchParams
+    resetSearchParams,
+    setView, day, resetDay
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -50,6 +51,7 @@ export default function Agents({
     // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/new_agents?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/new_agents/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/new_agents?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
@@ -57,14 +59,18 @@ export default function Agents({
     const [currentData, setCurrentData] = useState()
     // const searchField = useRef()
 
+    
 
+    
+    
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
     }
-
+    
     useEffect(() => {
         setActiveTab("New Agents")
         resetSearchParams()
+        resetDay()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -75,6 +81,15 @@ export default function Agents({
             console.log(agentsError)
         }
     }, [agents])
+    
+    useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {
@@ -295,6 +310,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -309,7 +325,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -362,6 +378,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -376,7 +393,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -512,7 +529,7 @@ export default function Agents({
                                     <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
-                                    <Textfield type="select" selectOptions={["Choose a type", "Super Agent", "Agent"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
@@ -530,6 +547,7 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />
                                 </div>

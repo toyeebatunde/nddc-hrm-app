@@ -1,7 +1,7 @@
 
 import { title } from "process"
 import ImageHolder from "./ImageHolder"
-export default function UserButton({ type, text, onClick, small=false, bg="bg-[white]", textColor, preventDefault="button", disabled=false }) {
+export default function UserButton({ type, text, onClick, small=false, bg="bg-[white]", textColor, preventDefault="button", disabled=false, alterImg = false }) {
     if (type == "gradient") {
         return (
             <button disabled={disabled} type={preventDefault} onClick={onClick} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-[18px] font-pushpennyMedium font-500 text-white w-full h-full font-[400] text-[#ffffff] rounded-[23px]'>
@@ -44,7 +44,7 @@ export default function UserButton({ type, text, onClick, small=false, bg="bg-[w
             <button type={preventDefault} onClick={onClick} className="w-full h-full flex justify-center gap-[10%] px-[10px] items-center text-white rounded-[24px] bg-black flex">
                 <h2 className="font-[400] font-pushPenny text-[18px]">{text}</h2>
                 <div className="w-[20px] h-[20px] relative">
-                    <ImageHolder src='/icons/view.svg' />
+                    <ImageHolder src={alterImg || '/icons/view.svg'} />
                 </div>
             </button>
         )

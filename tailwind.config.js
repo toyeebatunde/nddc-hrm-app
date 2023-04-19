@@ -32,6 +32,14 @@ module.exports = {
       },
       height: {
         "logo-height":"53px",
+        // "1": "50px",
+        "2": "85px",
+        "3": "120px",
+        "4": "145px",
+        "5": "170px",
+        "6": "200px",
+        "7": "230px",
+        "8": "260px",
       },
       fontFamily: {
         pushpennyMedium:["push-penny-medium"],

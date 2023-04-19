@@ -2,7 +2,7 @@
 import ImageHolder from "../../../components/ImageHolder";
 import UserButton from "../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
@@ -46,10 +46,12 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
-    function addBulkNotification() {
+    function addBulkNotification(e) {
+        e.preventDefault()
         axios.post(`${testEnv}v1/bulk_notification/send`, newMessage, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
             .then(response => {
                 setNewMessage(initialMessage)
+                mutate(`${testEnv}v1/bulk_notification/all?pageNo=0&pageSize=10`)
                 console.log(response)
             })
             .catch(error => console.log("error"))
@@ -81,21 +83,29 @@ export default function Bulk({ modals, setToken, setActiveDashboard, setActiveSt
                                 </div>
                                 <div className="w-full h-[50px] flex items-center">
                                     <div class="flex items-center">
-                                        <input onChange={(e) => { pushEdit(e) }} name="push" type="checkbox" class="w-4 h-4 focus:bg-[#E99E24] border-[white] border-none rounded-[2px]" />
+                                        <input onChange={(e) => { pushEdit(e) }} name="push" type="checkbox" checked={newMessage.push} class="w-4 h-4 focus:bg-[#E99E24] border-[white] border-none rounded-[2px]" />
                                         <label for="push" class="text-[14px] ml-[5px] font-[400] text-[#E99E24]">Push Notification</label>
                                     </div>
                                     <div class="flex ml-[20px] items-center">
-                                        <input onChange={(e) => { pushEdit(e) }} name="sms" type="checkbox" value="" class="w-4 h-4 border-[white] border-none rounded-[2px]" />
+                                        <input onChange={(e) => { pushEdit(e) }} name="sms" type="checkbox" checked={newMessage.sms} value="" class="w-4 h-4 border-[white] border-none rounded-[2px]" />
                                         <label for="sms" class="text-[14px] ml-[5px] font-[400] text-[#E99E24]">SMS</label>
                                     </div>
                                 </div>
 
                                 <div className="w-full flex px-[10px] justify-between items-center xl:w-[427px] mt-auto h-[57px]">
                                     <div className="w-[49%] h-[46px]">
-                                        <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" />
+                                        <UserButton onClick={(e)=>{
+                                            e.preventDefault()
+                                            setNewMessage({...newMessage,
+                                                title: "",
+                                                message:"",
+                                                push: false,
+                                                sms: false
+                                            })
+                                        }} text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" />
                                     </div>
                                     <div className="w-[49%] h-[46px]">
-                                        <UserButton type="gradient" text="Save" onClick={addBulkNotification} />
+                                        <UserButton disabled={newMessage.title == "" || newMessage.message == "" || (!newMessage.push && !newMessage.sms)} type="gradient" text="Save" onClick={(e)=>{addBulkNotification(e)}} />
                                     </div>
                                 </div>
 

@@ -15,9 +15,9 @@ import { testEnv } from '../../../../components/Endpoints'
 import jwt from 'jsonwebtoken'
 import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
-import { postApi } from '../../../../components/Endpoints'
+import { postApi, editApi, deleteApi } from '../../../../components/Endpoints'
 
-export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage }) {
+export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage, search, searchField, resetSearchParams, setSearchParam }) {
     // const [activeTab, setActiveTab] = useState("Team")
     const [createRole, setCreateRole] = useState(false)
     const [reload, setReload] = useState(true)
@@ -27,11 +27,13 @@ export default function UserManagement({ modals, setModalState, editFormState, s
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: users, error: usersError } = useSWR(`${testEnv}v1/user/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: roles, error: rolesError } = useSWR(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=15`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/user/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     // const router = useRouter()
 
     useEffect(() => {
         setLoading(true)
         setActiveTab("Team")
+        resetSearchParams()
         const decoded = jwt.decode(localStorage.getItem('token'))
         // console.log(decoded)
         const permissions = decoded?.permissions?.split(',')
@@ -51,9 +53,9 @@ export default function UserManagement({ modals, setModalState, editFormState, s
         // }
     }, [users])
 
-    useEffect(()=>{
+    useEffect(() => {
         resetPage()
-    },[])
+    }, [])
 
     useEffect(() => {
         // setLoading(true)
@@ -78,6 +80,12 @@ export default function UserManagement({ modals, setModalState, editFormState, s
         mutate(`${testEnv}v1/user/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
 
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
+
     function triggerReload() {
         setReload(!reload)
     }
@@ -101,7 +109,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
             <section className={`px-4 flex justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                     <section className="w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                        <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                        <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
                         <div className="w-[28px] h-[28px] relative">
                             <ImageHolder src={searchIcon} />
                         </div>
@@ -120,7 +128,8 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                     onClick: postApi,
                                     trigger: triggerReload,
                                     loadState: setLoading,
-                                    selectOptions: roleNames
+                                    selectOptions: roleNames,
+                                    privileges: false
                                 },
                                 0
                             )
@@ -144,18 +153,51 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                             </tr>
                         </thead>
                         <tbody className="mt-6">
-                            {usersData?.data.map((item, index) => {
-                                return (
-                                    <tr key={index} className="h-[50px]">
-                                        <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
-                                        <td className="font-pushpennyBook   font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
-                                        <td className="font-pushpennyBook truncate inline-block w-[205px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
-                                        <td className="font-pushpennyBook pl-[20px] h-[40px]  items-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                            <button >Change Privileges</button>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                            {searchField == "" ?
+                                usersData?.data.map((item, index) => {
+                                    return (
+                                        <tr key={index} className="h-[50px]">
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
+                                            <td className="font-pushpennyBook   font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
+                                            <td className="font-pushpennyBook truncate inline-block w-[205px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
+                                            <td className="font-pushpennyBook pl-[20px] h-[40px]  items-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                <button onClick={() => {
+                                                    addTeamMateForm(true, "teamModal",
+                                                        {
+                                                            firstName: item.firstName,
+                                                            lastName: item.lastName,
+                                                            email: "n/a",
+                                                            assignRole: "",                                                            
+                                                            endPoint: `${testEnv}v1/user/${item.id}/delete`,
+                                                            onClick: {delete: deleteApi, update: editApi},
+                                                            trigger: triggerReload,
+                                                            loadState: setLoading,
+                                                            selectOptions: roleNames,
+                                                            heading:"Update user privileges",
+                                                            privileges: true
+                                                        },
+                                                        item.id
+                                                    )
+                                                }}
+                                                >Change Privileges</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                                :
+                                searchBarData?.data.map((item, index) => {
+                                    return (
+                                        <tr key={index} className="h-[50px]">
+                                            <td className="font-pushpennyBook  font-400 text-[18px] leading-[14px] text-[#6E7883]">{`${item.firstName} ${item.lastName}`}</td>
+                                            <td className="font-pushpennyBook   font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
+                                            <td className="font-pushpennyBook truncate inline-block w-[205px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
+                                            <td className="font-pushpennyBook pl-[20px] h-[40px]  items-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
+                                                <button >Change Privileges</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
                         </tbody>
                     </table>
                 </TableContainer>

@@ -16,7 +16,7 @@ import useSWR, { mutate } from 'swr'
 import { testEnv, editApi, deleteApi } from '../../../components/Endpoints'
 import TableContainer from '../../../components/TableContainer'
 
-export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, setLoading, pageSelector, entryValue }) {
+export default function Institutions({ modals, setModalState, setToken, setActiveDashboard, setActiveState, editFormState, setLoading, pageSelector, entryValue, searchField, resetSearchParams, setSearchParam }) {
 
     const initialForm = {
         institutionCode: "",
@@ -32,7 +32,8 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
     const [institutionsData, setInstitutionsData] = useState()
     const [reload, setReload] = useState(true)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/institution/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data:institutionApiData, error:institutionApiDataError } = useSWR(`${testEnv}v1/institution/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/role/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     function institutionHandler(modalState, modal, fields, id) {
         setModalState(modalState, modal)
@@ -45,22 +46,29 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
         setView(false)
         setActiveDashboard("Institutions")
         setActiveState("1")
+        resetSearchParams()
         if (!institutionsData) {
             setLoading(true)
         }
-        if (data) {
+        if (institutionApiData) {
             setLoading(false)
-            setInstitutionsData(data)
+            setInstitutionsData(institutionApiData)
         }
-        if (error) {
-            console.log(error)
+        if (institutionApiDataError) {
+            console.log(institutionApiDataError)
         }
-    }, [data])
+    }, [institutionApiData])
 
     useEffect(() => {
         mutate(`${testEnv}v1/institution/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
 
     }, [reload])
+
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
     function triggerReload() {
         setReload(!reload)
@@ -207,7 +215,7 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
             <section className={`px-4 justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"} ${view ? "hidden" : "flex"}`}>
                 <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] flex flex-col mdxl:flex-row justify-between items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                     <section className="md:w-[354px] h-[40px] bg-white rounded-[20px] px-2 relative flex items-center justify-between">
-                        <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                        <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search institution" />
                         <div className="w-[28px] h-[28px] relative">
                             <ImageHolder src={searchIcon} />
                         </div>
@@ -237,7 +245,8 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                                     </tr>
                                 </thead>
                                 <tbody className="mt-6">
-                                    {institutionsData?.data.map((data, index) => {
+                                    {searchField == "" ?
+                                    institutionsData?.data.map((data, index) => {
                                         return (
                                             <tr key={index} className="flex justify-around h-[50px]">
                                                 <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionName}</td>
@@ -262,7 +271,34 @@ export default function Institutions({ modals, setModalState, setToken, setActiv
                                                 </td>
                                             </tr>
                                         )
-                                    })}
+                                    }) :
+                                    searchBarData?.data.map((data, index) => {
+                                        return (
+                                            <tr key={index} className="flex justify-around h-[50px]">
+                                                <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionName}</td>
+                                                <td className="font-pushpennyBook flex w-[20%] font-400 text-[18px] leading-[14px] text-[#6E7883]">{data.institutionCode}</td>
+
+                                                <td className="font-pushpennyBook flex w-[20%] flex items-start font-400 text-[18px] leading-[14px] text-[#6E7883]">
+
+                                                    <UserButton type="edit" onClick={(e) => { changeView(e, "edit", data.id) }} />
+                                                    <UserButton type="delete" onClick={() => {
+                                                        institutionHandler(true, "action", {
+                                                            caution: deleteCaution,
+                                                            action: "delete",
+                                                            endPoint: `${testEnv}v1/institution/delete/${data.id}`,
+                                                            reason: true,
+                                                            text: "Delete",
+                                                            onClick: deleteApi,
+                                                            trigger: triggerReload
+                                                        }, data.id)
+                                                    }}
+                                                    />
+
+                                                </td>
+                                            </tr>
+                                        )
+                                    }) 
+                                    }
                                 </tbody>
                             </table>
 

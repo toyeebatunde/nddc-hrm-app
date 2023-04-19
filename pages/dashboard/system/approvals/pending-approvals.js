@@ -9,33 +9,38 @@ import UserButton from "../../../../components/ButtonMaker"
 import TableContainer from "../../../../components/TableContainer"
 import { patchApi } from "../../../../components/Endpoints"
 
-export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab }) {
+export default function Approval({ modals, setModalState, editFormState, setActiveDashboard, setActiveState, setToken, setLoading, entryValue, pageSelector, setActiveTab, searchField, resetSearchParams }) {
     const [createRole, setCreateRole] = useState(false)
     const [reload, setReload] = useState(false)
     const [approvalsData, setApprovalsData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/approval/pending/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-
-
-
+    const { data:pendingData, error:pendingDataError } = useSWR(`${testEnv}v1/approval/pending/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/approval/search/pending?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     useEffect(() => {
         setActiveTab("Pending Approvals")
         setToken()
+        resetSearchParams()
         // setLoading(true)
         setActiveDashboard("Approvals")
         setActiveState("1")
 
-        if (data) {
+        if (pendingData) {
             // setLoading(false)
-            setApprovalsData(data)
+            setApprovalsData(pendingData)
 
         }
-    }, [data])
+    }, [pendingData])
 
     useEffect(() => {
         mutate(`${testEnv}v1/approval/pending/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
+
+    useEffect(() => {
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
     function triggerReload() {
         setReload(!reload)
@@ -66,7 +71,8 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                             </tr>
                         </thead>
                         <tbody className="mt-6">
-                            {approvalsData?.data.map((approval, index) => {
+                            {searchField == "" ?
+                            approvalsData?.data.map((approval, index) => {
                                 return (
                                     <tr key={index} className=" px-[5px] items-center border-b border-[#979797] h-[60px]">
                                         <td className="font-pushpennyBook   w-[68px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.code}</td>
@@ -88,7 +94,31 @@ export default function Approval({ modals, setModalState, editFormState, setActi
                                         </td>
                                     </tr>
                                 )
-                            })}
+                            }) :
+                            searchBarData?.data.map((approval, index) => {
+                                return (
+                                    <tr key={index} className=" px-[5px] items-center border-b border-[#979797] h-[60px]">
+                                        <td className="font-pushpennyBook   w-[68px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.code}</td>
+                                        <td className="font-pushpennyBook   w-[140px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.operation}</td>
+                                        <td className="font-pushpennyBook  truncate inline-block max-w-[100px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.initiatedBy}</td>
+                                        <td className="font-pushpennyBook  ml-[10px]   w-[110px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.identifier ? approval.identifier : "n/a"}</td>
+                                        <td className="font-pushpennyBook   w-[160px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{approval.description}</td>
+                                        <td className="font-pushpennyBook h-[60px] items-center flex w-[373px] gap-[20px]">
+                                            <div className="w-[137px] h-[36px]">
+                                                <UserButton type="accept"
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to accept a pending action that needs approval`, action: "accept", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=accept`, reason: false, onClick: patchApi, text: "Accept", trigger: triggerReload }, data.id) }}
+                                                />
+                                            </div>
+                                            <div className="w-[137px] h-[36px]">
+                                                <UserButton type="decline"
+                                                    onClick={() => { approvalHandler(true, "action", { caution: `You are about to decline a pending action that needs approval`, action: "delete", endPoint: `${testEnv}v1/approval/${approval.id}/accept?query=decline`, reason: false, onClick: patchApi, text: "Decline", trigger: triggerReload }, data.id) }}
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            }) 
+                            }
 
                         </tbody>
                     </table>

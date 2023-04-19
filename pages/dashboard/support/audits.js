@@ -3,31 +3,78 @@ import MetricLayoutTemplate from "../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR from 'swr'
+import useSWR, {mutate} from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import TableContainer from "../../../components/TableContainer";
 
-export default function Audit({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector }) {
-
+export default function Audit({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, search, resetSearchParams, searchField, dateRange, day }) {
+    
     const [auditData, setAuditData] = useState()
+    const [dateFiltered, setDateFiltered] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/audit/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: audits, error:auditsError } = useSWR(`${testEnv}v1/audit/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: auditsFiltered, error:auditsFilteredError } = useSWR(`${testEnv}v1/audit/filter_by_date_between?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/audit/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/audit/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
         setView(false)
+        resetSearchParams()
         setActiveDashboard("Audits")
         setActiveState("4")
-        if (data) {
+        if (audits) {
             setLoading(false)
-            setAuditData(data)
+            setAuditData(audits)
         }
-        if (error) {
-            console.log(error)
+        if (auditsError) {
+            console.log(auditsError)
         }
-    }, [data, entryValue])
+    }, [audits, entryValue])
+
+    useEffect(() => {
+        // mutate(`${testEnv}v1/audit/filter_by_date_between?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (auditsFiltered) {
+            setDateFiltered(auditsFiltered)
+        }
+        if (auditsFilteredError) {
+            console.log(auditsFilteredError)
+        }
+    }, [auditsFiltered])
+
+    useEffect(() => {
+        if (dayFiltered) {
+            setDateFiltered(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
+
+    function formatDate(date) {
+        var d = (date.getUTCDate() + 1).toString(),
+            m = (date.getUTCMonth() + 1).toString(),
+            y = date.getUTCFullYear().toString(),
+            formatted = '';
+        if (d.length === 1) {
+            d = '0' + d;
+        }
+        if (m.length === 1) {
+        }
+        formatted = d + '-' + m + '-' + y;
+        return formatted;
+    }
+
+    useEffect(() => {
+        if (searchBarData) {
+            // setSearchedField(searchBarData)
+        }
+        if (searchBarDataError) {
+            console.log(searchBarDataError)
+        }
+    }, [searchBarData])
 
 
     const dateFormatter = (stamp) => {
@@ -58,7 +105,8 @@ export default function Audit({ modals, setToken, setActiveDashboard, setActiveS
                                 </tr>
                             </thead>
                             <tbody className="mt-6">
-                                {auditData?.data.map((data, index) => {
+                                {searchField == "" ?
+                                (search ? dateFiltered : auditData)?.data.map((data, index) => {
                                     return (
                                         <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
                                             <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
@@ -70,7 +118,21 @@ export default function Audit({ modals, setToken, setActiveDashboard, setActiveS
 
                                         </tr>
                                     )
-                                })}
+                                }) :
+                                searchBarData?.data.map((data, index) => {
+                                    return (
+                                        <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
+                                            <td className="font-pushpennyBook  w-[135px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.initiatedBy}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.ipAddress}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.operation}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.comments}</td>
+                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+
+                                        </tr>
+                                    )
+                                })
+                                }
 
                             </tbody>
                         </table>

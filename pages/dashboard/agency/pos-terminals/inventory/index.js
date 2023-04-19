@@ -10,26 +10,42 @@ import Textfield from "../../../../../components/TextField";
 import ImageHolder from "../../../../../components/ImageHolder";
 import TableContainer from "../../../../../components/TableContainer";
 
-export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue, pageSelector }) {
+export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue, pageSelector, search, searchField, resetSearchParams, setSearchParam }) {
 
     const [posData, setPosData] = useState()
+    const [searchedField, setSearchedField] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/device/pos/inventory?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: inventoryData, error: inventoryDataError } = useSWR(`${testEnv}v1/device/pos/inventory?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchInventoryData, error: searchInventoryDataError } = useSWR(`${testEnv}v1/device/pos/inventory/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
-
         setView(false)
         setActiveDashboard("POSTerminals")
         setActiveState("2")
-        if (data) {
+        resetSearchParams()
+        if (inventoryData) {
             setLoading(false)
-            setPosData(data)
+            setPosData(inventoryData)
         }
-        if (error) {
-            console.log(error)
+        if (inventoryDataError) {
+            console.log(inventoryDataError)
         }
-    }, [data])
+    }, [inventoryData])
+
+    useEffect(() => {
+        // if(dateRange.dateTo > dateRange.dateFrom) {
+        //     console.log("valid date range")
+        // }
+        // console.log(dateRange)
+        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        if (searchInventoryData) {
+            setSearchedField(searchInventoryData)
+        }
+        if (searchInventoryDataError) {
+            console.log(searchInventoryDataError)
+        }
+    }, [searchInventoryData])
 
     function posEdit(modalState, modal, fields, id) {
         setModalState(modalState, modal)
@@ -51,7 +67,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
             <section className={`px-4 justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`pt-2 px-2 pb-2 w-full flex flex-col lg:flex-row items-center mt-8 h-fit lg:h-[61px] rounded-[10px] lg:rounded-[48px] bg-[#F3F3F3]`}>
                     <section className={`md:w-[250px] w-[95%] flex h-[40px] bg-white rounded-[20px] px-2 relative  items-center justify-between`}>
-                        <input className="search-tab rounded-[20px] w-[80%]" placeholder="Search member" />
+                        <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder="Search Inventory" />
                         <div className="w-[28px] h-[28px] relative">
                             <ImageHolder src='/icons/search-icon.svg' />
                         </div>
@@ -64,7 +80,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton onClick={() => { posEdit(true, "posModalAdd", { terminalId: "", serialNumber: "", posTerminalType: "", action: "Add" }, "") }} type="gradient" text="+ Add New Inventory" />
+                            <UserButton onClick={() => { posEdit(true, "posModalAdd", { terminalId: "", serialNumber: "", posTerminalType: "", action: "Add" }, "") }} type="gradient" text="+Add POS Terminal" />
                         </div>
                     </div>
                 </section>
@@ -84,31 +100,59 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                             </tr>
                         </thead>
                         <tbody className="mt-6">
-                            {posData?.data.map((data, index) => {
-                                return (
-                                    <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
-                                        <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.terminalId}</td>
-                                        <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serialNumber}</td>
-                                        <td className="font-pushpennyBook  w-[106px] break-words  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.type}</td>
-                                        <td className="font-pushpennyBook  w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agentDetails}</td>
-                                        <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
-                                        <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
-                                            <div className="w-[88px] inline-flex h-[36px]">
-                                                <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
-                                            </div>
-                                            <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
-                                            </div>
-                                            <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
-                                            </div>
-                                            <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                <UserButton type="view" text="View" />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                            {searchField == "" ?
+                                posData?.data.map((data, index) => {
+                                    return (
+                                        <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
+                                            <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.terminalId}</td>
+                                            <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serialNumber}</td>
+                                            <td className="font-pushpennyBook  w-[106px] truncate pr-[10px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.type}</td>
+                                            <td className="font-pushpennyBook  w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agentDetails}</td>
+                                            <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                            <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
+                                                <div className="w-[88px] inline-flex h-[36px]">
+                                                    <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="view" text="View" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                }) :
+                                
+                                searchInventoryData?.data.map((data, index) => {
+                                    return (
+                                        <tr key={index} className="h-[70px] border-b px-[10px] border-[#979797]">
+                                            <td className="font-pushpennyBook  w-[160px] break-words font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.terminalId}</td>
+                                            <td className="font-pushpennyBook  w-[132px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serialNumber}</td>
+                                            <td className="font-pushpennyBook  w-[106px] truncate pr-[10px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.type}</td>
+                                            <td className="font-pushpennyBook  w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agentDetails}</td>
+                                            <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                            <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
+                                                <div className="w-[88px] inline-flex h-[36px]">
+                                                    <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                </div>
+                                                <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
+                                                    <UserButton type="view" text="View" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
 
                         </tbody>
                     </table>

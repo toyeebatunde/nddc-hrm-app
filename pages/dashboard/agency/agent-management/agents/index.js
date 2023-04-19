@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
+import jwt from "jsonwebtoken";
 
 export default function Agents({
     modals, setToken,
@@ -18,28 +19,34 @@ export default function Agents({
     setActiveTab, dateRange,
     search, setSearch,
     setLoading, searchField,
-    resetSearchParams
+    resetSearchParams,
+    setView,
+    viewState,
+    createView,
+    changeCreateView,
+    initialCustomerForm,
+    day, resetDay
 }) {
-    const initialCustomerForm = {
-        agentId: "",
-        userName: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        address: "",
-        gender: "",
-        dateCreated: "",
-        city: "",
-        state: "",
-        lga: "",
-        agentType: "",
-        agentClass: "",
-        aggregator: "",
-        bank: "",
-        accountNumber: "",
-        id: ""
-    }
+    // const initialCustomerForm = {
+    //     agentId: "",
+    //     userName: "",
+    //     firstName: "",
+    //     lastName: "",
+    //     email: "",
+    //     phone: "",
+    //     address: "",
+    //     gender: "",
+    //     dateCreated: "",
+    //     city: "",
+    //     state: "",
+    //     lga: "",
+    //     agentType: "",
+    //     agentClass: "",
+    //     aggregator: "",
+    //     bank: "",
+    //     accountNumber: "",
+    //     id: ""
+    // }
 
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [agentData, setAgentData] = useState()
@@ -47,16 +54,15 @@ export default function Agents({
     const [searchedField, setSearchedField] = useState()
     const [banksData, setBanksData] = useState({ codes: [], names: [] })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
     const router = useRouter()
-    const [currentData, setCurrentData] = useState()
-    // const searchField = useRef()
-
+    const [currentData, setCurrentData] = useState()    
+    
 
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
@@ -65,6 +71,7 @@ export default function Agents({
     useEffect(() => {
         setActiveTab("Agents")
         resetSearchParams()
+        resetDay()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -88,11 +95,26 @@ export default function Agents({
             console.log(filteredError)
         }
     }, [dateFiltered])
+    useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
+
+    useEffect(()=>{
+        if(createView) {
+            setCustomerEdit({editView: true, editForm: initialCustomerForm})            
+        }
+    },[createView])
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
+        // if(dateRange.dateTo > dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
+        // console.log(dateRange)
         mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
             setSearchedField(searchBarData)
@@ -230,7 +252,7 @@ export default function Agents({
         return formatted;
     }
 
-    const dateFormatter = (stamp) => {
+    function dateFormatter (stamp) {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
@@ -294,7 +316,8 @@ export default function Agents({
                                                 </td>
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
-                                                        <UserButton onClick={() => {
+                                                        <UserButton onClick={() => {   
+                                                            setView(true)        
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -309,10 +332,11 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
+                                                            
                                                         }} type="edit" />
                                                     </div>
                                                     <div className="w-[88px] h-[36px]">
@@ -362,6 +386,7 @@ export default function Agents({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -376,7 +401,7 @@ export default function Agents({
                                                                 agent.lga,
                                                                 agent.agentType,
                                                                 agent.classification,
-                                                                agent.bankInstitutionName,
+                                                                agent.bankInstitutionCode,
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
@@ -395,73 +420,7 @@ export default function Agents({
                                         )
                                     })
                                 }
-                                {/* {(search ? filteredData : agentData)?.data.map((agent, index) => {
-                                    return (
-                                        <tr key={index} className=" justify-between h-[50px]">
-                                            <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
-                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
-                                            <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
-
-                                                {agent.firstName} <br></br>
-                                                {agent.lastName}
-
-                                            </td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
-                                            <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
-                                                <h2>
-                                                    {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
-                                                </h2>
-                                                <h2>
-                                                    {agent.status}
-                                                </h2>
-
-                                            </td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
-                                            <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
-                                                <h2>
-                                                    {agent.state}
-                                                </h2>
-                                                <h2>
-                                                    {agent.lga}
-                                                </h2>
-                                            </td>
-                                            <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
-                                                <div className="w-[80px] h-[36px]">
-                                                    <UserButton onClick={() => {
-                                                        editInfo(
-                                                            agent.agentIdentifier,
-                                                            agent.userName,
-                                                            agent.firstName,
-                                                            agent.lastName,
-                                                            agent.email,
-                                                            agent.phoneNumber,
-                                                            agent.address,
-                                                            agent.gender,
-                                                            agent.city,
-                                                            agent.state,
-                                                            agent.lga,
-                                                            agent.agentType,
-                                                            agent.classification,
-                                                            agent.bankInstitutionName,
-                                                            agent.bankAccountNumber,
-                                                            agent.id
-                                                        )
-                                                    }} type="edit" />
-                                                </div>
-                                                <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => {
-                                                        localStorage.setItem('id', agent.id)
-                                                        setLoading(true)
-                                                        router.push(`/dashboard/agency/agent-management/agents/agent`)
-                                                    }}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })} */}
+                                
                             </tbody>
                         </table>
 
@@ -475,7 +434,7 @@ export default function Agents({
                     <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
                         <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield type="readonly" formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                                <Textfield type={createView ? "text" : "readonly"} formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
@@ -512,7 +471,7 @@ export default function Agents({
                                     <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
-                                    <Textfield type="select" selectOptions={["Choose a type", "Super Agent", "Agent"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
@@ -530,6 +489,8 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        changeCreateView(false)
+                                        setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />
                                 </div>

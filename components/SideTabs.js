@@ -27,7 +27,7 @@ export default function SideTabs({permissions, text, dataSet, subTexts, activeDa
     // debugger
     // console.log(dataSet)
     return (
-        <li data-tab={dataSet} className={`w-full group ${dataSet == activeState ? `${full}` : "h-[24px]"} transition-all linear duration-[1s] ${height} overflow-hidden relative cursor-pointer pb-[10px] mt-[20px] gap-[5px] flex flex-col`}>
+        <li data-tab={dataSet} className={`w-full borde group ${dataSet == activeState ? `${full}` : "h-[24px]"} transition-all linear duration-[1s] ${height} overflow-hidden relative cursor-pointer pb-[10px] mt-[20px] gap-[5px] flex flex-col`}>
             <div className="font-pushPennyMedium z-30 bg-[#FAFBFC] flex items-start justify-between h-[24px] z-50 text-[16px] leading-[18px] font-[700]">
                 {text}
                 <div className={`bg-black h-1 rounded-2xl ${text == "Insights and Reports" ? "w-[40px]" : "w-[100px]"} mt-2 ${activeBar} group-hover:block`}></div>

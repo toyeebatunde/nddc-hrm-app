@@ -10,7 +10,7 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, dateRange, search, searchField, formatDate, resetSearchParams }) {
+export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, dateRange, search, searchField, formatDate, resetSearchParams, day }) {
 
     const initialCustomerForm = {
         customerId: "",
@@ -37,12 +37,13 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: customers, error: customersError } = useSWR(`${testEnv}v1/customer/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/customer/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/customer/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/customer/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-
+    
     function formEdit(e) {
         setCustomerEdit({ ...customerEdit, editForm: { ...customerEdit.editForm, [e.target.name]: e.target.value } })
     }
-
+    
     useEffect(() => {
         setLoading(true)
         setView(false)
@@ -57,7 +58,17 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
             console.log(customersError)
         }
     }, [customers])
+    
 
+      useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
+    
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")

@@ -15,12 +15,12 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
     const [reconciliationData, setReconciliationData] = useState()
     const [filteredData, setFilteredData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: recon, error:reconError } = useSWR(`${testEnv}v1/reconciliation/current?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: recon, error:reconError } = useSWR(`${testEnv}v1/reconciliation/current`, fetching)
+    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}`, fetching)
 
 
     useEffect(() => {
-        setLoading(true)
+        // setLoading(true)
         setView(false)
         setActiveDashboard("Reconciliation")
         setActiveState("2")
