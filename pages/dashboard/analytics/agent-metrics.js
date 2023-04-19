@@ -1,14 +1,20 @@
 import ImageHolder from "../../../components/ImageHolder"
+import axios from "axios"
 import directionDown from '../../../public/icons/direction-down.svg'
 import down from '../../../public/icons/down.svg'
 import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
+import useSWR, {mutate} from "swr"
 // import TheCalendar from "../../components/calendar"
 import { useState, useEffect } from "react"
 import DateSelector from "../../../components/DateSelector"
+import { testEnv } from "../../../components/Endpoints"
 
 export default function AgentMetrics({setToken, setDateRange, dateRange, week}) {
     const [isCalendar, setIsCalendar] = useState(false)
-    // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
+    const [analytics, setAnalytics] = useState()
+
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
+    const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats`, fetching)
 
    
 
@@ -18,6 +24,20 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
     //     previous.setDate(date.getDate() - 7);
     //     return previous;
     // }
+
+     useEffect(() => {
+        // setActiveTab("Agents")
+        // resetSearchParams()
+        // setToken()
+        // setActiveDashboard("AgentManagement")
+        // setActiveState("2")
+        if (transactionsData) {
+            setAnalytics(transactionsData)
+        }
+        if (transactionsDataError) {
+            console.log(transactionsDataError)
+        }
+    }, [transactionsData])
 
     function dateSearch() {}
 

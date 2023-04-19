@@ -19,7 +19,7 @@ export default function Agents({
     search, setSearch,
     setLoading, searchField,
     resetSearchParams,
-    setView
+    setView, day, resetDay
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -51,6 +51,7 @@ export default function Agents({
     // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/new_agents?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/new_agents/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/new_agents?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
@@ -58,14 +59,18 @@ export default function Agents({
     const [currentData, setCurrentData] = useState()
     // const searchField = useRef()
 
+    
 
+    
+    
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
     }
-
+    
     useEffect(() => {
         setActiveTab("New Agents")
         resetSearchParams()
+        resetDay()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -76,6 +81,15 @@ export default function Agents({
             console.log(agentsError)
         }
     }, [agents])
+    
+    useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {

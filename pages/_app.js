@@ -25,15 +25,19 @@ export default function MyApp({ Component, pageProps }) {
   const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
   const [search, setSearch] = useState(false)
+  const [createView, setCreateView] = useState(false)
+  const[day, setDay] = useState(0)
   const [week, setWeek] = useState({
     current: "Last 7 days",
-    oneBefore: getPreviousDay(1),
-    twoBefore: getPreviousDay(2),
-    threeBefore: getPreviousDay(3),
-    fourBefore: getPreviousDay(4),
-    fiveBefore: getPreviousDay(5),
-    sixBefore: getPreviousDay(6),
-    sevenBefore: getPreviousDay(7),
+    days: [
+      getPreviousDay(1),
+      getPreviousDay(2),
+      getPreviousDay(3),
+      getPreviousDay(4),
+      getPreviousDay(5),
+      getPreviousDay(6),
+      getPreviousDay(7),
+    ]
   })
   const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
 
@@ -51,14 +55,17 @@ export default function MyApp({ Component, pageProps }) {
   //     return formatted;
   // }
 
-  function setDateSearchRange(e, set) {
-    // console.log(e)
+  function setDateSearchRange(e, set, day) {
     if (set == "week") {
       setWeek({ ...week, current: e.target.innerText })
+      setSearch(true)
+      setDay(day)
     }
   }
 
-  function dateSearch() { }
+  function resetDay() {
+    setDay(0)
+  }
 
   const [modalSuccess, setModalSuccess] = useState(false)
   const router = useRouter()
@@ -74,12 +81,35 @@ export default function MyApp({ Component, pageProps }) {
 
   const Layout = Component.Layout || EmptyLayout
 
+  const initialCustomerForm = {
+    agentId: "",
+    userName: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    gender: "",
+    dateCreated: "",
+    city: "",
+    state: "",
+    lga: "",
+    agentType: "",
+    agentClass: "",
+    aggregator: "",
+    bank: "",
+    accountNumber: "",
+    id: ""
+}
+
   function setSearchParam(e) {
     setSearchField(e.target.value)
   }
   function resetSearchParams() {
     setSearchField("")
     setDateRange({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
+    setSearch(false)
+    setDay(0)
   }
 
   function setView(state) {
@@ -195,8 +225,8 @@ export default function MyApp({ Component, pageProps }) {
     router.push("/")
   }
 
-  function loginCaution() {
-
+  function changeCreateView(status) {
+    setCreateView(status)
   }
 
   function createPassword(details, caution, setDetails) {
@@ -284,7 +314,7 @@ export default function MyApp({ Component, pageProps }) {
     }
   }
 
-  if (router.pathname === "/" || router.pathname.includes("/change-password") || router.pathname === "/success" || router.pathname === "/reset-password") {
+  if (router.pathname === "/" || router.pathname ==="/change-password" || router.pathname === "/success" || router.pathname === "/reset-password") {
     return (
       <LoginLayout>
         <Component
@@ -359,6 +389,8 @@ export default function MyApp({ Component, pageProps }) {
         searchField={searchField}
         formatDate={formatDate}
         resetSearchParams={resetSearchParams}
+        changeCreateView={changeCreateView}
+        getPreviousDay={getPreviousDay}
       >
         <Component
           login={login}
@@ -396,6 +428,11 @@ export default function MyApp({ Component, pageProps }) {
           searchField={searchField}
           resetSearchParams={resetSearchParams}
           setSearchParam={setSearchParam}
+          initialCustomerForm={initialCustomerForm}
+          createView={createView}
+          changeCreateView={changeCreateView}
+          day={day}
+          resetDay={resetDay}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

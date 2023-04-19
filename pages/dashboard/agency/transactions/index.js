@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams }) {
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day }) {
 
     const [transactionsData, setTransactionsData] = useState()
     const [filteredData, setFilteredData] = useState()
@@ -18,6 +18,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: allTransactions, error: allTransactionsError } = useSWR(`${testEnv}v1/transaction/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/transaction/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/transaction/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const router = useRouter()
 
@@ -36,6 +37,17 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
             console.log(allTransactionsError)
         }
     }, [allTransactions])
+
+    useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
+
+
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {

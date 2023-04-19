@@ -21,28 +21,32 @@ export default function Agents({
     setLoading, searchField,
     resetSearchParams,
     setView,
-    viewState
+    viewState,
+    createView,
+    changeCreateView,
+    initialCustomerForm,
+    day, resetDay
 }) {
-    const initialCustomerForm = {
-        agentId: "",
-        userName: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        address: "",
-        gender: "",
-        dateCreated: "",
-        city: "",
-        state: "",
-        lga: "",
-        agentType: "",
-        agentClass: "",
-        aggregator: "",
-        bank: "",
-        accountNumber: "",
-        id: ""
-    }
+    // const initialCustomerForm = {
+    //     agentId: "",
+    //     userName: "",
+    //     firstName: "",
+    //     lastName: "",
+    //     email: "",
+    //     phone: "",
+    //     address: "",
+    //     gender: "",
+    //     dateCreated: "",
+    //     city: "",
+    //     state: "",
+    //     lga: "",
+    //     agentType: "",
+    //     agentClass: "",
+    //     aggregator: "",
+    //     bank: "",
+    //     accountNumber: "",
+    //     id: ""
+    // }
 
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [agentData, setAgentData] = useState()
@@ -50,16 +54,15 @@ export default function Agents({
     const [searchedField, setSearchedField] = useState()
     const [banksData, setBanksData] = useState({ codes: [], names: [] })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: banks, error: banksError } = useSWR(`${testEnv}v1/institution/all?pageNo=0&pageSize=15`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
     const router = useRouter()
-    const [currentData, setCurrentData] = useState()
-    // const searchField = useRef()
-
+    const [currentData, setCurrentData] = useState()    
+    
 
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
@@ -68,6 +71,7 @@ export default function Agents({
     useEffect(() => {
         setActiveTab("Agents")
         resetSearchParams()
+        resetDay()
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -91,6 +95,20 @@ export default function Agents({
             console.log(filteredError)
         }
     }, [dateFiltered])
+    useEffect(() => {
+        if (dayFiltered) {
+            setFilteredData(dayFiltered)
+        }
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [dayFiltered])
+
+    useEffect(()=>{
+        if(createView) {
+            setCustomerEdit({editView: true, editForm: initialCustomerForm})            
+        }
+    },[createView])
 
     useEffect(() => {
         // if(dateRange.dateTo > dateRange.dateFrom) {
@@ -416,7 +434,7 @@ export default function Agents({
                     <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
                         <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield type="readonly" formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                                <Textfield type={createView ? "text" : "readonly"} formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
@@ -471,6 +489,7 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        changeCreateView(false)
                                         setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />

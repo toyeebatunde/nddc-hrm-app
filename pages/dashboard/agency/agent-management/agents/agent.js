@@ -32,6 +32,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     useEffect(()=>{
         const newId = localStorage.getItem('id')
         setId(newId)
+        // debugger
     }, [])
     // const [agentServerDetails, setAgentServerDetails] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)

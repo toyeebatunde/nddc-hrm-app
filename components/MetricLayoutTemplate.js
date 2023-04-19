@@ -9,20 +9,7 @@ import { tabs } from "./Tabs"
 
 
 
-export default function MetricLayoutTemplate({ children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState, dateRange, week, setDateRange, setDateSearchRange, setSearch, setSearchParam }) {
-    // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date() })
-    // const [activeTab, setActiveTab] = useState("")
-    // const [week, setWeek] = useState({
-    //     current: "Last 7 days",
-    //     oneBefore: getPreviousDay(1),
-    //     twoBefore: getPreviousDay(2),
-    //     threeBefore: getPreviousDay(3),
-    //     fourBefore: getPreviousDay(4),
-    //     fiveBefore: getPreviousDay(5),
-    //     sixBefore: getPreviousDay(6),
-    //     sevenBefore: getPreviousDay(7),
-    // })
-    // const[currentDay]
+export default function MetricLayoutTemplate({ children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState, dateRange, week, setDateRange, setDateSearchRange, setSearch, setSearchParam, changeCreateView }) {
     const [tab, setTab] = useState()
 
     useEffect(() => {
@@ -30,6 +17,8 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
             setTab(Number(activeState))
         }
     }, [activeState])
+
+
 
 
 
@@ -138,7 +127,7 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
                                 <UserButton type="pdf" />
                             </div>
                             <div className={`h-[35px] ${activeAgency == "AgentManagement" ? "" : "hidden"}  w-full lg:w-[200px]`}>
-                                <UserButton type="gradient" text="+ Add New Agents" />
+                                <UserButton onClick={()=>{changeCreateView(true)}} type="gradient" text="+ Add New Agents" />
                             </div>
                         </div>
                     </section>

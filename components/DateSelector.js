@@ -4,7 +4,7 @@ import { months } from "./Tabs"
 
 
 
-export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week, setSearch}) {
+export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week, setSearch, getPreviousDay}) {
 
     function getFormattedDate(date, week) {
         let year = date.getFullYear()
@@ -29,13 +29,10 @@ export default function DateSelector({dateRange, setDateSearchRange, setDateRang
                                 <div className="absolute hidden pb-4 bg-[#ffffff] z-40 group-hover:flex h-[179px] w-[144px] rounded-[8px] left-[-110px] top-[58px]">
                                     <div className=" pb-4 bg-[#ffffff] z-40 flex flex-col h-[250px] w-[144px] mt-[1px] rounded-[8px] border">
                                         <ul className="w-full h-full flex flex-col justify-around items-center">
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.oneBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.twoBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.threeBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.fourBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.fiveBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.sixBefore,"week")}</li>
-                                            <li onClick={(e)=>{setDateSearchRange(e, "week")}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(week.sevenBefore,"week")}</li>
+                                            
+                                            {week.days.map((day, index)=>{
+                                                return <li key={index} onClick={(e)=>{setDateSearchRange(e, "week", index+1)}} className="h-[20%] hover:bg-[#dddddd] bg-[#ffffff] cursor-pointer z-40 cursor-pointer w-[90%] border-b flex justify-center items-end border-[#dddddd] font-400 font-pushpennyMedium text-[18px] leading-[22px]">{getFormattedDate(day,"week")}</li>
+                                            })}
 
                                         </ul>
                                     </div>

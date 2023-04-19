@@ -15,7 +15,7 @@ import { testEnv } from '../../../../components/Endpoints'
 import jwt from 'jsonwebtoken'
 import SubLayoutTemplate from '../../../../components/ConfigLayoutTemplate'
 import TableContainer from '../../../../components/TableContainer'
-import { postApi } from '../../../../components/Endpoints'
+import { postApi, editApi, deleteApi } from '../../../../components/Endpoints'
 
 export default function UserManagement({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage, search, searchField, resetSearchParams, setSearchParam }) {
     // const [activeTab, setActiveTab] = useState("Team")
@@ -128,7 +128,8 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                     onClick: postApi,
                                     trigger: triggerReload,
                                     loadState: setLoading,
-                                    selectOptions: roleNames
+                                    selectOptions: roleNames,
+                                    privileges: false
                                 },
                                 0
                             )
@@ -160,7 +161,25 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                             <td className="font-pushpennyBook   font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.email}</td>
                                             <td className="font-pushpennyBook truncate inline-block w-[205px] font-400 text-[18px] leading-[14px] text-[#6E7883]">{item.role.name}</td>
                                             <td className="font-pushpennyBook pl-[20px] h-[40px]  items-center font-400 text-[18px] leading-[14px] text-[#6E7883]">
-                                                <button >Change Privileges</button>
+                                                <button onClick={() => {
+                                                    addTeamMateForm(true, "teamModal",
+                                                        {
+                                                            firstName: item.firstName,
+                                                            lastName: item.lastName,
+                                                            email: "n/a",
+                                                            assignRole: "",                                                            
+                                                            endPoint: `${testEnv}v1/user/${item.id}/delete`,
+                                                            onClick: {delete: deleteApi, update: editApi},
+                                                            trigger: triggerReload,
+                                                            loadState: setLoading,
+                                                            selectOptions: roleNames,
+                                                            heading:"Update user privileges",
+                                                            privileges: true
+                                                        },
+                                                        item.id
+                                                    )
+                                                }}
+                                                >Change Privileges</button>
                                             </td>
                                         </tr>
                                     )
@@ -177,7 +196,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                             </td>
                                         </tr>
                                     )
-                                }) 
+                                })
                             }
                         </tbody>
                     </table>
