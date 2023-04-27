@@ -3,13 +3,14 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 
-export default function TheCalendar({dateRangeParam, dateRange, setDateRange, setSearch}) {
+export default function TheCalendar({dateRangeParam, dateRange, setDateRange, setSearch, setRangeParam}) {
   const [date, setDate] = useState(new Date());
 
   function onChange(date){
     setSearch(true)
     setDate(date)
     setDateRange({...dateRange, [dateRangeParam]:date})
+    setRangeParam("")
   }
 
   useEffect(()=>{

@@ -25,7 +25,7 @@ export default function Agents({
     createView,
     changeCreateView,
     initialCustomerForm,
-    day, resetDay
+    day, resetDay, rangeParam
 }) {
     // const initialCustomerForm = {
     //     agentId: "",
@@ -61,17 +61,20 @@ export default function Agents({
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/agent/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
     const router = useRouter()
-    const [currentData, setCurrentData] = useState()    
-    
+    const [currentData, setCurrentData] = useState()
+
 
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
     }
 
     useEffect(() => {
-        setActiveTab("Agents")
         resetSearchParams()
         resetDay()
+    }, [])
+
+    useEffect(() => {
+        setActiveTab("Agents")
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -84,40 +87,50 @@ export default function Agents({
     }, [agents])
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
+        let newSearch
+         axios.get(`${testEnv}v1/agent/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(res => {
+                // debugger
+                setSearchedField(res.data)
+                newSearch = res.data
+                console.log(newSearch)
+                if (rangeParam == "date") {
+                    setFilteredData(res.data)
+                }
+            }
+            )
+        if (dayFilteredError) {
+            console.log(dayFilteredError)
+        }
+    }, [day, entryValue])
+
+    useEffect(() => {
         mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
-        if (dateFiltered) {
+        if (dateFiltered && (rangeParam == "")) {
             setFilteredData(dateFiltered)
         }
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered])
-    useEffect(() => {
-        if (dayFiltered) {
-            setFilteredData(dayFiltered)
-        }
-        if (dayFilteredError) {
-            console.log(dayFilteredError)
-        }
-    }, [dayFiltered])
+    }, [dateFiltered, entryValue])
 
-    useEffect(()=>{
-        if(createView) {
-            setCustomerEdit({editView: true, editForm: initialCustomerForm})            
+
+
+    useEffect(() => {
+        if (createView) {
+            setCustomerEdit({ editView: true, editForm: initialCustomerForm })
         }
-    },[createView])
+    }, [createView])
 
     useEffect(() => {
         // if(dateRange.dateTo > dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
         // console.log(dateRange)
-        mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
-            setSearchedField(searchBarData)
+            // setSearchedField(searchBarData)
         }
         if (searchBarDataError) {
             console.log(searchBarDataError)
@@ -252,7 +265,7 @@ export default function Agents({
         return formatted;
     }
 
-    function dateFormatter (stamp) {
+    function dateFormatter(stamp) {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
@@ -316,8 +329,8 @@ export default function Agents({
                                                 </td>
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
                                                     <div className="w-[80px] h-[36px]">
-                                                        <UserButton onClick={() => {   
-                                                            setView(true)        
+                                                        <UserButton onClick={() => {
+                                                            setView(true)
                                                             editInfo(
                                                                 agent.agentIdentifier,
                                                                 agent.userName,
@@ -336,7 +349,7 @@ export default function Agents({
                                                                 agent.bankAccountNumber,
                                                                 agent.id
                                                             )
-                                                            
+
                                                         }} type="edit" />
                                                     </div>
                                                     <div className="w-[88px] h-[36px]">
@@ -420,7 +433,7 @@ export default function Agents({
                                         )
                                     })
                                 }
-                                
+
                             </tbody>
                         </table>
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day }) {
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day, resetDay, rangeParam }) {
 
     const [transactionsData, setTransactionsData] = useState()
     const [filteredData, setFilteredData] = useState()
@@ -23,12 +23,17 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     
     const router = useRouter()
 
+
+    useEffect(() => {
+        resetSearchParams()
+        resetDay()
+    }, [])
+
     useEffect(() => {
         setActiveTab("Withdrawals")
         setLoading(true)
         setToken()
         setActiveDashboard("Transactions")
-        resetSearchParams()
         setActiveState("2")
         if (allTransactions) {
             setLoading(false)
@@ -40,26 +45,33 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     }, [allTransactions])
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
         mutate(`${testEnv}v1/transaction/withdrawal/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
-        if (dateFiltered) {
+        if (dateFiltered && (rangeParam == "")) {
             setFilteredData(dateFiltered.data)
         }
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered])
+    }, [dateFiltered, entryValue])
 
     useEffect(() => {
-        if (dayFiltered) {
-            setFilteredData(dayFiltered)
-        }
+        let newSearch
+         axios.get(`${testEnv}v1/transaction/withdrawal/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(res => {
+                // debugger
+                // setSearchedField(res.data)
+                newSearch = res.data
+                console.log(newSearch)
+                if (rangeParam == "date") {
+                    setFilteredData(res.data.data)
+                }
+            }
+            )
         if (dayFilteredError) {
             console.log(dayFilteredError)
         }
-    }, [dayFiltered])
+    }, [day, entryValue])
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {

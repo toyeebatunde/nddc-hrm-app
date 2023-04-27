@@ -88,7 +88,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
     }
 
     return (
-        <div className={`w-full h-screen flex overflow-hidden justify-between`}>
+        <div className={`w-full h-screen border flex overflow-hidden justify-between`}>
             <div className={`bg-[#ffffff] ${modals.isOpen ? "flex" : "hidden"} left-[50%] ml-[-175px] lg:ml-[-327px] top-[70px]  rounded-[15px] lg:rounded-[48px] z-[200] fixed w-fit h-fit`}>
                 <Modal
                     modal={modals}
@@ -111,7 +111,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
             </div>
 
 
-            <div onClick={openSideBar} className={`${token ? "fixed" : "hidden"} left-[10px] cursor-pointer lg:left-[50px] z-[95]`}>
+            <div onClick={openSideBar} className={`${token ? "fixed" : "hidden"} left-[10px] cursor-pointer lg:left-[50px] z-[158]`}>
                 <div className="relative side-bar mt-[46px] w-[40px] h-[40px] lg:w-[66.32px] lg:h-[66.32px]">
                     <ImageHolder src="/icons/payrail-logo-circle.svg" />
                 </div>
@@ -123,7 +123,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[57] ${token ? "fixed" : "hidden"} ${sideBarMargin} transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px]  h-screen pb-2">
                     {tabs.map((tab, index) => {
                         if (index == 1) {
@@ -214,7 +214,7 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                         return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                     })}
                 </ul>
-                <div className=" flex w-full z-[260] bg-[#FAFBFC] fixed absolute left-0 bottom-[5px] h-[50px] justify-around">
+                <div className=" flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
                     <button onClick={logout} className="flex flex-col">
                         Logout
