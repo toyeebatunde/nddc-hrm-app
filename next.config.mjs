@@ -7,6 +7,9 @@ const nextConfig = {
     path: '/',
   },
   trailingSlash: true,
+  env: {
+    base: "https://admapis-staging.payrail.co/"
+  }
   // async redirects() {
   //   return [
   //     {

@@ -31,16 +31,16 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
     
     useEffect(() => {
         const today = new Date()
-        const exp = jwt.decode(localStorage.getItem("token")).exp
-        // debugger
-        if(exp < (new Date().getTime() + 1) / 1000) {
-            const expValue = exp < (new Date().getTime() + 1) / 1000
-            // debugger
-            router.push("/")
-            logout()        
-            return
-        }
-        setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
+        // const exp = jwt.decode(localStorage.getItem("token")).exp
+        // // debugger
+        // if(exp < (new Date().getTime() + 1) / 1000) {
+        //     const expValue = exp < (new Date().getTime() + 1) / 1000
+        //     // debugger
+        //     router.push("/")
+        //     logout()        
+        //     return
+        // }
+        // setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
         
         window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {

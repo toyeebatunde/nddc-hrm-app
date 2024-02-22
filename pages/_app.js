@@ -184,30 +184,23 @@ export default function MyApp({ Component, pageProps }) {
 
   function login(details, caution) {
     setIsLoading(true)
-    // debugger
-    axios.post(`${testEnv}v1/auth/login`, {
+    axios.post(`https://admapis-staging.payrail.co/v1/auth/login`, { // ${testEnv}v1/auth/login 
       "password": details.password,
       "username": details.username
     })
       .then(response => {
         const decoded = jwt.decode(response.data.token)
-        // console.log(decoded)
         setToken(true)
         const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(','),exp: decoded?.exp }
         // const exp = { exp: decoded?.exp }
         Cookies.set("token", response.data.token)
-        // Cookies.set("token", response.data.token)
-        // console.log(user)
         Cookies.set("user", JSON.stringify(user))
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(user))
-        // localStorage.setItem('exp', JSON.stringify(exp))
         setIsLoading(false)
-        router.push("/dashboard/analytics/agent-metrics")
-        // console.log(response.data)
+        router.push("/dashboard/agency/agent-management/pending-approvals")
       })
       .catch(response => {
-        // console.log(response.response.data)
         if (response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {
           caution()
         }

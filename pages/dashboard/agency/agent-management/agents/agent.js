@@ -12,8 +12,6 @@ import { testEnv } from "../../../../../components/Endpoints"
 import { editApi, patchApi, deleteApi } from "../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
-import Cookies from "js-cookie"
-import { cookies } from 'next/headers'
 
 
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
@@ -29,14 +27,14 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     const [reload, setReload] = useState(true)
     const [id, setId] = useState()
 
-    useEffect(()=>{
+    useEffect(() => {
         const newId = localStorage.getItem('id')
         setId(newId)
         // debugger
     }, [])
     // const [agentServerDetails, setAgentServerDetails] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/${id}`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/agent/${id}`, fetching) // /kyc/${id}/get-kyc
     // const kycs = ["bvn", "nin", "contractNo", "tin", "rcNumber"]
     // const kycImages = ["cac", "selfie", "idCard"]
     const kycImages = [
@@ -82,11 +80,12 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     // },[])
 
     useEffect(() => {
-        setLoading(true)        
+        setLoading(true)
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
         if (data) {
+            console.log("agent data: ", data)
             setAgentData(data)
             setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
             setAccountStatus({ account: data.customerAccount?.accountStatus, status: data.customerAccount?.accountStatus == "ACTIVE" ? "on" : "off", api: false })
@@ -117,12 +116,12 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                     text: "Update Lien",
                     cancelClick: reverseStatus,
                     trigger: triggerReload,
-                    target:lienToggle,
+                    target: lienToggle,
                     status: lienStatus,
                     setter: setLienStatus,
-                    keyOne:"lien",
-                    keyTwo:"status",
-                    keyThree:"api",
+                    keyOne: "lien",
+                    keyTwo: "status",
+                    keyThree: "api",
                 }, data.id)
             return
         }
@@ -137,16 +136,16 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                     text: "Update Status",
                     cancelClick: reverseStatus,
                     trigger: triggerReload,
-                    target:accountToggle,
+                    target: accountToggle,
                     status: accountStatus,
                     setter: setAccountStatus,
-                    keyOne:"account",
-                    keyTwo:"status",
-                    keyThree:"api",
+                    keyOne: "account",
+                    keyTwo: "status",
+                    keyThree: "api",
                 }, data.id)
             return
         }
-        
+
     }, [lienStatus, accountStatus])
 
     function reverseLien() {
@@ -155,13 +154,28 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     }
     function reverseStatus(target, status, setStatus, keyOne, keyTwo, keyThree) {
         target.current.checked = !target.current.checked
-        setStatus({...status, [keyOne]:target.current.checked, [keyTwo]:target.current.checked ? "on" : "off",[keyThree]:false })
+        setStatus({ ...status, [keyOne]: target.current.checked, [keyTwo]: target.current.checked ? "on" : "off", [keyThree]: false })
     }
 
-    function agentHandler(modalState, modal, fields, id) {
+    async function agentHandler(modalState, modal, fields, id, fileKey = "") {
+        if (modal == "imageView") { // api/file-view/presign-url- returns image url /v1/api/presign-url/view-file?fileKey
+            const data = await fetch("https://admapis-staging.payrail.co/v1/api/presign-url/view-file", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({ fileKey: fileKey })
+            })
+
+            const url = await data.json()
+            setModalState(modalState, modal)
+            editFormState({ image: url }, id)
+            return
+        }
         setModalState(modalState, modal)
         editFormState(fields, id)
-    }   
+    }
 
     const toggle = (e, handler) => {
         // console.log(lienToggle.current.checked)
@@ -169,11 +183,11 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     };
     const toggler = (e, handler, keyOne, keyTwo, keyThree, target) => {
         // console.log(lienToggle.current.checked)
-        if(target == "lien") {
-            setLienStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
+        if (target == "lien") {
+            setLienStatus({ ...handler, [keyOne]: e.target.checked, [keyTwo]: e.target.checked ? "on" : "off", [keyThree]: true })
             return
         }
-        setAccountStatus({...handler, [keyOne]:e.target.checked, [keyTwo]:e.target.checked ? "on" : "off",[keyThree]:true })
+        setAccountStatus({ ...handler, [keyOne]: e.target.checked, [keyTwo]: e.target.checked ? "on" : "off", [keyThree]: true })
     };
 
     const approveCaution = "You are about to approve a KYC. Please note after approving it will go through the approval process"
@@ -461,10 +475,6 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{agent.phoneNumber}</h2>
                                                 </div>
 
-                                                {/* <div className="h-[36px] self-center mt-[20px] w-[236px]">
-                                                    <UserButton type="view" text="View agent" />
-                                                </div> */}
-
                                             </div>
                                         </div>
                                     )
@@ -539,24 +549,5 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
             </section>
         </div>
     )
-    
+
 }
-
-
-// export const getServerSideProps = async(context) => {   
-//     console.log(context.req.cookies.token)
-//     const res = await fetch(`https://agencyadm-api.payrail.co/v1/agent/${context.params.id}`,
-//     {
-//         method: "GET",
-//         headers: {
-//             "Authorization":`Bearer ${context.req.cookies.token}`
-//         }
-//     }
-//     )
-//     const agentDetails = await res.json()
-//     return {
-//         props: {
-//             agentDetails
-//         }
-//     }
-// }

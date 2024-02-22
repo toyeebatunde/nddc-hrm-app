@@ -70,7 +70,8 @@ export default function PendingKYC({
         setActiveDashboard("AgentManagement")
         setActiveState("2")
         if (agents) {
-            setAgentData(agents)
+            setAgentData(agents.data.Agents)
+            console.log("agents: ", agents)
         }
         if (agentsError) {
             console.log(agentsError)
@@ -190,16 +191,16 @@ export default function PendingKYC({
                                     })
                                 } */}
                                 {
-                                    agents?.data.map((agent, index) => {
+                                    agentData?.map((agent, index) => {
                                         return (
                                             <tr key={index} className=" justify-between border-b h-[63px]">
-                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
+                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentId}</td>
                                                 <td className="font-pushpennyBook font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentName}</td>
-                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentClass}</td>
+                                                <td className="font-pushpennyBook font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentClassification}</td>
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex h-[63px] items-center items-start">
                                                     <div className="w-[88px] h-[36px]">
                                                         <UserButton type="view" text="View" onClick={() => {
-                                                            localStorage.setItem('id', agent.id)
+                                                            localStorage.setItem('id', "45")
                                                             setLoading(true)
                                                             router.push(`/dashboard/agency/agent-management/agents/agent`)
                                                         }}
