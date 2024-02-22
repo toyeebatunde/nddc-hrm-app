@@ -1,7 +1,7 @@
 import Textfield from "./TextField"
 import ImageHolder from "./ImageHolder"
 
-export default function TableContainer({ children, pageSelector, entryValue, color="bg-brand-light-yellow" }) {
+export default function TableContainer({ children, pageSelector, entryValue, color="bg-brand-light-yellow", }) {
     return (
         <div className="w-full flex gap-[10px] flex-col">
             <div className="w-full  overflow-x-auto">                

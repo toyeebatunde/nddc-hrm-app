@@ -27,6 +27,7 @@ export default function MyApp({ Component, pageProps }) {
   const [search, setSearch] = useState(false)
   const [createView, setCreateView] = useState(false)
   const[day, setDay] = useState(0)
+  const [rangeParam, setRangeParam] = useState()
   const [week, setWeek] = useState({
     current: "Last 7 days",
     days: [
@@ -60,6 +61,7 @@ export default function MyApp({ Component, pageProps }) {
       setWeek({ ...week, current: e.target.innerText })
       setSearch(true)
       setDay(day)
+      setRangeParam("date")
     }
   }
 
@@ -109,7 +111,8 @@ export default function MyApp({ Component, pageProps }) {
     setSearchField("")
     setDateRange({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
     setSearch(false)
-    setDay(0)
+    setWeek({...week, current: "Last 7 days"})
+    // setDay(0)
   }
 
   function setView(state) {
@@ -384,6 +387,7 @@ export default function MyApp({ Component, pageProps }) {
         resetSearchParams={resetSearchParams}
         changeCreateView={changeCreateView}
         getPreviousDay={getPreviousDay}
+        setRangeParam={setRangeParam}
       >
         <Component
           login={login}
@@ -426,6 +430,7 @@ export default function MyApp({ Component, pageProps }) {
           changeCreateView={changeCreateView}
           day={day}
           resetDay={resetDay}
+          rangeParam={rangeParam}
         />
         {/* <div className="flex px-[20px] justify-between w-full">
           <div className="flex items-center gap-[10px]">

@@ -4,7 +4,7 @@ import { months } from "./Tabs"
 
 
 
-export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week, setSearch, getPreviousDay}) {
+export default function DateSelector({dateRange, setDateSearchRange, setDateRange, directionDown, week, setSearch, getPreviousDay, setRangeParam}) {
 
     function getFormattedDate(date, week) {
         let year = date.getFullYear()
@@ -46,10 +46,10 @@ export default function DateSelector({dateRange, setDateSearchRange, setDateRang
                         <div className=" min-h-[400px] w-[890px] z-[90] absolute min-w-[100%] hidden group-hover:flex -ml-[625px] mt-[49px] bg-white">
                             <div className="w-[880px] min-h-[400px] pb-[4px] z-[70] bg-brand-light-yellow rounded-[10px] border border-gray top-[9px] flex justify-between pt-[10px] pl-[70px] pr-[5px] box-border">
                                 <div className="w-[394px] min-h-[395px] rounded-[10px] border bg-white border-gray flex justify-center">
-                                    <TheCalendar dateRangeParam={"dateFrom"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} />
+                                    <TheCalendar dateRangeParam={"dateFrom"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setRangeParam={setRangeParam} />
                                 </div>
                                 <div className="w-[394px] min-h-[395px] rounded-[10px] border bg-white border-gray flex justify-center">
-                                    <TheCalendar dateRangeParam={"dateTo"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} />
+                                    <TheCalendar dateRangeParam={"dateTo"} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setRangeParam={setRangeParam} />
                                 </div>
                             </div>
                         </div>

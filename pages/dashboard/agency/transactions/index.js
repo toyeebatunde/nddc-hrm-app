@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day }) {
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day, resetDay, rangeParam }) {
 
     const [transactionsData, setTransactionsData] = useState()
     const [filteredData, setFilteredData] = useState()
@@ -23,44 +23,65 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const router = useRouter()
 
     useEffect(() => {
+        resetSearchParams()
+        resetDay()
+    }, [])
+
+    useEffect(() => {
         setActiveTab("All Transactions")
         setLoading(true)
         setToken()
         setActiveDashboard("Transactions")
         setActiveState("2")
-        resetSearchParams()
-        if (allTransactions) {
-            setLoading(false)
-            setTransactionsData(allTransactions.data)
-        }
-        if (allTransactionsError) {
-            console.log(allTransactionsError)
-        }
+
+        const timeout = setTimeout(() => {
+            if(!allTransactions) {
+                setLoading(false);
+                window.alert("Something went wrong, loading is taking longer than usual. Please refresh page")
+            }
+          }, 5000); // 5 seconds
+      
+          if (allTransactions) {
+              setLoading(false)
+              setTransactionsData(allTransactions.data)
+            }
+            if (allTransactionsError) {
+                console.log(" connection error")
+            }
+            return () => clearTimeout(timeout);
     }, [allTransactions])
 
     useEffect(() => {
-        if (dayFiltered) {
-            setFilteredData(dayFiltered)
-        }
+        let newSearch
+         axios.get(`${testEnv}v1/transaction/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(res => {
+                // debugger
+                // setSearchedField(res.data)
+                newSearch = res.data
+                console.log(newSearch)
+                if (rangeParam == "date") {
+                    setFilteredData(res.data)
+                }
+            }
+            )
+       
         if (dayFilteredError) {
             console.log(dayFilteredError)
         }
-    }, [dayFiltered])
+    }, [day, entryValue])
 
 
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
         mutate(`${testEnv}v1/transaction/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
-        if (dateFiltered) {
-            setFilteredData(dateFiltered.data)
+        if (dateFiltered && (rangeParam == "")) {
+            setFilteredData(dateFiltered)
         }
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered])
+    }, [dateFiltered, entryValue])
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {

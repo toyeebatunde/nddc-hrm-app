@@ -119,7 +119,7 @@ export const tabs = [
     {
         text: "Agency",
         data: "2",
-        // height: "hover:h-[260px]",
+        // height: "hover:h-[290px]",
         1: "[50px]",
         2: "[85px]",
         3: "[120px]",
@@ -128,6 +128,7 @@ export const tabs = [
         6: "[200px]",
         7: "[230px]",
         8: "[260px]",
+        9: "[290px]",
         // full: "h-[230px]",
         subTexts: [
             {
@@ -184,6 +185,14 @@ export const tabs = [
                 inactive: '/icons/payment-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/payment",
+                permission: ["VIEW_PAYMENT", "EDIT_PAYMENT"]
+            },
+            {
+                text: "Revenue",
+                active:'/icons/revenue-active.svg',
+                inactive: '/icons/revenue-inactive.svg',
+                data: "2",
+                link: "/dashboard/agency/revenue",
                 permission: ["VIEW_PAYMENT", "EDIT_PAYMENT"]
             },
             {

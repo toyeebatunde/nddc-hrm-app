@@ -40,6 +40,7 @@ module.exports = {
         "6": "200px",
         "7": "230px",
         "8": "260px",
+        '9': '290px',
       },
       fontFamily: {
         pushpennyMedium:["push-penny-medium"],

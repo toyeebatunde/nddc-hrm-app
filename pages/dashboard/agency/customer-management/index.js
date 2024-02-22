@@ -10,7 +10,7 @@ import { ngrok, testEnv, editApi } from "../../../../components/Endpoints";
 import Textfield from "../../../../components/TextField";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, dateRange, search, searchField, formatDate, resetSearchParams, day }) {
+export default function Customers({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, dateRange, search, searchField, formatDate, resetSearchParams, day, resetDay, rangeParam }) {
 
     const initialCustomerForm = {
         customerId: "",
@@ -28,7 +28,7 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
         lga: "",
         bvn: "",
     }
-    
+
     const router = useRouter()
     const [customerEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const [customerData, setCustomerData] = useState()
@@ -39,17 +39,21 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/customer/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/customer/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/customer/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    
+
     function formEdit(e) {
         setCustomerEdit({ ...customerEdit, editForm: { ...customerEdit.editForm, [e.target.name]: e.target.value } })
     }
-    
+
+    useEffect(() => {
+        resetSearchParams()
+        resetDay()
+    }, [])
+
     useEffect(() => {
         setLoading(true)
         setView(false)
         setActiveDashboard("CustomerManagement")
         setActiveState("2")
-        resetSearchParams()
         if (customers) {
             setLoading(false)
             setCustomerData(customers)
@@ -58,35 +62,39 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
             console.log(customersError)
         }
     }, [customers])
-    
 
-      useEffect(() => {
-        if (dayFiltered) {
-            setFilteredData(dayFiltered)
-        }
+
+    useEffect(() => {
+        let newSearch
+
+        axios.get(`${testEnv}v1/customer/filter_all_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(res => {
+                // debugger
+                setSearchedField(res.data)
+                newSearch = res.data
+                console.log(newSearch)
+                if (rangeParam == "date") {
+                    setFilteredData(res.data)
+                }
+            }
+            )
         if (dayFilteredError) {
             console.log(dayFilteredError)
         }
-    }, [dayFiltered])
-    
+    }, [day, entryValue])
+
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
         // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
-        if (dateFiltered) {
+        if (dateFiltered && (rangeParam == "")) {
             setFilteredData(dateFiltered)
         }
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered])
+    }, [dateFiltered, entryValue])
 
     useEffect(() => {
-        // if(dateRange.dateTo < dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
-        // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
             setSearchedField(searchBarData)
         }
@@ -191,47 +199,47 @@ export default function Customers({ modals, setToken, setActiveDashboard, setAct
                                     </tr>
                                 </thead>
                                 <tbody className="mt-6 ">
-                                    { searchField == "" ?
-                                    (search ? filteredData : customerData)?.data.map((customer, index) => {
-                                        return (
-                                            <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
-                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
-                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
-                                                <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
-                                                <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
+                                    {searchField == "" ?
+                                        (search ? filteredData : customerData)?.data.map((customer, index) => {
+                                            return (
+                                                <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
+                                                    <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
+                                                    <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
+                                                    <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
+                                                    <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
 
-                                                <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
-                                                <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
-                                                    <div className="w-[80px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
-                                                    </div>
-                                                    <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }) :
-                                    searchBarData?.data.map((customer, index) => {
-                                        return (
-                                            <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
-                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
-                                                <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
-                                                <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
-                                                <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
+                                                    <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
+                                                    <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
+                                                        <div className="w-[80px] h-[36px]">
+                                                            <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
+                                                        </div>
+                                                        <div className="w-[88px] h-[36px]">
+                                                            <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }) :
+                                        searchBarData?.data.map((customer, index) => {
+                                            return (
+                                                <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
+                                                    <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
+                                                    <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
+                                                    <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
+                                                    <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
 
-                                                <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
-                                                <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
-                                                    <div className="w-[80px] h-[36px]">
-                                                        <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
-                                                    </div>
-                                                    <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })                                    
+                                                    <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
+                                                    <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
+                                                        <div className="w-[80px] h-[36px]">
+                                                            <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
+                                                        </div>
+                                                        <div className="w-[88px] h-[36px]">
+                                                            <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
                                     }
                                 </tbody>
                             </table>
