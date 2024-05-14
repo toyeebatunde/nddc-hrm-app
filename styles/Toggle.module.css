@@ -33,6 +33,7 @@
 }
 
 .toggleSpan:before {
+  /* border: 2px solid blue; */
   position: absolute;
   content: "";
   height: 27px;

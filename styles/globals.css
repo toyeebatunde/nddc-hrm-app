@@ -169,16 +169,30 @@ input[type=password]::-ms-clear {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 4px;
+  /* width: 4px; */
+  /* height: 4px; */
   background-color: #F4F5F7;
 }
 
+::-webkit-scrollbar-track {
+  /* background-color: blue; */
+
+}
+
 ::-webkit-scrollbar-thumb {
-  /* background-color: rgb(250, 169, 67, 0.2); */
+  background-color: rgb(250, 169, 67, 0.2);
   background-color: #dddddd;
+  /* background-color: red; */
   border-radius: 8px;
 }
+
+::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+::-webkit-scrollbar:horizontal {
+  height: 3px;
+}
+
 
 
 .react-calendar__navigation {
@@ -449,10 +463,11 @@ input {
 input[type=file] {
   width: 350px;
   max-width: 100%;
-  color: #F3F3F3;
+  color: gray;
   padding: 5px;
   background: #fff;
   border-radius: 10px;
+  /* border: 1px solid #F3F3F3; */
   border: 1px solid #F3F3F3;
 }
 
@@ -464,6 +479,10 @@ input[type=file]::file-selector-button {
   color: black;
   cursor: pointer;
   background: white;
+}
+
+.editor-toolbar {
+  background-color: #000;
 }
 
 /* input[type=file]::file-selector-button:hover {

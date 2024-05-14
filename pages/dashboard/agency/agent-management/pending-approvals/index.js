@@ -20,7 +20,9 @@ export default function PendingKYC({
     setLoading, searchField,
     resetSearchParams,
     setView,
-    viewState
+    viewState,
+    createView,
+    changeCreateView
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -63,6 +65,49 @@ export default function PendingKYC({
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
     }
 
+    function editAgent() {
+        let bank = banksData.names.findIndex(bank => bank == agentEdit.editForm.bank)
+        debugger
+        // setLoading(true)
+        axios.put(`${testEnv}v1/agent/${agentEdit.editForm.id}/update`,
+            {
+                "agentIdentifier": agentEdit.editForm.agentId,
+                "userName": agentEdit.editForm.userName,
+                "firstName": agentEdit.editForm.firstName,
+                "lastName": agentEdit.editForm.lastName,
+                "email": agentEdit.editForm.email,
+                "phoneNumber": agentEdit.editForm.phone,
+                "address": agentEdit.editForm.address,
+                "gender": agentEdit.editForm.gender,
+                "city": agentEdit.editForm.city,
+                "state": agentEdit.editForm.state,
+                "lga": agentEdit.editForm.lga,
+                "agentType": agentEdit.editForm.agentType,
+                "classification": agentEdit.editForm.agentClass,
+                // "aggregator": "",
+                "bankInstitutionCode": banksData.codes[Number(bank)],
+                "bankAccountNumber": agentEdit.editForm.accountNumber
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        )
+            .then(response => {
+                debugger
+                console.log(response.data)
+                setLoading(false)
+                setCustomerEdit({ ...agentEdit, editView: false })
+            })
+            .catch(error => {
+                debugger
+                console.log(error)
+                setLoading(false)
+                setCustomerEdit({ ...agentEdit, editView: false })
+            })
+    }
+
     useEffect(() => {
         setActiveTab("KYC Pending approvals")
         resetSearchParams()
@@ -90,6 +135,12 @@ export default function PendingKYC({
             console.log(filteredError)
         }
     }, [dateFiltered])
+
+    useEffect(() => {
+        if (createView) {
+            setCustomerEdit({ editView: true, editForm: initialCustomerForm })
+        }
+    }, [createView])
 
     useEffect(() => {
         // if(dateRange.dateTo < dateRange.dateFrom) {
@@ -200,7 +251,7 @@ export default function PendingKYC({
                                                 <td className="font-pushpennyBook gap-[5px] w-[175px] flex h-[63px] items-center items-start">
                                                     <div className="w-[88px] h-[36px]">
                                                         <UserButton type="view" text="View" onClick={() => {
-                                                            localStorage.setItem('id', "45")
+                                                            localStorage.setItem('id', `${agent.agentId}`) //45
                                                             setLoading(true)
                                                             router.push(`/dashboard/agency/agent-management/agents/agent`)
                                                         }}
@@ -216,6 +267,96 @@ export default function PendingKYC({
 
                     </TableContainer>
                 </section>
+            </section>
+
+            <section className={`${agentEdit.editView ? "flex" : "hidden"} flex-col gap-[10px]`}>
+                <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                    <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Edit Agent Details</h2>
+                </div>
+                <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
+                    <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield type={createView ? "text" : "readonly"} formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield important={true} formEdit={formEdit} title="First Name" value={agentEdit.editForm.firstName} name="firstName" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Last Name" value={agentEdit.editForm.lastName} name="lastName" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Middle Name" value={agentEdit.editForm.middleName} name="middleName" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} charType="date" title="Date of birth" value={agentEdit.editForm.dob} name="dob" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Email address" value={agentEdit.editForm.email} name="email" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Phone Number" value={agentEdit.editForm.phone} name="phone" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="Address" value={agentEdit.editForm.address} name="address" bg="bg-[white]" />
+                        </div>
+                        <div className="w-full h-[57px] rounded-[28px]">
+                            <Textfield formEdit={formEdit} title="City" value={agentEdit.editForm.city} name="city" bg="bg-[white]" />
+                        </div>
+
+
+
+
+                    </section>
+                    <section className="w-full lg:w-[45%] flex flex-col gap-[20px] lg:justify-between">
+                        <section className="flex gap-[15px] flex-col">
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="State" value={agentEdit.editForm.state} name="state" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type="select" selectOptions={["Choose a country", "Nigeria"]} formEdit={formEdit} title="Country" value={agentEdit.editForm.country} name="country" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT", "FARMER"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type="select" selectOptions={["Choose a gender", "Male", "Female"]} formEdit={formEdit} title="Gender" value={agentEdit.editForm.gender} name="gender" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type="select" selectOptions={banksData.names} formEdit={formEdit} title="Bank" value={agentEdit.editForm.bank} name="bank" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Account Number" value={agentEdit.editForm.accountNumber} name="accountNumber" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="BVN" value={agentEdit.editForm.bvn} name="bvn" bg="bg-[white]" />
+                            </div>
+
+
+                        </section>
+                        <div className="w-full flex flex-col gap-[20px] lg:gap-0 md:flex-row md:justify-around h-fit rounded-[28px]">
+                            <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
+                                    e.preventDefault()
+                                    changeCreateView(false)
+                                    setView(false)
+                                    setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
+                                }} />
+                            </div>
+                            <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                <UserButton submit={"submit"} onClick={editAgent} type="gradient" text="Save" />
+                            </div>
+                        </div>
+                    </section>
+                </form>
             </section>
         </div>
     )

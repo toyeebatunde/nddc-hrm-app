@@ -48,6 +48,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
     }, [searchInventoryData])
 
     function posEdit(modalState, modal, fields, id) {
+        // debugger
         setModalState(modalState, modal)
         editFormState(fields, id)
     }
@@ -111,13 +112,13 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                                             <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
                                             <td className="font-pushpennyBook  group:ml-[10px] w-[460px]">
                                                 <div className="w-[88px] inline-flex h-[36px]">
-                                                    <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                    <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.terminalId, serialNumber: data.serialNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
                                                     <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Retrieve" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
                                                     <UserButton type="view" text="View" />
@@ -143,7 +144,7 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                                                     <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
+                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalRetrieve", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Retrieve" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
                                                     <UserButton type="view" text="View" />

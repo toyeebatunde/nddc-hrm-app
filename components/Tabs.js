@@ -1,5 +1,5 @@
 
- 
+
 export const configurationCards = [
     {
         url: '/icons/config-setting.svg',
@@ -53,14 +53,14 @@ export const tabs = [
         subTexts: [
             {
                 text: "Agent Metrics",
-                active:'/icons/agent-metrics.svg',
+                active: '/icons/agent-metrics.svg',
                 inactive: '/icons/agent-metrics-inactive.svg',
                 data: "0",
                 link: "/dashboard/analytics/agent-metrics",
             },
             {
                 text: "Loan Metrics",
-                active:'/icons/loan-metrics.svg',
+                active: '/icons/loan-metrics.svg',
                 inactive: '/icons/loan-metrics-inactive.svg',
                 data: "0",
                 link: "/dashboard/analytics/loan-metrics",
@@ -75,32 +75,32 @@ export const tabs = [
         subTexts: [
             {
                 text: "User Management",
-                active:'/icons/user-management.svg',
+                active: '/icons/user-management.svg',
                 inactive: '/icons/user-management-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/user-management",
-                permission:"USER_MANAGEMENT",
+                permission: "USER_MANAGEMENT",
             },
             {
                 text: "Configurations",
-                active:'/icons/configurations.svg',
+                active: '/icons/configurations.svg',
                 inactive: '/icons/configurations-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/configuration",
-                permission:"CONFIGURATIONS",
+                permission: "CONFIGURATIONS",
             },
             {
-                permission:"INSTITUTIONS",
+                permission: "INSTITUTIONS",
                 text: "Institutions",
-                active:'/icons/institutions.svg',
+                active: '/icons/institutions.svg',
                 inactive: '/icons/institutions-inactive.svg',
                 data: "1",
                 link: "/dashboard/system/institutions",
             },
             {
-                permission:"APPROVALS",
+                permission: "APPROVALS",
                 text: "Approvals",
-                active:'/icons/approvals.svg',
+                active: '/icons/approvals.svg',
                 inactive: '/icons/approvals-inactive.svg',
                 data: "approvals",
                 link: "/dashboard/system/approvals"
@@ -133,7 +133,7 @@ export const tabs = [
         subTexts: [
             {
                 text: "Agent Management",
-                active:'/icons/agent-management.svg',
+                active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/agent-management/agents",
@@ -141,7 +141,7 @@ export const tabs = [
             },
             {
                 text: "Customer Management",
-                active:'/icons/customer-management.svg',
+                active: '/icons/customer-management.svg',
                 inactive: '/icons/customer-management-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/customer-management",
@@ -149,7 +149,7 @@ export const tabs = [
             },
             {
                 text: "Value Added Services",
-                active:'/icons/value-added-services.svg',
+                active: '/icons/value-added-services.svg',
                 inactive: '/icons/value-added-services-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/vas",
@@ -157,7 +157,7 @@ export const tabs = [
             },
             {
                 text: "Transactions",
-                active:'/icons/transactions.svg',
+                active: '/icons/transactions.svg',
                 inactive: '/icons/transactions-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/transactions",
@@ -165,7 +165,7 @@ export const tabs = [
             },
             {
                 text: "Settlement",
-                active:'/icons/settlement.svg',
+                active: '/icons/settlement.svg',
                 inactive: '/icons/settlement-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/settlement",
@@ -173,7 +173,7 @@ export const tabs = [
             },
             {
                 text: "Reconciliation",
-                active:'/icons/reconciliation.svg',
+                active: '/icons/reconciliation.svg',
                 inactive: '/icons/reconciliation-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/reconciliation",
@@ -181,7 +181,7 @@ export const tabs = [
             },
             {
                 text: "Payment",
-                active:'/icons/payment.svg',
+                active: '/icons/payment.svg',
                 inactive: '/icons/payment-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/payment",
@@ -189,7 +189,7 @@ export const tabs = [
             },
             {
                 text: "Revenue",
-                active:'/icons/revenue-active.svg',
+                active: '/icons/revenue-active.svg',
                 inactive: '/icons/revenue-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/revenue",
@@ -197,7 +197,7 @@ export const tabs = [
             },
             {
                 text: "POS Terminals",
-                active:'/icons/pos-terminals.svg',
+                active: '/icons/pos-terminals.svg',
                 inactive: '/icons/pos-terminals-inactive.svg',
                 data: "2",
                 link: "/dashboard/agency/pos-terminals",
@@ -220,7 +220,7 @@ export const tabs = [
         subTexts: [
             {
                 text: "Reports",
-                active:'/icons/report.svg',
+                active: '/icons/report.svg',
                 inactive: '/icons/reports-inactive.svg',
                 data: "3",
                 link: "reports",
@@ -243,7 +243,7 @@ export const tabs = [
         subTexts: [
             {
                 text: "Ticket Management",
-                active:'/icons/ticket-management.svg',
+                active: '/icons/ticket-management.svg',
                 inactive: '/icons/ticket-management-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/ticket-management",
@@ -251,7 +251,7 @@ export const tabs = [
             },
             {
                 text: "Bulk Notification",
-                active:'/icons/bulk-notification.svg',
+                active: '/icons/bulk-notification.svg',
                 inactive: '/icons/bulk-notification-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/bulk-notification",
@@ -259,7 +259,7 @@ export const tabs = [
             },
             {
                 text: "Audits",
-                active:'/icons/audits.svg',
+                active: '/icons/audits.svg',
                 inactive: '/icons/audits-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/audits",
@@ -267,29 +267,30 @@ export const tabs = [
             },
         ]
     },
-    // {
-    //     text: "Loan",
-    //     height: "hover:h-[85px]",
-    //     full: "h-[85px]",
-    //     data: "5",
-    //     subTexts: [
-    //         {
-    //             text: "Loan Performance",
-    //             active:'/icons/loan-performance.svg',
-    //             inactive: '/icons/loan-performance-inactive.svg',
-    //             data: "5",
-    //             link: "loanperformance",
-    //         },
-    //         {
-    //             text: "Credit Call",
-    //             active:'/icons/credit-call.svg',
-    //             inactive: '/icons/credit-call-inactive.svg',
-    //             data: "5",
-    //             link: "creditcall",
-    //         },
-    //     ]
-    // },
+    {
+        text: "Loans",
+        height: "hover:h-[85px]",
+        full: "h-[85px]",
+        data: "5",
+        subTexts: [
+            {
+                text: "Loan Performance",
+                active: '/icons/loan-performance.svg',
+                inactive: '/icons/loan-performance-inactive.svg',
+                data: "5",
+                link: "/dashboard/loans",
+                permission: ["VIEW_TRANSACTIONS", "EDIT_TRANSACTIONS"]
+            },
+            {
+                text: "Credit Call",
+                active: '/icons/credit-call.svg',
+                inactive: '/icons/credit-call-inactive.svg',
+                data: "5",
+                link: "credit-call",
+            },
+        ]
+    },
 ]
 
 
-export const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+export const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

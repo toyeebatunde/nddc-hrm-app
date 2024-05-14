@@ -10,6 +10,7 @@ import { useRouter } from "next/router"
 
 export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading, closeEdge }) {
     const router = useRouter()
+    console.log("values: ", values)
 
     const chargeSelectOptions = [
         "TRANSFER",
@@ -28,7 +29,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
 
     const posOptions = [
         "GA Linux Terminal",
-        "GA POS Android Terminal",
+        "ANDROID_TERMINAL",
     ]
 
 
@@ -218,6 +219,11 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                             <Textfield formEdit={formEdit} value={values.values.email} type="text" title="Email" name="email" />
                         </div>
                     </section>
+                    <section className={`${values.values.privileges ? "hidden" : "flex"}  flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]`}>
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield formEdit={formEdit} value={values.values.phone} type="text" title="Phone" name="phone" />
+                        </div>
+                    </section>
                     <section className="flex flex-col mt-[20px] lg:mt-0 lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
                             <Textfield formEdit={formEdit} value={values.values.assignRole} type="select" selectOptions={values.values.selectOptions} title="Assign Role" name="assignRole" />
@@ -257,8 +263,9 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                             {
                                                 "firstname": values.values.firstName,
                                                 "lastname": values.values.lastName,
-                                                "email": values.values.email,
+                                                "email": values.values.email.toString(),
                                                 "role": values.values.assignRole,
+                                                "phoneNumber": `+234${values.values.phone.toString().slice(1)}`,
                                             },
                                             localStorage.getItem('token'),
                                             modalCloser,
@@ -449,6 +456,72 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                         </div>
                         <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
                             <UserButton onClick={(e) => {
+                                postApi(
+                                    e,
+                                    `https://admapis-staging.payrail.co/v1/device/pos/create`,
+                                    {
+                                        "serialNumber": values.values.serialNumber,
+                                        "terminalId": values.values.terminalId,
+                                        "type": values.values.posTerminalType || "GA Linux Terminal"
+                                        // "agentDetails": "string",
+                                        // "agentEmail": "string",
+                                        // "agentId": 0,
+                                        // "agentPhone": "string",
+                                        // "deviceId": "string",
+                                        // "deviceOs": "string",
+                                        // "id": 0,
+                                        // "name": "string",
+                                        // "pushNotificationId": "string",
+                                        // "status": "ACTIVE"
+                                      },
+                                    localStorage.getItem('token'),
+                                    modalCloser,
+                                    setLoading,
+                                    "posModalAdd"
+                                )
+                            }}
+                                text={values.values.action} type="gradient" />
+                        </div>
+                    </section>
+                </form>
+            </section>
+        )
+    }
+    if (modal.posModalRetrieve) {
+        return (
+            <section className={`w-[350px] lg:rounded-[48px] lg:w-[654px] py-[20px] px-[20px] flex flex-col items-center min-h-[500px] bg-white rounded-[15px]`}>
+                <section className="flex w-[90%] lg:w-[80%] lg:mr-[40px] lg:self-end justify-between">
+                    <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">{values.values.action} POS Terminal Inventory</p>
+                    <button onClick={(e) => { modalCloser(false, "posModalAdd") }} className="w-[40px] h-[40px] relative cursor-pointer">
+                        <ImageHolder id="closer" src="/icons/close-modal.svg" />
+                    </button>
+                </section>
+                <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Note that all changes are effected immediately</p>
+                <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
+
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="text" title="Terminal ID" name="terminalId" formEdit={formEdit} value={values.values.terminalId || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield charType="text" type="text" title="Serial Number" name="serialNumber" formEdit={formEdit} value={values.values.serialNumber || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield type="select" selectOptions={posOptions} title="POS Terminal Type" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminalType || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+
+
+                    <section className="flex justify-between mt-[15px] w-[90%] self-center relative w-full">
+                        <div className="w-[126px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            <UserButton text="Cancel" textColor="text-black" onClick={(e) => { modalCloser(false, "posModalAdd") }} />
+                        </div>
+                        <div className="w-[186px] h-[47px] lg:w-[186px] lg:h-[57px]">
+                            {/* <UserButton onClick={(e) => {
                                 // editApi(
                                 //     e,
                                 //     `https://admapis-staging.payrail.co/v1/charge/update/${values.id}`,
@@ -465,7 +538,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                 //     setLoading
                                 // )
                             }}
-                                text={`${values.values.action == "Add" ? "Add" : "Edit"}`} type="gradient" />
+                                text={values.values.action} type="gradient" /> */}
                         </div>
                     </section>
                 </form>

@@ -10,13 +10,14 @@ import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 import TableContainer from "../../../components/TableContainer";
 
-export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, formatDate, dateRange, search }) {
+export default function Reconciliation({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, formatDate, dateRange, search }) {
 
-    const [reconciliationData, setReconciliationData] = useState()
+    const [reconciliationData, setReconciliationData] = useState([])
+    const [totalPages, setTotalPages] = useState(0)
     const [filteredData, setFilteredData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: recon, error:reconError } = useSWR(`${testEnv}v1/reconciliation/current`, fetching)
-    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: recon, error: reconError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
 
     useEffect(() => {
@@ -26,7 +27,9 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
         setActiveState("2")
         if (recon) {
             setLoading(false)
-            setReconciliationData(recon)
+            // debugger
+            setReconciliationData(recon.data.ReconciliationList)
+            setTotalPages(recon.data.TotalPages)
         }
         if (reconError) {
             console.log(reconError)
@@ -38,13 +41,13 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
         //     console.log("valid date range")
         // }
         mutate(`${testEnv}v1/reconciliation/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
-        if (dateFiltered) {
-            setFilteredData(dateFiltered.data)
+        if (recon) {
+            setReconciliationData(recon.data.ReconciliationList)
         }
-        if (filteredError) {
-            console.log(filteredError)
+        if (reconError) {
+            // console.log(filteredError)
         }
-    }, [dateFiltered])
+    }, [entryValue, dateRange])
 
 
     const dateFormatter = (stamp) => {
@@ -58,18 +61,16 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
 
     return (
         <div className="w-full">
-
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <section className={`h-[674px] w-full overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
-                    <div className="min-w-[1135px] h-fit">
-
-                        <table className="table-fixed px-[5px] w-full">
+                <section className={`min-h-[674px] w-full min-h-[674px] w-full  pt-4 pl-[5px]`}>
+                    <TableContainer entryValue={entryValue} pageSelector={pageSelector} totalPages={totalPages}>
+                        <table className="table-fixed w-full">
                             <thead>
-                                <tr className="px-[10px]">
-                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                <tr className="px-[10px">
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
                                     <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">CREDIT {"(IN)"}</th>
-                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">DEBIT {"(OUT)"}</th>
-                                    <th className="font-400 w-[116px]  text-start   text-[12px] leading-[15.62px] font-pushpennyBook">BALANCE</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">DEBIT {"(OUT)"}</th>
+                                    <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">BALANCE</th>
                                     <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">LEDGER BALANCE</th>
                                     <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT</th>
                                     <th className="font-400 w-[116px]  text-start  text-[12px] leading-[15.62px] font-pushpennyBook">SUPER AGENT</th>
@@ -84,32 +85,26 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
                                     <th colSpan="2" className="">Commissions</th>
                                     <th className="w-[161px] "></th>
                                 </tr>
-
-                                {/* {(search ? filteredData : transactionsData)?.map((transaction, index) => {
+                                {reconciliationData.map((reconItem, index) => {
                                     return (
-                                        <tr key={index} className="flex justify-between h-[60px]">
-                                            <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>
-                                            <td className="font-pushpennyBook w-[148px] truncate inline-block  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.tranRef}</td>
-                                            <td className="font-pushpennyBook truncate inline-block w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>
-                                            <td className="font-pushpennyBook flex w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.userName}</td>
-                                            <td className="font-pushpennyBook flex w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceName}</td>
-                                            <td className="font-pushpennyBook truncate inline-block w-[165px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.externalServiceReference || "n/a"}</td>
-                                            <td className="font-pushpennyBook flex w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
-                                            <td className="font-pushpennyBook flex w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge}</td>
-                                            <td className="font-pushpennyBook flex w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
-                                            <td className="font-pushpennyBook flex w-[88px]  flex items-start">
-                                                <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
-                                                </div>
-                                            </td>
+                                        <tr className="fle h-[60px]">
+                                            <td className="font-pushpennyBook fle w-[75px]  font-400 text-[14px] leading-[18px] text-[#6E7883]">{reconItem.dateCreated ? dateFormatter(reconItem.dateCreated) : "n/a"}</td>
+                                            <td className="font-pushpennyBook  truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalInflow ? reconItem.totalInflow : "n/a"}</td>
+                                            <td className="font-pushpennyBook truncate  w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalOutflow ? reconItem.totalOutflow : "n/a"}</td>
+                                            <td className="font-pushpennyBook fle w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalClosingBalance ? reconItem.totalClosingBalance : "n/a"}</td>
+                                            <td className="font-pushpennyBook fle w-[91px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.ledgerBalance ?reconItem.ledgerBalance : "n/a"}</td>
+                                            <td className="font-pushpennyBook truncate inline-block w-[165px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalAgentCommission ? reconItem.totalAgentCommission : "n/a"}</td>
+                                            <td className="font-pushpennyBook fle w-[90px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalSuperAgentCommission ? reconItem.totalSuperAgentCommission : "n/a"}</td>
+                                            <td className="font-pushpennyBook fle w-[50px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{reconItem.totalPayrailCommission ?reconItem.totalPayrailCommission : "n/a"}</td>
+                                            <td className="font-pushpennyBook fle w-[69px]  font-[600] text-[11px] leading-[14px] text-[#6E7883]">{reconItem.glBalance ? reconItem.glBalance : "n/a"}</td>
                                         </tr>
                                     )
-                                })} */}
-                                
+                                })}
+
+
                             </tbody>
                         </table>
-
-                    </div>
+                    </TableContainer>
                 </section>
             </section>
         </div>

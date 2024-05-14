@@ -7,18 +7,18 @@ import { useState, useEffect } from "react"
 import Toggler from "../../../../../components/Toggle"
 import axios from "axios"
 import useSWR, { mutate } from 'swr'
-import { useRouter } from "next/router"
 import { testEnv } from "../../../../../components/Endpoints"
 import { editApi, patchApi, deleteApi } from "../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
+import { useRouter } from "next/navigation"
 
 
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
     const [toggleStateOne, setToggleStateOne] = useState(false)
     const [lienStatus, setLienStatus] = useState({ lien: false, status: "off", api: false })
-    const [accountStatus, setAccountStatus] = useState({ account: false, status: "off", api: false })
+    const [accountStatus, setAccountStatus] = useState({ account: "", status: "off", api: false })
     const [tranDetails, setTranDetails] = useState(false)
     const [viewTransaction, setViewTransaction] = useState(false)
     const lienToggle = useRef()
@@ -32,11 +32,9 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         setId(newId)
         // debugger
     }, [])
-    // const [agentServerDetails, setAgentServerDetails] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/agent/${id}`, fetching) // /kyc/${id}/get-kyc
-    // const kycs = ["bvn", "nin", "contractNo", "tin", "rcNumber"]
-    // const kycImages = ["cac", "selfie", "idCard"]
+    const { data, error } = useSWR(`${testEnv}v1/agent/${id}`, fetching) 
+
     const kycImages = [
         {
             name: "cac",
@@ -75,25 +73,33 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
         },
     ]
 
-    // useEffect(()=>{
-    //     setAgentServerDetails(agentDetails)
-    // },[])
-
     useEffect(() => {
         setLoading(true)
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
+
+        const timeout = setTimeout(() => {
+            if(!data) {
+                setLoading(false);
+                router.push("/dashboard/agency/agent-management/agents/")
+                window.alert("Something went wrong, loading user took longer than usual")
+            }
+          }, 6000); // 5 seconds
+
+
         if (data) {
-            console.log("agent data: ", data)
+            // console.log("agent data: ", data)
+            // console.log("status: ", data.agent.status)
             setAgentData(data)
             setLienStatus({ lien: data.agent.onLien, status: data.agent.onLien ? "on" : "off", api: false })
-            setAccountStatus({ account: data.customerAccount?.accountStatus, status: data.customerAccount?.accountStatus == "ACTIVE" ? "on" : "off", api: false })
+            setAccountStatus({ account: data.agent.status, status: data.agent.status == "A" ? "on" : "off", api: false })
             setLoading(false)
         }
         if (error) {
-            console.log(error)
+            // console.log(error)
         }
+        return () => clearTimeout(timeout);
     }, [data])
 
     useEffect(() => {
@@ -158,19 +164,17 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
     }
 
     async function agentHandler(modalState, modal, fields, id, fileKey = "") {
+        // debugger
         if (modal == "imageView") { // api/file-view/presign-url- returns image url /v1/api/presign-url/view-file?fileKey
-            const data = await fetch("https://admapis-staging.payrail.co/v1/api/presign-url/view-file", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                },
-                body: JSON.stringify({ fileKey: fileKey })
-            })
-
-            const url = await data.json()
+            const data = await axios.post("https://admapis-staging.payrail.co/v1/api/presign-url/view-file",
+                { fileKey: fileKey },
+                { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } }
+            )
+            .then(res => res.data)
+            .catch(err => console.log(err))
+            // console.log("otherData: ", otherData)
             setModalState(modalState, modal)
-            editFormState({ image: url }, id)
+            editFormState({ image: data }, id)
             return
         }
         setModalState(modalState, modal)
@@ -307,7 +311,7 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between xl:w-full lg:h-[36px] mt-[17px]">
                                                 <h2 className="font-pushpennyBook text-[18px] text-[#6E7883] font-[400] leading-[15px]">Account Status</h2>
                                                 <div>
-                                                    <Toggler toggleRef={accountToggle} onClick={(e) => { toggler(e, accountStatus, "account", "status", "api", "account") }} id={id} toggled={accountStatus == undefined ? false : accountStatus.account} />
+                                                    <Toggler toggleRef={accountToggle} onClick={(e) => { toggler(e, accountStatus, "account", "status", "api", "account") }} id={id} toggled={accountStatus.account} />
                                                 </div>
                                             </div>
                                             <div className="w-[153px] lg:w-full flex flex-col items-center lg:flex-row justify-between lg:h-[36px] mt-[17px]">
@@ -510,10 +514,10 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
 
                                                     <td className="font-pushpennyBook flex items-start">
                                                         <div className="w-[49%] h-[36px]">
-                                                            <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                            <UserButton disabled={agentData?.kyc[item.name + "KycStatus"] == "VERIFIED" || agentData?.kyc[item.name + "KycStatus"] == "PENDING_UPLOAD"} type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
                                                         </div>
                                                         <div className="w-[49%] h-[36px]">
-                                                            <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                            <UserButton disabled={agentData?.kyc[item.name + "KycStatus"] == "VERIFIED" || agentData?.kyc[item.name + "KycStatus"] == "PENDING_UPLOAD"} type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -524,17 +528,17 @@ export default function Agent({ modals, setModalState, editFormState, setToken, 
                                                 <tr key={index} className="h-[50px]">
                                                     <td className="font-pushpennyBook  font-[400] text-[14px] leading-[18px] text-[#6E7883]">{item.name.toUpperCase()}</td>
                                                     <td className="font-pushpennyBook  w-[100px] font-[400] text-[14px] leading-[14px] text-[#6E7883]">
-                                                        <UserButton type="image" text="view image" bg="bg-[black]" onClick={() => { agentHandler(true, "imageView", { image: agentData.kyc[item.name + "Base64Img"] }, data.id) }} />
+                                                        <UserButton type="image" text="view image" bg="bg-[black]" onClick={() => { agentHandler(true, "imageView", { image: agentData.kycselfieBase64Img}, data.id, agentData.kyc[item.name+"Base64Img"]) }} />
                                                     </td>
                                                     <td className="font-pushpennyBook  w-[100px]  font-[400] text-[14px] leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "UploadedDate"] ? dateFormatter(agentData?.kyc[item.name + "UploadedDate"]) : "n/a"}</td>
                                                     <td className="font-pushpennyBook  w-[53px]  font-[400] text-[12px] truncate leading-[14px] text-[#6E7883]">{agentData?.kyc[item.name + "KycStatus"] ? agentData?.kyc[item.name + "KycStatus"] : "n/a"}</td>
 
                                                     <td className="font-pushpennyBook flex items-start">
                                                         <div className="w-[49%] h-[36px]">
-                                                            <UserButton type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                            <UserButton disabled={agentData?.kyc[item.name + "KycStatus"] == "VERIFIED" || agentData?.kyc[item.name + "KycStatus"] == "PENDING_UPLOAD"} type="edit" text="Approve" onClick={() => { agentHandler(true, "action", { caution: approveCaution, action: "approve", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/verify_${item.url}`, reason: true, onClick: patchApi, trigger: triggerReload }, data.id) }} />
                                                         </div>
                                                         <div className="w-[49%] h-[36px]">
-                                                            <UserButton type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
+                                                            <UserButton disabled = {agentData?.kyc[item.name + "KycStatus"] == "VERIFIED" || agentData?.kyc[item.name + "KycStatus"] == "PENDING_UPLOAD"} type="view" text="Decline" onClick={() => { agentHandler(true, "action", { caution: declineCaution, action: "decline", endPoint: `${testEnv}v1/kyc/${agentData.kyc.id}/decline_${item.url}`, reason: false, onClick: patchApi, trigger: triggerReload }, data.id) }} />
                                                         </div>
                                                     </td>
                                                 </tr>

@@ -10,20 +10,20 @@ import { ngrok, testEnv, editApi } from "../../../components/Endpoints";
 import Textfield from "../../../components/TextField";
 
 export default function Settlement({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue }) {
-    
+
     const [settlementData, setSettlementData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/settlement/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    
-    
+
+
     useEffect(() => {
-        setLoading(true)        
+        setLoading(true)
         setView(false)
         setActiveDashboard("Settlement")
         setActiveState("2")
         if (data) {
             setLoading(false)
-            setSettlementData(data)
+            setSettlementData(data.data)
         }
         if (error) {
             console.log(error)
@@ -47,42 +47,38 @@ export default function Settlement({ modals, setToken, setActiveDashboard, setAc
                 <section className={`h-[674px] w-full flex overflow-x-auto rounded-[10px] bg-brand-light-yellow pt-4 pl-[5px]`}>
                     <div className="w-[1135px] h-fit">
 
-                        <table className="table-fixed px-[5px] w-full flex flex-col">
+                        <table className="table-fixed px-[5px] w-full">
                             <thead>
-                                <tr className="flex justify-between">
-                                    <th className="font-400 w-[106px]  flex  text-[12px] leading-[15.62px] font-pushpennyBook">AGENT</th>
-                                    <th className="font-400 w-[75px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
-                                    <th className="font-400 w-[73px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">TYPE/ID</th>
-                                    <th className="font-400 w-[80px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">SERVICE TYPE</th>
-                                    <th className="font-400 w-[73px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">COMMISSION AGENT</th>
-                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">COMMISSION SA</th>
-                                    <th className="font-400 w-[70px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
-                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">PRE BALANCE</th>
-                                    <th className="font-400 w-[118px] flex  text-[12px] leading-[15.62px] font-pushpennyBook">POST BALANCE</th>
+                                <tr className="">
+                                    <th className="borde font-400 w-[106px] text-left   text-[11px] leading-[15.62px] font-pushpennyBook">AGENT</th>
+                                    <th className="borde font-400 w-[75px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">DATE</th>
+                                    <th className="borde font-400 w-[73px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">TYPE/ID</th>
+                                    <th className="borde font-400 w-[80px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">SERVICE TYPE</th>
+                                    <th className="borde font-400 w-[73px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
+                                    <th className="borde font-400 w-[122px] lex text-left text-[12px] leading-[15.62px] font-pushpennyBook">COMMISSION AGENT</th>
+                                    <th className="borde font-400 w-[114px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">COMMISSION SA</th>
+                                    <th className="borde font-400 w-[70px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                    <th className="borde font-400 w-[118px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">PRE BALANCE</th>
+                                    <th className="borde font-400 w-[118px] lex text-left text-[11px] leading-[15.62px] font-pushpennyBook">POST BALANCE</th>
                                 </tr>
                             </thead>
                             <tbody className="mt-6 ">
-                                {/* {customerData?.data.map((customer, index) => {
+                                {settlementData?.map((settlement, index) => {
                                     return (
-                                        <tr key={index} className="flex justify-between items-center h-[50px] border-b border-[#979797]">
-                                            <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.firstName}</td>
-                                            <td className="font-pushpennyBook flex w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.lastName}</td>
-                                            <td className="font-pushpennyBook flex w-[170px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.email}</td>
-                                            <td className="font-pushpennyBook flex w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{customer.phoneNumber}</td>
-
-                                            <td className="font-pushpennyBook flex w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(customer.dateCreated)}</td>
-                                            <td className="font-pushpennyBook gap-[5px] flex w-[175px]  flex items-start">
-                                                <div className="w-[80px] h-[36px]">
-                                                    <UserButton type="edit" onClick={() => { editInfo(customer.id, customer.firstName, customer.lastName, customer.email, customer.dob, customer.phoneNumber, customer.address, customer.city, customer.state, customer.lga, customer.bvn, customer.middleName, customer.dateCreated, customer.gender) }} />
-                                                </div>
-                                                <div className="w-[88px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/customer-management/${customer.id}`) }} />
-                                                </div>
-                                            </td>
+                                        <tr key={index} className="h-[50px] border-b border-[#979797]">
+                                            <td className="borde font-pushpennyBook truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.agentPhoneNumber}</td>
+                                            <td className="font-pushpennyBook truncate font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(settlement.date)}</td>
+                                            <td className="font-pushpennyBook truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.transactionId}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.serviceType}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.amount}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.agentCommission}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.superAgentCommission}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.settlementStatus}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.preBalance}</td>
+                                            <td className="font-pushpennyBook  truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{settlement.postBalance}</td>
                                         </tr>
                                     )
-                                })} */}
+                                })}
                             </tbody>
                         </table>
 

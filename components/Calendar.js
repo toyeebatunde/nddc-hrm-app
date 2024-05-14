@@ -7,15 +7,15 @@ export default function TheCalendar({dateRangeParam, dateRange, setDateRange, se
   const [date, setDate] = useState(new Date());
 
   function onChange(date){
+    console.log("The changed Date: ", date)
     setSearch(true)
     setDate(date)
     setDateRange({...dateRange, [dateRangeParam]:date})
     setRangeParam("")
   }
 
-  useEffect(()=>{
-    // console.log(date)
-  }, [date])
+  // useEffect(()=>{
+  // }, [date])
 
   // console.log(Date())
 

@@ -3,24 +3,25 @@ import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 import UserButton from "../../../../components/ButtonMaker";
 import { useEffect, useState } from "react";
-import useSWR, {mutate} from 'swr'
+import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
 import { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 
-export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day }) {
-    
+export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day, rangeParam }) {
+
     const [transactionsData, setTransactionsData] = useState()
     const [filteredData, setFilteredData] = useState()
     const [transactionToView, setTransactionToView] = useState()
     const [viewState, setViewState] = useState(true)
+    const [totalPages, setTotalPages] = useState(0)
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data:allTransactions, error:allTransactionsError } = useSWR(`${testEnv}v1/transaction/bill_payment/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data:dateFiltered, error:filteredError } = useSWR(`${testEnv}v1/transaction/bill_payment/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
-    const { data:dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/transaction/bill_payment/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: allTransactions, error: allTransactionsError } = useSWR(`${testEnv}v1/transaction/bill_payment/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/transaction/bill_payment/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/transaction/bill_payment/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/bill_payment?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    
+
     const router = useRouter()
 
     useEffect(() => {
@@ -32,7 +33,8 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         setActiveState("2")
         if (allTransactions) {
             setLoading(false)
-            setTransactionsData(allTransactions.data)
+            setTransactionsData(allTransactions.data.Transactions)
+            setTotalPages(allTransactions.data.TotalPages)
         }
         if (allTransactionsError) {
             console.log(allTransactionsError)
@@ -45,21 +47,35 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         // }
         mutate(`${testEnv}v1/transaction/withdrawal/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (dateFiltered) {
-            setFilteredData(dateFiltered.data)
+            setFilteredData(dateFiltered.data.Transactions)
+            if (search) {
+                setTotalPages(dateFiltered.data.TotalPages)
+            }
         }
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered])
+    }, [dateFiltered, entryValue])
 
     useEffect(() => {
-        if (dayFiltered) {
-            setFilteredData(dayFiltered)
-        }
+        let newSearch
+        axios.get(`${testEnv}v1/transaction/bill_payment/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            .then(res => {
+                // debugger
+                // setSearchedField(res.data)
+                newSearch = res.data
+                console.log(newSearch)
+                if (rangeParam == "date") {
+                    setFilteredData(res.data.data.Transactions)
+                    setTotalPages(res.data.data.TotalPages)
+                }
+            }
+            )
         if (dayFilteredError) {
             console.log(dayFilteredError)
         }
-    }, [dayFiltered])
+    }, [day, entryValue])
 
 
     useEffect(() => {
@@ -86,9 +102,9 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         <div className="w-full">
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`min-h-[674px] w-full  pt-4 pl-[5px]`}>
-                    <TableContainer entryValue={entryValue} pageSelector={pageSelector}>
+                    <TableContainer totalPages={totalPages} entryValue={entryValue} pageSelector={pageSelector}>
 
-                    <table className="table-fixed w-full">
+                        <table className="table-fixed w-full">
                             <thead>
                                 <tr className="">
                                     <th className="font-400 text-left   w-[75px]  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
@@ -108,10 +124,10 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                     (search ? filteredData : transactionsData)?.map((transaction, index) => {
                                         return (
                                             <tr key={index} className="h-[60px]">
-                                                <td className="font-pushpennyBook    font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.dateCreated)}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.date)}</td>
                                                 <td className="font-pushpennyBook  truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.tranRef}</td>
                                                 <td className="font-pushpennyBook truncate w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.type}</td>
-                                                <td className="font-pushpennyBook   truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.agent.userName}</td>
+                                                <td className="font-pushpennyBook   truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.customerInfo?.name || "n/a"}</td>
                                                 <td className="font-pushpennyBook   truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceName}</td>
                                                 <td className="font-pushpennyBook truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.externalServiceReference || "n/a"}</td>
                                                 <td className="font-pushpennyBook    font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
@@ -124,7 +140,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 </td>
                                             </tr>
                                         )
-                                    }) : 
+                                    }) :
                                     searchBarData?.data.map((transaction, index) => {
                                         return (
                                             <tr key={index} className="h-[60px]">

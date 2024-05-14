@@ -1,8 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import dynamic from "next/dynamic"
 // import { Editor } from 'react-draft-wysiwyg';
-import { convertToRaw } from 'draft-js';
+// import { convertToRaw } from 'draft-js';
 import draftToHtml from "draftjs-to-html"
+import { EditorState, convertToRaw } from 'draft-js';
+// let Editor;
+// if (typeof window !== 'undefined') {
+//     Editor = require('react-draft-wysiwyg').Editor;
+// }
+let draftToMarkdown;
+if (typeof window !== 'undefined') {
+    draftToMarkdown = require('draftjs-to-markdown').draftToMarkdown;
+}
 
 
 const Editor = dynamic(
@@ -10,26 +19,30 @@ const Editor = dynamic(
     { ssr: false }
 )
 
-const EditorComponent = ({ initialContent, onContentChange }) => {
-    const [content, setContent] = useState(initialContent);
+const useEditor = (initialContent) => {
+    const [content, setContent] = useState();
+    const [message, setMessage] = useState("")
 
-    // console.log(draftToHtml(convertToRaw(content.getCurrentContent())))
-    // console.log((convertToRaw(content.getCurrentContent())).blocks[0].text)
+    useEffect(()=>{
+        setContent(initialContent)
+    },[initialContent])
 
     const memoizedEditor = useMemo(() => (
         <Editor
             editorState={content}
             onEditorStateChange={(editorState) => {
                 setContent(editorState);
-                onContentChange(editorState);
+                setMessage((convertToRaw(editorState.getCurrentContent())).blocks[0].text)
             }}
             toolbarClassName="rounded-[10px]"
             wrapperClassName="p-[10px] min-h-[460px]"
-            editorClassName='min-h-[400px]'
+            editorClassName='min-h-[400px] borde'
         />
-    ), [content, onContentChange]);
+    ), [content]);
 
-    return memoizedEditor;
+    return { memoizedEditor, message };
 };
 
-export default EditorComponent;
+export { useEditor };
+
+

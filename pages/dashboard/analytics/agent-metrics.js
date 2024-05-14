@@ -3,20 +3,78 @@ import axios from "axios"
 import directionDown from '../../../public/icons/direction-down.svg'
 import down from '../../../public/icons/down.svg'
 import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
-import useSWR, {mutate} from "swr"
+import useSWR, { mutate } from "swr"
 // import TheCalendar from "../../components/calendar"
 import { useState, useEffect } from "react"
 import DateSelector from "../../../components/DateSelector"
 import { testEnv } from "../../../components/Endpoints"
+import MetricLayoutTemplate from "../../../components/MetricLayoutTemplate"
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import CircularProgress from '@mui/material/CircularProgress';
 
-export default function AgentMetrics({setToken, setDateRange, dateRange, week}) {
-    const [isCalendar, setIsCalendar] = useState(false)
+export default function AgentMetrics({ setToken, setDateRange, dateRange, week, setActiveDashboard, setActiveState, reformatDate }) {
+    // const [isCalendar, setIsCalendar] = useState(false)
     const [analytics, setAnalytics] = useState()
+    const [mount, setMount] = useState(1)
+    const [totalTransactions, setTotalTransactions] = useState({ total: null, successful: 0, failed: 0, reversed: 0 })
+    const [agentStats, setAgentSats] = useState([])
+    const [todaysTransactions, setTodaysTransactions] = useState({ total: 0, successful: 0, failed: 0, reversed: 0 })
 
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats`, fetching)
+    const { data: transactionsTodayData, error: transactionsTodayDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=2022-01-16&to=2022-01-17`, fetching)
+    const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
+    const { data: agentsData, error: agentsDataError } = useSWR(`${testEnv}v1/analytics/agents_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
+    // const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
+    // https://admapis-staging.payrail.co/v1/analytics/transaction_stats/filter_by_dates_between?from=2022-01-01&to=2022-05-29
+    // ${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}
 
-   
+    // function formatDate(date) {
+    //     var d = date.getDate(), // mount == 1 ? date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()).toString() : date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()+1).toString(),
+    //         m = date.getMonth()+1 ,//(date.getUTCMonth() + 1).toString(),
+    //         y = date.getFullYear().toString(), // date.getUTCFullYear().toString(),
+    //         formatted = '',
+    //         otherDate = date.getDate();
+    //     // debugger
+    //     if (d.length === 1) {
+    //         d = '0' + d;
+    //     }
+    //     if (m.length === 1) {
+    //         m = '0' + m;
+    //     }
+    //     formatted = y + '-' + m + '-' + d;
+    //     // debugger
+    //     // setMount(mount+1)
+    //     return formatted;
+    // }
+
+    function newFormatDate(date = new Date()) {
+        var d = date.getDate().toString(), // mount == 1 ? date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()).toString() : date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()+1).toString(),
+            dPlusOne = (date.getDate() + 1).toString(),
+            m = (date.getMonth() + 1).toString(),
+            y = date.getFullYear().toString(),
+            formatted = '',
+            otherDate = date.getDate();
+        // debugger
+        if (d.length === 1) {
+            d = '0' + d;
+        }
+        if (m.length === 1) {
+            m = '0' + m;
+        }
+        formatted = {to: y + '-' + m + '-' + dPlusOne, from: y + '-' + m + '-' + d}
+        // debugger
+        // setMount(mount+1)
+        return formatted;
+    }
+
+    useEffect(() => {
+        // formatDate(dateRange.dateFrom)
+        // debugger
+        console.log("tomorrow: ", newFormatDate())
+    }, [dateRange.dateFrom, dateRange.dateTo])
+
+
 
 
     // function getPreviousDay(date = new Date()) {
@@ -25,35 +83,49 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
     //     return previous;
     // }
 
-     useEffect(() => {
+    useEffect(() => {
+        console.log("Success Percentage: ", Math.floor((totalTransactions.successful / totalTransactions.total) * 100) + " Failure Percentage: ", Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100))
+        axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateFrom)}`,
+            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
+        )
+            .then(response => {
+                console.log("today: ", response.data)
+            })
+    }, [dateRange.dateFrom, dateRange.dateTo])
+
+    useEffect(() => {
         // setActiveTab("Agents")
         // resetSearchParams()
         // setToken()
-        // setActiveDashboard("AgentManagement")
-        // setActiveState("2")
+        setActiveDashboard("AgentMetrics")
+        setActiveState("0")
         if (transactionsData) {
-            setAnalytics(transactionsData)
+            // console.log("setting analytics")
+            setAnalytics(transactionsData.data)
+            setTotalTransactions({ ...totalTransactions, total: transactionsData.data.noOfSuccessfulTransactions + transactionsData.data.noOfReversedTransactions + transactionsData.data.noOfFailedTransactions, successful: transactionsData.data.noOfSuccessfulTransactions, failed: transactionsData.data.noOfFailedTransactions, reversed: transactionsData.data.noOfReversedTransactions })
+            // console.log(Math.ceil())
         }
         if (transactionsDataError) {
             console.log(transactionsDataError)
         }
-    }, [transactionsData])
+    }, [transactionsData, dateRange.dateFrom, dateRange.dateTo])
 
-    function dateSearch() {}
+    function dateSearch() { }
+    //  ${totalTransactions.reversed == 0 ? Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.ceil((totalTransactions.successful / totalTransactions.total) * 100) : Math.floor((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}
 
     const ninety = "90"
     return (
         <div className="flex flex-col items-center pt-[60px] w-full">
-            <section className="w-full flex flex-col sm:flex-row px-4 justify-between">
+            {/* <section className="w-full flex flex-col sm:flex-row px-4 justify-between">
                 <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                     Metrics
                 </h4>
                 <div className=" grow flex justify-end">
-                <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
+                    <DateSelector week={week} dateRange={dateRange} setDateRange={setDateRange} directionDown={directionDown} />
                 </div>
-            </section>
+            </section> */}
             <section className="flex flex-col xl:flex-row items-center w-full  justify-between px-4 py-2 ">
-                <section className="w-full xl:grow h-[375px] flex flex-col items-center border border-[#dddddd] rounded-[8px]">
+                {/* <section className="w-full xl:grow h-[375px] flex flex-col items-center border border-[#dddddd] rounded-[8px]">
                     <section className="flex rounded-[4px] group relative justify-around bg-brand-light-yellow items-center w-[190px] h-[38px] font-400 font-pushpennyBook text-[10px] leading-[13px] text-[#161616]">
                         <p>TOTAL AGENT BALANCE</p>
                         <div className="relative w-[24px] h-[24px] flex justify-center items-center">
@@ -130,7 +202,7 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
                             <div className="font-pushpennyMedium font-400 text-[14px] px-[6px] leading-[18px]">Fri</div>
                         </div>
                     </section>
-                </section>
+                </section> */}
 
 
                 <section className="lg:w-[400px] xl:ml-[5px] xl:mt-0 border rounded-[8px] mt-[10px] border-[#dddddd] h-[375px] flex flex-col items-center justify-between py-4">
@@ -138,39 +210,81 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
                         <p className="font-pushpennyMedium font-500 text-[13px] leading-[20px]">Transaction Overview</p>
                         <p className="font-400 font-pushpennyBook text-[14px] leading-[22px] cursor-pointer underline underline-offset-1">View all</p>
                     </section>
-                    <section className="w-[100%] rounded-[8px] h-[231px] relative bg-brand-light-yellow flex justify-between items-center px-4">
+                    {totalTransactions.total == null && (
+                        <section className={`w-[100%] rounded-[8px] h-[231px] relative bg-brand-light-yellow flex justify-between items-center px-4`}>
+                            <Box className="justify-center w-full flex">
+                                <CircularProgress sx={{ color: "#dddddd" }} className=" border-[#dddddd]" />
+                            </Box>
+                        </section>
+                    )}
+                    {totalTransactions.total != null && (
+                        <section className="w-[100%] rounded-[8px] h-[231px] relative bg-brand-light-yellow flex justify-between items-center px-4">
+                            <section className="flex flex-col justify-center items-center w-[180px] h-[180px]">
+                                <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">{totalTransactions.total}</p>
+                                <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">Total</p>
+                                <div id="first-chart" className="pie z-30 animate-two no-round" style={{ "--p": `${Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
+                                <div id="second-chart" className="pie z-20 animate no-round" style={{ "--p": `${totalTransactions.reversed == 0 ? Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.ceil((totalTransactions.successful / totalTransactions.total) * 100) : Math.floor((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "black", "--b": "20px" }}></div>
+                                <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "100", "--c": "gray", "--b": "15px" }}></div>
+                                <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "70", "--c": "rgba(251, 244, 235, 1)", "--b": "25px" }}></div>
+                            </section>
+                            <section className="flex  justify-between h-[180px] flex-col">
+                                <section className="flex flex-col">
+                                    <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.successful}</p>
+                                    <div className="flex justify-between w-[90px] items-center">
+                                        <div className="w-[13px] h-[13px] rounded-[50%] bg-brand-yellow"></div>
+                                        <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Successful</p>
+                                    </div>
+                                </section>
+                                <section className="flex flex-col">
+                                    <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.failed}</p>
+                                    <div className="flex justify-between w-[90px] items-center">
+                                        <div className="w-[13px] h-[13px] rounded-[50%] bg-black"></div>
+                                        <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Failed</p>
+                                    </div>
+                                </section>
+                                <section className="flex flex-col">
+                                    <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.reversed}</p>
+                                    <div className="flex justify-between w-[90px] items-center">
+                                        <div className="w-[13px] h-[13px] rounded-[50%] bg-gray"></div>
+                                        <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Reversed</p>
+                                    </div>
+                                </section>
+                            </section>
+                        </section>
+                    )}
+                    {/* <section className="w-[100%] rounded-[8px] h-[231px] relative bg-brand-light-yellow flex justify-between items-center px-4">
                         <section className="flex flex-col justify-center items-center w-[180px] h-[180px]">
-                            <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">21841</p>
+                            <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">{totalTransactions.total}</p>
                             <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">Total</p>
-                            <div id="first-chart" className="pie z-30 animate-two no-round" style={{ "--p": `${ninety}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
-                            <div id="second-chart" className="pie z-20 animate no-round" style={{ "--p": "97", "--c": "black", "--b": "15px" }}></div>
-                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "100", "--c": "gray", "--b": "20px" }}></div>
-                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "97", "--c": "rgba(251, 244, 235, 1)", "--b": "25px" }}></div>
+                            <div id="first-chart" className="pie z-30 animate-two no-round" style={{ "--p": `${Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
+                            <div id="second-chart" className="pie z-20 animate no-round" style={{ "--p": `${Math.floor((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "black", "--b": "20px" }}></div>
+                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "100", "--c": "gray", "--b": "15px" }}></div>
+                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "70", "--c": "rgba(251, 244, 235, 1)", "--b": "25px" }}></div>
                         </section>
                         <section className="flex  justify-between h-[180px] flex-col">
                             <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">14967</p>
+                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.successful}</p>
                                 <div className="flex justify-between w-[90px] items-center">
                                     <div className="w-[13px] h-[13px] rounded-[50%] bg-brand-yellow"></div>
                                     <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Successful</p>
                                 </div>
                             </section>
                             <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">6008</p>
+                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.failed}</p>
                                 <div className="flex justify-between w-[90px] items-center">
                                     <div className="w-[13px] h-[13px] rounded-[50%] bg-black"></div>
                                     <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Failed</p>
                                 </div>
                             </section>
                             <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">74</p>
+                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.reversed}</p>
                                 <div className="flex justify-between w-[90px] items-center">
                                     <div className="w-[13px] h-[13px] rounded-[50%] bg-gray"></div>
                                     <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Reversed</p>
                                 </div>
                             </section>
                         </section>
-                    </section>
+                    </section> */}
                     <section className="flex justify-between h-[44px] px-2 w-full">
                         <section className="flex flex-col">
                             <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">20</p>
@@ -193,30 +307,30 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
             </section>
             <section className="w-[97.5%] h-fit border border-[#dddddd] rounded-[10px] flex flex-col xl:flex-row items-center justify-between px-4">
                 <section className="flex sm:w-[70%] xl:w-fit xl:justify-betwen justify-around">
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">03</p>
-                        <section className="z-10 bg-brand-light-yellow -ml-[10px] h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            Secs
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">03</p>
+                            <section className="z-10 bg-brand-light-yellow -ml-[10px] h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                Secs
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Avg. completed transaction time
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Avg. completed transaction time
-                    </section>
-                </section>
 
-                <section className="flex justify-between items-center">
-                    <section className=" z-30 flex w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">98</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" z-30 flex w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">98</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Payment <br></br>
+                            Conversion rate
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Payment <br></br>
-                        Conversion rate
-                    </section>
-                </section>
 
                 </section>
                 <section className="flex sm:w-[40%] justify-around xl:w-fit xl:justify-between items-center">
@@ -232,30 +346,30 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
                     </section>
                 </section>
                 <section className="flex sm:w-[70%] justify-around xl:w-fit xl:justify-betwen">
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">40</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">40</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Rate of <br></br>
+                            returning users
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Rate of <br></br>
-                        returning users
-                    </section>
-                </section>
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">05</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">05</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Abandonment <br></br>
+                            Rate
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Abandonment <br></br>
-                        Rate
-                    </section>
-                </section>
                 </section>
 
 
@@ -371,3 +485,5 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
         </div>
     )
 }
+
+AgentMetrics.Layout = MetricLayoutTemplate

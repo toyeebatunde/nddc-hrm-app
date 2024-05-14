@@ -6,7 +6,7 @@ import ImageHolder from '../../../../components/ImageHolder'
 import searchIcon from '../../../../public/icons/search-icon.svg'
 import closeIcon from '../../../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect } from "react"
-import RadioToggle from "../../../../components/RadioToggle"
+// import RadioToggle from "../../../../components/RadioToggle"
 import ButtonTab from "../../../../components/ButtonTab"
 import nookies from 'nookies'
 import useSWR, { mutate } from 'swr'
@@ -122,6 +122,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                     firstName: "",
                                     lastName: "",
                                     email: "",
+                                    phone: "",
                                     assignRole: "",
                                     // resetPasswordUrl: "/change-password",
                                     endPoint: `${testEnv}v1/user/add_user`,

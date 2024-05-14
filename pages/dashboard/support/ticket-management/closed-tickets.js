@@ -38,6 +38,12 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
+    function viewSingleTicket(id) {
+        localStorage.setItem("ticketId", id)
+        router.push(`/dashboard/support/ticket-management/single-ticket`)
+
+    }
+
 
 
 
@@ -60,7 +66,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Create Ticket" />
+                            <UserButton onClick={()=>{router.push("/dashboard/support/ticket-management/new-ticket")}} type="gradient" text="+ Create Ticket" />
                         </div>
                     </div>
                 </section>
@@ -92,7 +98,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                                         <td className="font-pushpennyBook  w-[46px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{ticket.ticketStatus}</td>
                                         <td className="font-pushpennyBook  group:ml-[10px] w-[88px]">
                                             <div className="w-[88px] h-[30px] rounded-[24px]">
-                                                <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/support/ticket-management/${ticket.id}`) }} />
+                                                <UserButton type="view" text="View" onClick={() => { viewSingleTicket(ticket.id) }} />
                                             </div>
                                         </td>
                                     </tr>

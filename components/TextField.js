@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import ImageHolder from "./ImageHolder"
 
 
-export default function Textfield({ title, type = "text", value, name, bg = "bg-[#F3F3F3]", formFields, setFormFields, formEdit, selectOptions = "", charType = "text" }) {
+export default function Textfield({ title, type = "text", value, name, bg = "bg-[#F3F3F3]", formFields, setFormFields, formEdit, selectOptions = "", charType = "text", important=false }) {
     const [focusState, setFocusState] = useState(false)
 
 
@@ -59,11 +59,27 @@ export default function Textfield({ title, type = "text", value, name, bg = "bg-
             </div>
         )
     }
+    if (type == "text" && important) {
+        return (
+            <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
+                <input important type={charType || "text"} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
+            </div>
+        )
+    }
     if (type == "text") {
         return (
             <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
                 <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
                 <input type={charType || "text"} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
+            </div>
+        )
+    }
+    if (type == "date") {
+        return (
+            <div className="flex items-center relative h-full group justify-center w-full  rounded-[inherit]">
+                <label className="text-[12px] font-[400] top-[-10px] left-[45px] font-interegular absolute w-fit text-[#777777] bg-[#FFFFFF] px-[4px]">{title}</label>
+                <input type={charType} name={name} onChange={(e) => { formEdit(e) }} value={value} className={`h-full outline-none pl-[25px] font-interegular text-[14px] font-[400] rounded-[10px] ${bg} w-[95%] rounded-[inherit]`} />
             </div>
         )
     }

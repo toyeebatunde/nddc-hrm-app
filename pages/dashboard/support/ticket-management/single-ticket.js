@@ -1,31 +1,43 @@
 
-import UserButton from "../../../../../components/ButtonMaker"
-import ImageHolder from "../../../../../components/ImageHolder"
+import UserButton from "../../../../components/ButtonMaker"
+import ImageHolder from "../../../../components/ImageHolder"
 // import RadioToggle from "../../../../../components/RadioToggle"
 import { useState, useEffect, useMemo } from "react"
-import Toggler from "../../../../../components/Toggle"
+import Toggler from "../../../../components/Toggle"
 import axios from "axios"
 import useSWR from 'swr'
 import { useRouter } from "next/router"
-import { testEnv } from "../../../../../components/Endpoints"
+import { testEnv } from "../../../../components/Endpoints"
 import dynamic from "next/dynamic"
 import { EditorState, convertToRaw } from "draft-js"
+import EditorComponent from '../../../../components/EditorComponent'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html"
-import Textfield from "../../../../../components/TextField"
-import useEditor from '../../../../../components/EditorComponent'
+import Textfield from "../../../../components/TextField"
+import { useEditor } from "../../../../components/EditorComponent"
 // import { Editor } from 'react-draft-wysiwyg';
 // import {draftToMarkdown} from 'draftjs-to-markdown'
 
 
-export default function Ticket({ modals, setModalState, setToken, setActiveDashboard, setActiveState, setLoading }) {
+export default function Ticket({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
     const router = useRouter()
+    const [ticketId, setTicketId] = useState()
     const [ticketData, setTicketData] = useState()
     const [messagesData, setMessagesData] = useState()
+    const [attachments, setAttachments] = useState([])
+    // const [editorState, setEditorState] = useState(EditorState.createEmpty())
+    const { memoizedEditor, message } = useEditor()
+
+    useEffect(() => {
+        const newId = localStorage.getItem('ticketId')
+        setTicketId(newId)
+        // debugger
+    }, [])
+
+
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: ticket, error: ticketError } = useSWR(`${testEnv}v1/ticket/${router.query.id}`, fetching)
-    const { data: ticketMessages, error: ticketMessagesError } = useSWR(`${testEnv}v1/ticket/${router.query.id}/messages`, fetching)
-    const [editorState, setEditorState] = useState(EditorState.createEmpty())
+    const { data: ticket, error: ticketError } = useSWR(`${testEnv}v1/ticket/${ticketId}`, fetching)
+    const { data: ticketMessages, error: ticketMessagesError } = useSWR(`${testEnv}v1/ticket/${ticketId}/messages`, fetching)
 
     useEffect(() => {
         // setLoading(true)
@@ -33,8 +45,24 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
         setActiveDashboard("TicketManagement")
         setActiveState("4")
         if (ticket) {
+            let messageAttachments = []
             setLoading(false)
             setTicketData(ticket)
+            ticket.data.messages.map((message) => {
+                // const messageToPush = []
+                if (Array.isArray(JSON.parse(message.attachment1))) {
+                    messageAttachments = [...messageAttachments, message.attachment1]
+                    return
+                }
+                messageAttachments.push(message.attachment1 || "", message.attachment2 || "", message.attachment3 || "")
+            })
+            const finalAttachments = messageAttachments.filter((attachment) => {
+                if (attachment) {
+                    return attachment
+                }
+                return
+            })
+            setAttachments(finalAttachments)
         }
         if (ticketError) {
             console.log(ticketError)
@@ -101,10 +129,27 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
     // console.log(draftToHtml(convertToRaw(editorState.getCurrentContent())))
     // console.log(convertToRaw(editorState.getCurrentContent()))
 
-    if(!ticketData) {
+    if (!ticketData) {
         return (
-            <div>Error</div>
+            <div>Loading...</div>
         )
+    }
+
+    function downloadImage(url) { }
+
+    async function viewAttachment(modalState, modal, id, fileKey = "") {
+        // debugger
+        // api/file-view/presign-url- returns image url /v1/api/presign-url/view-file?fileKey
+        const data = await axios.post("https://admapis-staging.payrail.co/v1/api/presign-url/view-file",
+            { fileKey: fileKey },
+            { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } }
+        )
+            .then(res => res.data)
+            .catch(err => console.log(err))
+        // console.log("otherData: ", otherData)
+        setModalState(modalState, modal)
+        editFormState({ image: data }, id)
+        // return
     }
 
 
@@ -120,17 +165,10 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                 <section className="flex flex-col w-full lg:w-[60%] gap-[10px]">
                     <div className="flex flex-col gap-[10px]">
                         <div className="w-full min-h-[460px] rounded-[10px] border-[#F3F3F3] flex-col border">
-                            {/* <Editor
-                                toolbarClassName="rounded-[10px]"
-                                wrapperClassName=" min-h-[460px]"
-                                // editorClassName=""
-                                editorState={editorState}
-                                onEditorStateChange={onEditorStateChange}
-                            /> */}
-
-                            {/* <EditorComponent  /> */}
+                            {/* <EditorComponent initialContent={editorState}  onContentChange={onEditorStateChange} /> */}
+                            {memoizedEditor}
                         </div>
-                        {/* <div className="flex justify-between items-center flex-col lg:flex-row lg:flex-wrap items-center gap-[10px] w-full min-h-[57px]">
+                        <div className="flex justify-between items-center flex-col lg:flex-row lg:flex-wrap items-center gap-[10px] w-full min-h-[57px]">
                             <input type="file" id="images" accept="image/*" required />
                             <div className="w-[223px] h-[56px]">
                                 <UserButton type="gradient" text="Add More" />
@@ -138,10 +176,10 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                             <div className="w-[223px] h-[56px]">
                                 <UserButton type="gradient" text="Reply" />
                             </div>
-                        </div> */}
+                        </div>
                     </div>
 
-                    {/* {messagesData?.data.map((message, index) => {
+                    {messagesData?.data.map((message, index) => {
                         return (
                             <div key={index} className="w-full min-h-[471px] border border-[#F3F3F3] rounded-[10px] flex flex-col items-center gap-[50px] pt-[10px]">
                                 <div className="border-b border-[#6E7883] h-[52px] w-[90%] flex">
@@ -184,9 +222,9 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                 </div>
                             </div>
                         )
-                    })} */}
+                    })}
                 </section>
-                {/* <section className="flex lg:w-[35%] flex-col w-full">
+                <section className="flex lg:w-[35%] flex-col w-full">
                     <div className="flex flex-col w-full h-[440px] gap-[10px]">
                         <div className="flex flex-col justify-between rounded-[12px] w-full border items-center border-[#F3F3F3] h-[356px]">
                             <div className=" border-b border-[#F3F3F3] flex justify-between items-center w-[90%] h-[54px]">
@@ -246,7 +284,17 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                     <div className="flex flex-col w-full min-h-[204px] mt-[103px] gap-[10px]">
                         <h2 className="font-[700] text-[17px] text-[#161616] leading-[27px] font-pushpennyBook">Attachments</h2>
                         <div className="rounded-[10px] mt-[26px] border border-[#F3F3F3] w-full flex flex-col items-center justify-center">
-                            <div className="w-[90%] gap-[10px] py-[5px] flex">
+                            {attachments.map((attachment, idx) => {
+                                return (
+                                    <button onClick={() => { viewAttachment(true, "imageView", ticketId, attachment) }} className="w-[90%] gap-[10px] py-[5px] flex">
+                                        <div className="w-[20px] h-[20px] relative">
+                                            <ImageHolder src="/icons/file-download.svg" />
+                                        </div>
+                                        <h2 className="font-[400] text-[#6f6f6f] font-pushpennyBook text-[14px] leading-[22px]">Attachment {idx + 1}</h2>
+                                    </button>
+                                )
+                            })}
+                            {/* <div className="w-[90%] gap-[10px] py-[5px] flex">
                                 <div className="w-[20px] h-[20px] relative">
                                     <ImageHolder src="/icons/file-download.svg" />
                                 </div>
@@ -257,13 +305,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                                     <ImageHolder src="/icons/file-download.svg" />
                                 </div>
                                 <h2 className="font-[400] text-[#6f6f6f] font-pushpennyBook text-[14px] leading-[22px]">IMG109112  02-17-2022 7.20.21AM.png</h2>
-                            </div>
-                            <div className="w-[90%] gap-[10px] py-[5px] flex">
-                                <div className="w-[20px] h-[20px] relative">
-                                    <ImageHolder src="/icons/file-download.svg" />
-                                </div>
-                                <h2 className="font-[400] text-[#6f6f6f] font-pushpennyBook text-[14px] leading-[22px]">IMG109112  02-17-2022 7.20.21AM.png</h2>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="flex flex-col w-full min-h-[204px] mt-[31px] gap-[10px]">
@@ -277,7 +319,7 @@ export default function Ticket({ modals, setModalState, setToken, setActiveDashb
                             </div>
                         </div>
                     </div>
-                </section> */}
+                </section>
             </section>
         </div>
     )

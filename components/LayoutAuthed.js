@@ -13,35 +13,59 @@ import jwt from 'jsonwebtoken'
 
 
 
-export default function Dashboard({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify, isLoading, setLoading, logout, userPermissions }) {
+export default function Dashboard({
+    children,
+    modals,
+    setModalState,
+    setActiveDashboard,
+    activeDashboard,
+    activeState,
+    switchActive,
+    switchBoard,
+    closeModals,
+    token,
+    editForm,
+    setEditForm,
+    formEdit,
+    modalSuccessNotify,
+    isLoading,
+    setLoading,
+    logout,
+    userPermissions,
+    headers,
+    currentData
+}) {
+    
     const [isFull, setIsFull] = useState()
     const [permissions, setPermissions] = useState()
-    // const [menuChange, setMenuChange] = useState()
     const [edgeFunction, setEdgeFunction] = useState(false)
     const bodyRef = useRef()
     const sideBarMargin = isFull ? "-ml-[255px]" : "ml-[0]"
     const router = useRouter()
+    const [authed, setAuthed] = useState(false)
 
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
     }
 
-    
-    
+
+
     useEffect(() => {
         const today = new Date()
-        // const exp = jwt.decode(localStorage.getItem("token")).exp
-        // // debugger
-        // if(exp < (new Date().getTime() + 1) / 1000) {
-        //     const expValue = exp < (new Date().getTime() + 1) / 1000
-        //     // debugger
-        //     router.push("/")
-        //     logout()        
-        //     return
-        // }
-        // setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
-        
+        const exp = jwt.decode(localStorage.getItem("token"))?.exp
+        // console.log("exp: ", exp)
+        // debugger
+        if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
+            const expValue = exp < (new Date().getTime() + 1) / 1000
+            // debugger
+            router.push("/")
+            logout()
+            return
+        }
+        setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
+        setAuthed(true)
+
         window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {
             window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
@@ -87,6 +111,12 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
         setEdgeFunction(edgeState)
     }
 
+    if(!authed) {
+        return (
+            <div>Loading</div>
+        )
+    }
+
     return (
         <div className={`w-full h-screen border flex overflow-hidden justify-between`}>
             <div className={`bg-[#ffffff] ${modals.isOpen ? "flex" : "hidden"} left-[50%] ml-[-175px] lg:ml-[-327px] top-[70px]  rounded-[15px] lg:rounded-[48px] z-[200] fixed w-fit h-fit`}>
@@ -123,98 +153,101 @@ export default function Dashboard({ children, modals, setModalState, setActiveDa
                     </div>
                 </div>
             </div>
-            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0 pl-[50px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <ul className="flex flex-col w-[197px] sticky top-[90px] mt-[150px]  h-screen pb-2">
-                    {tabs.map((tab, index) => {
-                        if (index == 1) {
-                            let newSubs = tab.subTexts.filter((sub, index) => {
-                                if (permissions?.includes(sub.permission)) {
-                                    return sub
+            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                <div className="borde h-[500px] overflow-y-auto sticky pl-[40px] top-[90px]">
+                    <ul className="borde flex flex-col w-[197px]  h-fit overflow-y-auto pb-2">
+                        {tabs.map((tab, index) => {
+                            if (index == 1) {
+                                let newSubs = tab.subTexts.filter((sub, index) => {
+                                    if (permissions?.includes(sub.permission)) {
+                                        return sub
+                                    }
+                                })
+                                if (newSubs.length === 0) {
+                                    return
                                 }
-                            })
-                            if (newSubs.length === 0) {
-                                return
+                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                             }
-                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                        }
 
-                        if (index == 2) {
-                            let newSubs = (tab.subTexts.map((sub, index) => {
-                                if (permissions?.includes(sub.permission[0])) {
-                                    return sub
+                            if (index == 2) {
+                                let newSubs = (tab.subTexts.map((sub, index) => {
+                                    if (permissions?.includes(sub.permission[0])) {
+                                        return sub
+                                    }
+                                    if (permissions?.includes(sub.permission[1])) {
+                                        return sub
+                                    }
+                                }))
+                                let filteredSubs = newSubs.filter(sub => sub != undefined)
+                                if (filteredSubs.length == 0) {
+                                    return
                                 }
-                                if (permissions?.includes(sub.permission[1])) {
-                                    return sub
-                                }
-                            })) 
-                            let filteredSubs = newSubs.filter(sub => sub != undefined)
-                            if (filteredSubs.length == 0) {
-                                return
+                                // console.log(newSubs.length.toString())
+                                const newHeight = newSubs.length.toString()
+                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                             }
-                            console.log(newSubs.length.toString())
-                            const newHeight = newSubs.length.toString()                              
-                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                        }
-                        // if (index == 3) {
-                        //     let newSubs = (tab.subTexts.map((sub, index) => {
-                        //         if (permissions?.includes(sub.permission[0])) {
-                        //             return sub
-                        //         }
-                        //         if (permissions?.includes(sub.permission[1])) {
-                        //             return sub
-                        //         }
-                        //     }))
-                          
-                        //     let filteredSubs = newSubs.filter(sub => sub != undefined)
-                        //     if (filteredSubs.length == 0) {
-                        //         return
-                        //     }
-                        //     // console.log(filteredSubs.length)                              
-                        //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                        // }
-                        // if (index == 4) {
-                        //     let newSubs = (tab.subTexts.map((sub, index) => {
-                        //         if (permissions?.includes(sub.permission[0])) {
-                        //             return sub
-                        //         }
-                        //         if (permissions?.includes(sub.permission[1])) {
-                        //             return sub
-                        //         }
-                        //     }))
-                        //     //     let newerSubs = (tab.subTexts.filter((sub, index) => {
-                        //     //         if(permissions?.includes(sub.permission[0]))  {
-                        //     //             return sub
-                        //     //         }                              
-                        //     //     }) )   
-                        //     //     let newerSubsToo = (tab.subTexts.filter((sub, index) => {
-                        //     //         if(permissions?.includes(sub.permission[1]))  {
-                        //     //             return sub
-                        //     //         }                              
-                        //     //     }) )   
+                            // if (index == 3) {
+                            //     let newSubs = (tab.subTexts.map((sub, index) => {
+                            //         if (permissions?.includes(sub.permission[0])) {
+                            //             return sub
+                            //         }
+                            //         if (permissions?.includes(sub.permission[1])) {
+                            //             return sub
+                            //         }
+                            //     }))
 
-                        //     //     let mergedNewSubs = newerSubs.concat(newerSubsToo)
-                        //     //    let filteredMerge = mergedNewSubs.filter((currentValue, currentIndex) => mergedNewSubs.indexOf(currentValue) !== currentIndex)
+                            //     let filteredSubs = newSubs.filter(sub => sub != undefined)
+                            //     if (filteredSubs.length == 0) {
+                            //         return
+                            //     }
+                            //     // console.log(filteredSubs.length)                              
+                            //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                            // }
+                            // if (index == 4) {
+                            //     let newSubs = (tab.subTexts.map((sub, index) => {
+                            //         if (permissions?.includes(sub.permission[0])) {
+                            //             return sub
+                            //         }
+                            //         if (permissions?.includes(sub.permission[1])) {
+                            //             return sub
+                            //         }
+                            //     }))
+                            //     //     let newerSubs = (tab.subTexts.filter((sub, index) => {
+                            //     //         if(permissions?.includes(sub.permission[0]))  {
+                            //     //             return sub
+                            //     //         }                              
+                            //     //     }) )   
+                            //     //     let newerSubsToo = (tab.subTexts.filter((sub, index) => {
+                            //     //         if(permissions?.includes(sub.permission[1]))  {
+                            //     //             return sub
+                            //     //         }                              
+                            //     //     }) )   
 
-                        //     //    let finalSubs = filteredMerge.length > 0 ? filteredMerge : mergedNewSubs
+                            //     //     let mergedNewSubs = newerSubs.concat(newerSubsToo)
+                            //     //    let filteredMerge = mergedNewSubs.filter((currentValue, currentIndex) => mergedNewSubs.indexOf(currentValue) !== currentIndex)
 
-                        //     //     console.log(newerSubs)  
-                        //     //     console.log(newerSubsToo)  
-                        //     //     console.log(mergedNewSubs)  
-                        //     //     console.log("fm:",filteredMerge)  
-                        //     //     console.log("fs:",finalSubs)  
-                        //     // console.log(newSubs)  
-                        //     let filteredSubs = newSubs.filter(sub => sub != undefined)
-                        //     if (filteredSubs.length == 0) {
-                        //         return
-                        //     }
-                        //     // console.log(filteredSubs.length)                              
-                        //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                        // }
+                            //     //    let finalSubs = filteredMerge.length > 0 ? filteredMerge : mergedNewSubs
 
-                        return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                    })}
-                </ul>
-                <div className=" flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
+                            //     //     console.log(newerSubs)  
+                            //     //     console.log(newerSubsToo)  
+                            //     //     console.log(mergedNewSubs)  
+                            //     //     console.log("fm:",filteredMerge)  
+                            //     //     console.log("fs:",finalSubs)  
+                            //     // console.log(newSubs)  
+                            //     let filteredSubs = newSubs.filter(sub => sub != undefined)
+                            //     if (filteredSubs.length == 0) {
+                            //         return
+                            //     }
+                            //     // console.log(filteredSubs.length)                              
+                            //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                            // }
+
+                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                        })}
+                    </ul>
+
+                </div>
+                <div className="borde pl-[40px] flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
                     <button onClick={logout} className="flex flex-col">
                         Logout

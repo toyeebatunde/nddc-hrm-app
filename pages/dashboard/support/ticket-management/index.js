@@ -60,7 +60,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                             <UserButton type="pdf" />
                         </div>
                         <div className={`h-[35px]  w-full lg:w-[200px]`}>
-                            <UserButton type="gradient" text="+ Create Ticket" />
+                            <UserButton onClick={()=>{router.push("/dashboard/support/ticket-management/new-ticket")}} type="gradient" text="+ Create Ticket" />
                         </div>
                     </div>
                 </section>

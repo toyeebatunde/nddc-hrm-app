@@ -10,6 +10,7 @@ import Textfield from '../components/TextField'
 import ImageHolder from '../components/ImageHolder'
 import jwt from 'jsonwebtoken'
 import LoginLayout from '../components/LoginLayout'
+import { CSVLink } from "react-csv";
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -22,39 +23,20 @@ export default function MyApp({ Component, pageProps }) {
   const [newPasswordDisplay, setNewPasswordDisplay] = useState({ password: "password", confirmPassword: "password" })
   const [resetPasswordDisplay, setResetPasswordDisplay] = useState({ newPassword: "password", confirmPassword: "password" })
   const [token, setToken] = useState(false)
-  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
+  const [modals, setModals] = useState({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalRetrieve: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
   const [editForm, setEditForm] = useState()
   const [search, setSearch] = useState(false)
   const [createView, setCreateView] = useState(false)
-  const[day, setDay] = useState(0)
+  const [day, setDay] = useState(0)
   const [rangeParam, setRangeParam] = useState()
+  const [currentData, setCurrentData] = useState([])
+  const [headers, setHeaders] = useState([])
+
   const [week, setWeek] = useState({
     current: "Last 7 days",
-    days: [
-      getPreviousDay(1),
-      getPreviousDay(2),
-      getPreviousDay(3),
-      getPreviousDay(4),
-      getPreviousDay(5),
-      getPreviousDay(6),
-      getPreviousDay(7),
-    ]
+    days: []
   })
   const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
-
-  //    function formatDate(date) {            
-  //     var d = date.getUTCDate().toString(),           
-  //         m = (date.getUTCMonth() + 1).toString(),    
-  //         y = date.getUTCFullYear().toString(),       
-  //         formatted = '';
-  //     if (d.length === 1) {                           
-  //         d = '0' + d;
-  //     }
-  //     if (m.length === 1) {                           
-  //     }
-  //     formatted = d + '-' + m + '-' + y;              
-  //     return formatted;
-  // }
 
   function setDateSearchRange(e, set, day) {
     if (set == "week") {
@@ -63,6 +45,38 @@ export default function MyApp({ Component, pageProps }) {
       setDay(day)
       setRangeParam("date")
     }
+  }
+
+  function dataToDownload(type = "all") {
+    if (type == "all") {
+      const preSorted = currentItems.map((data) => {
+        const newObject = { ...data.data }
+        return newObject
+      })
+      return preSorted
+    }
+    const data = [...viewFellowship.details.members]
+    data.push(viewFellowship.details.fellowship)
+    return data
+  }
+
+  function handleCurrentData(data, currentHeaders) {
+    // debugger
+    setCurrentData(data)
+    setHeaders(currentHeaders)
+  }
+
+
+  function downloadData(headers) {
+    return (
+      <CSVLink
+        filename="data.csv"
+        data={currentData}
+        headers={headers}
+      >
+        Download Info
+      </CSVLink>
+    )
   }
 
   function resetDay() {
@@ -75,10 +89,12 @@ export default function MyApp({ Component, pageProps }) {
   const [viewState, setViewState] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState()
-  const [entryValue, setEntryValue] = useState({ size: 10, page: 0 })
+  const [entryValue, setEntryValue] = useState({ size: 15, page: 0 })
+  // const[pageData, setPageData] = useState({size: 10, page: 0})
   const [passwordCaution, setCreatePasswordCaution] = useState(false)
   const [loginFail, setLoginFail] = useState(false)
   const [searchField, setSearchField] = useState("")
+  const [agentFormAction, setAgentFormAction] = useState("add")
 
 
   const Layout = Component.Layout || EmptyLayout
@@ -88,6 +104,8 @@ export default function MyApp({ Component, pageProps }) {
     userName: "",
     firstName: "",
     lastName: "",
+    fullName: "",
+    middleName: "",
     email: "",
     phone: "",
     address: "",
@@ -101,8 +119,12 @@ export default function MyApp({ Component, pageProps }) {
     aggregator: "",
     bank: "",
     accountNumber: "",
-    id: ""
-}
+    id: "",
+    bvn: "",
+    country: "",
+    dob: "",
+    gender: ""
+  }
 
   function setSearchParam(e) {
     setSearchField(e.target.value)
@@ -111,18 +133,24 @@ export default function MyApp({ Component, pageProps }) {
     setSearchField("")
     setDateRange({ dateFrom: getPreviousDay(7), dateTo: new Date(), search: false })
     setSearch(false)
-    setWeek({...week, current: "Last 7 days"})
+    setWeek({ ...week, current: "Last 7 days" })
     // setDay(0)
   }
 
-  function setView(state) {
+  function setView(state, status) {
+    if (status) {
+      setAgentFormAction(status)
+    }
     setViewState(state)
   }
 
   function getPreviousDay(range, date = new Date()) {
-    const previous = new Date(date.getTime());
-    // console.log(previous)
+    // debugger
+    const previous = date         //new Date(date.getTime());
     previous.setDate(date.getDate() - range);
+    // console.log("sample Date", previous.setDate(date.getDate() - range))
+    // let checkPrevious = date.getDate() - range
+    // debugger
     return previous;
   }
 
@@ -194,7 +222,7 @@ export default function MyApp({ Component, pageProps }) {
       .then(response => {
         const decoded = jwt.decode(response.data.token)
         setToken(true)
-        const user = { name: decoded?.firstname ,role: decoded?.role, permissions: decoded?.permissions?.split(','),exp: decoded?.exp }
+        const user = { name: decoded?.firstname, role: decoded?.role, permissions: decoded?.permissions?.split(','), exp: decoded?.exp }
         // const exp = { exp: decoded?.exp }
         Cookies.set("token", response.data.token)
         Cookies.set("user", JSON.stringify(user))
@@ -221,7 +249,13 @@ export default function MyApp({ Component, pageProps }) {
     router.push("/")
   }
 
-  function changeCreateView(status) {
+  function changeCreateView(status, action = "") {
+    if (action == "update") {
+      setAgentFormAction("update")
+    }
+    if (action == "add") {
+      setAgentFormAction("add")
+    }
     setCreateView(status)
   }
 
@@ -235,22 +269,30 @@ export default function MyApp({ Component, pageProps }) {
     const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
     const thePassword = details.password.replaceAll(" ", "")
     const theConfirmation = details.confirmPassword.replaceAll(" ", "")
+    const body = {newPassword: thePassword, confirmPassword: theConfirmation}
     // console.log(url)
-    // debugger
+    debugger
     axios.patch(url,
       {
         "newPassword": thePassword,
         "confirmPassword": theConfirmation
+      },
+      {
+        headers: {
+          "Host":`${testEnv}`,
+          "Content-Length":JSON.stringify(body).length.toString(),
+          "Content-Type": "application/json"
+        }
       }
     )
       .then(response => {
-        // debugger
+        debugger
         setDetails({ password: "", confirmPassword: "", code: "" })
         router.push("/success")
       })
       .catch(response => {
         // debugger
-        // console.log(response)
+        console.log("did not reset: ", response)
       })
   }
 
@@ -266,13 +308,28 @@ export default function MyApp({ Component, pageProps }) {
     }
   }, [])
 
+  useEffect(() => {
+    setWeek({
+      ...week, days: [
+        getPreviousDay(1),
+        getPreviousDay(2),
+        getPreviousDay(3),
+        getPreviousDay(4),
+        getPreviousDay(5),
+        getPreviousDay(6),
+        getPreviousDay(7),
+      ]
+    })
+  }, [])
+
   function pageSelector(e, entry) {
     if (entry == "size") {
       setEntryValue({ ...entryValue, size: e.target.value })
       return
     }
     if (entry == "page") {
-      setEntryValue({ ...entryValue, page: e.target.value })
+      setEntryValue({ ...entryValue, page: Number(e.target.innerText) - 1 })
+      // console.log("page: ", e.target.innerText)
       return
     }
     if (entry == "none") {
@@ -286,11 +343,28 @@ export default function MyApp({ Component, pageProps }) {
 
   }
 
+  // function formatDate(date) {
+  //   var d = (date.getUTCDate() + 1).toString(),
+  //     m = (date.getUTCMonth() + 1).toString(),
+  //     y = date.getUTCFullYear().toString(),
+  //     formatted = '';
+  //   if (d.length === 1) {
+  //     d = '0' + d;
+  //   }
+  //   if (m.length === 1) {
+  //     m = '0' + m;
+  //   }
+  //   formatted = d + '-' + m + '-' + y;
+  //   return formatted;
+  // }
+
   function formatDate(date) {
-    var d = (date.getUTCDate() + 1).toString(),
-      m = (date.getUTCMonth() + 1).toString(),
-      y = date.getUTCFullYear().toString(),
-      formatted = '';
+    var d = date.getDate().toString(), // mount == 1 ? date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()).toString() : date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()+1).toString(),
+      m = (date.getMonth() + 1).toString(),//(date.getUTCMonth() + 1).toString(),
+      y = date.getFullYear().toString(), // date.getUTCFullYear().toString(),
+      formatted = '',
+      otherDate = date.getDate();
+    // debugger
     if (d.length === 1) {
       d = '0' + d;
     }
@@ -298,6 +372,26 @@ export default function MyApp({ Component, pageProps }) {
       m = '0' + m;
     }
     formatted = d + '-' + m + '-' + y;
+    // debugger
+    // setMount(mount+1)
+    return formatted;
+  }
+  function reformatDate(date) {
+    var d = date.getDate().toString(), // mount == 1 ? date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()).toString() : date.getUTCDate() == 31 || date.getUTCDate() == 30 || date.getUTCDate() == 28 || date.getUTCDate() == 29 ?  "1" :  (date.getUTCDate()+1).toString(),
+      m = (date.getMonth() + 1).toString(),//(date.getUTCMonth() + 1).toString(),
+      y = date.getFullYear().toString(), // date.getUTCFullYear().toString(),
+      formatted = '',
+      otherDate = date.getDate();
+    // debugger
+    if (d.length === 1) {
+      d = '0' + d;
+    }
+    if (m.length === 1) {
+      m = '0' + m;
+    }
+    formatted = y + '-' + m + '-' + d;
+    // debugger
+    // setMount(mount+1)
     return formatted;
   }
 
@@ -310,7 +404,7 @@ export default function MyApp({ Component, pageProps }) {
     }
   }
 
-  if (router.pathname === "/" || router.pathname ==="/change-password" || router.pathname === "/success" || router.pathname === "/reset-password") {
+  if (router.pathname === "/" || router.pathname === "/change-password" || router.pathname === "/success" || router.pathname === "/reset-password") {
     return (
       <LoginLayout>
         <Component
@@ -339,6 +433,8 @@ export default function MyApp({ Component, pageProps }) {
   return (
 
     <LayoutAuthed
+      reformatDate={reformatDate}
+      downloadData={downloadData}
       isLoading={isLoading}
       setLoading={setLoading}
       modals={modals}
@@ -366,11 +462,17 @@ export default function MyApp({ Component, pageProps }) {
       setSearch={setSearch}
       formatDate={formatDate}
       resetSearchParams={resetSearchParams}
+      agentFormAction={agentFormAction}
+      headers={headers}
+      currentData={currentData}
     >
       <Layout
+        reformatDate={reformatDate}
+        downloadData={downloadData}
         modals={modals}
         activeTab={activeTab}
         setDateSearchRange={setDateSearchRange}
+        agentFormAction={agentFormAction}
         setActiveTab={setTab}
         activeAgency={activeDashboard}
         setView={setView}
@@ -388,9 +490,14 @@ export default function MyApp({ Component, pageProps }) {
         changeCreateView={changeCreateView}
         getPreviousDay={getPreviousDay}
         setRangeParam={setRangeParam}
+        headers={headers}
+        currentData={currentData}
       >
         <Component
+          reformatDate={reformatDate}
+          downloadData={downloadData}
           login={login}
+          agentFormAction={agentFormAction}
           setActiveDashboard={setActiveDashboard}
           activeDashboard={activeDashboard}
           setActiveState={setActiveState}
@@ -431,26 +538,8 @@ export default function MyApp({ Component, pageProps }) {
           day={day}
           resetDay={resetDay}
           rangeParam={rangeParam}
+          handleCurrentData={handleCurrentData}
         />
-        {/* <div className="flex px-[20px] justify-between w-full">
-          <div className="flex items-center gap-[10px]">
-            <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">Show</h2>
-            <div className="w-[83px] h-[51px] rounded-[25.5px] border-[#D1D1D1] border">
-              <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[5, 10, 15]} />
-            </div>
-            <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">entries</h2>
-          </div>
-
-          <div className="w-[83px] h-[51px] rounded-[25.5px] justify-center border-[#D1D1D1] border flex items-center">
-            <div className=' w-[40%] relative h-[100%] flex justify-center items-center leading-[28px] font-pushpennyBook text-[22px] font-[400]'>{entryValue.page + 1}</div>
-            <button onClick={(e)=>{pageSelector(e, "none")}} className='w-[40%] h-[100%] relative justify-center flex items-center'>
-              <div className='w-[50%] relative h-[40%]'>
-                <ImageHolder src='/icons/forward.svg' />
-              </div>
-            </button>
-          </div>
-
-        </div> */}
       </Layout>
     </LayoutAuthed>
   )

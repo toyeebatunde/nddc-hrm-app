@@ -19,7 +19,8 @@ export default function Agents({
     search, setSearch,
     setLoading, searchField,
     resetSearchParams,
-    setView, day, resetDay
+    setView, day, resetDay, createView,
+    changeCreateView
 }) {
     const initialCustomerForm = {
         agentId: "",
@@ -59,14 +60,20 @@ export default function Agents({
     const [currentData, setCurrentData] = useState()
     // const searchField = useRef()
 
-    
 
-    
-    
+
+
+
     function formEdit(e) {
         setCustomerEdit({ ...agentEdit, editForm: { ...agentEdit.editForm, [e.target.name]: e.target.value } })
     }
-    
+
+    useEffect(() => {
+        if (createView) {
+            setCustomerEdit({ editView: true, editForm: initialCustomerForm })
+        }
+    }, [createView])
+
     useEffect(() => {
         setActiveTab("New Agents")
         resetSearchParams()
@@ -81,7 +88,7 @@ export default function Agents({
             console.log(agentsError)
         }
     }, [agents])
-    
+
     useEffect(() => {
         if (dayFiltered) {
             setFilteredData(dayFiltered)
@@ -492,16 +499,22 @@ export default function Agents({
                     <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
                         <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield type="readonly" formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                                <Textfield type={createView ? "text" : "readonly"} formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
-                                <Textfield formEdit={formEdit} title="First Name" value={agentEdit.editForm.firstName} name="firstName" bg="bg-[white]" />
+                                <Textfield important={true} formEdit={formEdit} title="First Name" value={agentEdit.editForm.firstName} name="firstName" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Last Name" value={agentEdit.editForm.lastName} name="lastName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Middle Name" value={agentEdit.editForm.middleName} name="middleName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} charType="date" title="Date of birth" value={agentEdit.editForm.dob} name="dob" bg="bg-[white]" />
                             </div>
                             <div className="w-full h-[57px] rounded-[28px]">
                                 <Textfield formEdit={formEdit} title="Email address" value={agentEdit.editForm.email} name="email" bg="bg-[white]" />
@@ -529,7 +542,13 @@ export default function Agents({
                                     <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
-                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                    <Textfield type="select" selectOptions={["Choose a country", "Nigeria"]} formEdit={formEdit} title="Country" value={agentEdit.editForm.country} name="country" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT", "FARMER"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a gender", "Male", "Female"]} formEdit={formEdit} title="Gender" value={agentEdit.editForm.gender} name="gender" bg="bg-[white]" />
                                 </div>
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
@@ -540,6 +559,9 @@ export default function Agents({
                                 <div className="w-full h-[57px] rounded-[28px]">
                                     <Textfield formEdit={formEdit} title="Account Number" value={agentEdit.editForm.accountNumber} name="accountNumber" bg="bg-[white]" />
                                 </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="BVN" value={agentEdit.editForm.bvn} name="bvn" bg="bg-[white]" />
+                                </div>
 
 
                             </section>
@@ -547,12 +569,13 @@ export default function Agents({
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
                                     <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
                                         e.preventDefault()
+                                        changeCreateView(false)
                                         setView(false)
                                         setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
                                     }} />
                                 </div>
                                 <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
-                                    <UserButton onClick={editAgent} type="gradient" text="Save" />
+                                    <UserButton submit={"submit"} onClick={editAgent} type="gradient" text="Save" />
                                 </div>
                             </div>
                         </section>

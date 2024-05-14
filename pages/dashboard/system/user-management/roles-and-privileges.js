@@ -5,7 +5,7 @@ import ImageHolder from '../../../../components/ImageHolder'
 // import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
 import searchIcon from '../../../../public/icons/search-icon.svg'
 import closeIcon from '../../../../public/icons/close-modal.svg'
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import RadioToggle from "../../../../components/RadioToggle"
 import ButtonTab from "../../../../components/ButtonTab"
 import nookies from 'nookies'
@@ -18,50 +18,94 @@ import TableContainer from '../../../../components/TableContainer'
 import UserButton from '../../../../components/ButtonMaker'
 
 export default function Roles({ modals, setModalState, setToken, setActiveDashboard, setActiveState, entryValue, pageSelector, setActiveTab, setLoading, resetPage, searchField, resetSearchParams, setSearchParam }) {
-    const [permissions, setPermissions] = useState([
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-        { name: false },
-    ])
+    const initialPermissions = [
+        {
+            category: "SYSTEM",
+            sub: []
+        },
+        {
+            category: "AGENCY",
+            sub: []
+        },
+        {
+            category: "INSIGHTS_AND_REPORTS",
+            sub: []
+        },
+        {
+            category: "SUPPORT",
+            sub: []
+        },
+        {
+            category: "LOAN",
+            sub: []
+        },
+    ]
+    const [permissions, setPermissions] = useState(initialPermissions)
+    const [newRolePermissions, setNewRolePermissions] = useState([])
     const [newRole, setNewRole] = useState("")
     const [reload, setReload] = useState(true)
     const [createRole, setCreateRole] = useState(false)
     const [rolesData, setRolesData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: allPermissions, error: allPermissionsError } = useSWR(`${testEnv}v1/permission/all`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/role/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     // const router = useRouter()
 
 
-    function setRolePermissions(e, position, permission) {
+    function setRolePermissions(e, permission, status, permissionTwo = "random") {
         e.preventDefault()
-        console.log(permissions[position])
-        setPermissions([...permissions, permissions[position].name = permission])
+        if (!status) {
+            let isPermissions = newRolePermissions.filter(permit => permit != permission)
+            isPermissions = isPermissions.filter(permit => permit != permissionTwo)
+            setNewRolePermissions(isPermissions)
+            return
+        }
+        setNewRolePermissions(removeDuplicates([...newRolePermissions, permission]))
+    }
+
+    function removeDuplicates(array) {
+        return [...new Set(array)];
+    }
+
+    useMemo(() => {
+        if (allPermissions) {
+            const userPermissions = permissions
+            allPermissions.data.map((permission) => {
+                let currentIndex
+                const currentPermission = userPermissions.find((item, index) => {
+                    currentIndex = index
+                    return item.category == permission.category
+                })
+                if (currentPermission) {
+                    userPermissions[currentIndex].sub?.push(permissionsLabel(permission.code))
+                }
+            })
+            // console.log("mapped: ", userPermissions)
+            const filteredSet = userPermissions.map((permission) => {
+                const newSub = [...new Set(permission.sub)]
+                // debugger
+                const newPermission = { ...permission, sub: newSub }
+                return newPermission
+            })
+            console.log("FilteredSet: ", filteredSet)
+            setPermissions(filteredSet)
+        }
+    }, [allPermissions])
+
+    function permissionsLabel(code) {
+        if (code.charAt(0) == "E" || code.charAt(0) == "V") {
+            let underScorePosition = code.indexOf("_") + 1
+            const newCode = code.slice(underScorePosition)
+            return newCode
+        }
+        return code
     }
 
     function saveRole() {
-        let allPermissions = []
-        permissions.map((permission) => {
-            if (permission.name) {
-                allPermissions.push(permission.name)
-                return
-            }
-        })
         axios.post(`${testEnv}v1/role/create`, {
             "name": newRole,
-            "permissions": allPermissions
+            "permissions": newRolePermissions
         },
             {
                 headers: {
@@ -88,9 +132,9 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
         setActiveTab("Roles and Privileges")
         resetSearchParams()
         const decoded = jwt.decode(localStorage.getItem('token'))
-        console.log(decoded)
+        // console.log(decoded)
         const permissions = decoded?.permissions?.split(',')
-        console.log(permissions)
+        // console.log(permissions)
         setToken()
         setActiveDashboard("UserManagement")
         setActiveState("1")
@@ -103,10 +147,11 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
         }
     }, [data])
 
+
     useEffect(() => {
         mutate(`${testEnv}v1/role/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
     }, [reload])
-    
+
     useEffect(() => {
         if (searchBarDataError) {
             console.log(searchBarDataError)
@@ -168,41 +213,62 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                     <section className="flex flex-col w-full lg:w-[60%]">
                         <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">System</p>
-                            <RadioToggle parent={"System"} label={"User management"} permissions={permissions} setPermissions={setRolePermissions} position={0} access={{ yes: "USER_MANAGEMENT", no: false }} />
-                            <RadioToggle parent={"System"} label={"Configurations"} permissions={permissions} setPermissions={setRolePermissions} position={1} access={{ yes: "CONFIGURATIONS", no: false }} />
-                            <RadioToggle parent={"System"} label={"Approvals"} permissions={permissions} setPermissions={setRolePermissions} position={2} access={{ yes: "APPROVALS", no: false }} />
-                            <RadioToggle parent={"System"} label={"Institutions"} permissions={permissions} setPermissions={setRolePermissions} position={3} access={{ yes: "INSTITUTIONS", no: false }} />
-
+                            {permissions[0].sub.map((subPerm, index) => {
+                                return (
+                                    <RadioToggle parent={permissions[0].category} label={subPerm} permissions={newRolePermissions} setPermissions={setRolePermissions} access={{ yes: subPerm, no: false }} />
+                                )
+                            })}
                         </section>
+
                         <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">Agency</p>
-                            <RadioToggle parent={"Agency"} label={"Agent Management"} permissions={permissions} setPermissions={setRolePermissions} position={4} access={{ edit: "EDIT_AGENT_MANAGEMENT", view: "VIEW_AGENT_MANAGEMENT", hide: false }} />
+                            {/* <RadioToggle parent={"Agency"} label={"Agent Management"} permissions={permissions} setPermissions={setRolePermissions} position={4} access={{ edit: "EDIT_AGENT_MANAGEMENT", view: "VIEW_AGENT_MANAGEMENT", hide: false }} />
                             <RadioToggle parent={"Agency"} label={"Customer Management"} permissions={permissions} setPermissions={setRolePermissions} position={5} access={{ edit: "EDIT_CUSTOMER_MANAGEMENT", view: "VIEW_CUSTOMER_MANAGEMENT", hide: false }} />
                             <RadioToggle parent={"Agency"} label={"Value Added Services"} permissions={permissions} setPermissions={setRolePermissions} position={6} access={{ edit: "EDIT_VALUE_ADDED_SERVICES", view: "VIEW_VALUE_ADDED_SERVICES", hide: false }} />
                             <RadioToggle parent={"Agency"} label={"Transactions"} permissions={permissions} setPermissions={setRolePermissions} position={7} access={{ edit: "EDIT_TRANSACTIONS", view: "VIEW_TRANSACTIONS", hide: false }} />
                             <RadioToggle parent={"Agency"} label={"Settlements"} permissions={permissions} setPermissions={setRolePermissions} position={8} access={{ edit: "EDIT_SETTLEMENTS", view: "VIEW_SETTLEMENTS", hide: false }} />
                             <RadioToggle parent={"Agency"} label={"Reconciliation"} permissions={permissions} setPermissions={setRolePermissions} position={9} access={{ edit: "EDIT_RECONCILIATION", view: "VIEW_RECONCILIATION", hide: false }} />
-                            <RadioToggle parent={"Agency"} label={"POS Terminals"} permissions={permissions} setPermissions={setRolePermissions} position={10} access={{ edit: "EDIT_POS_TERMINAL", view: "VIEW_POS_TERMINALS", hide: false }} />
+                            <RadioToggle parent={"Agency"} label={"POS Terminals"} permissions={permissions} setPermissions={setRolePermissions} position={10} access={{ edit: "EDIT_POS_TERMINAL", view: "VIEW_POS_TERMINALS", hide: false }} /> */}
+                            {permissions[1].sub.map((subPerm, index) => {
+                                return (
+                                    <RadioToggle parent={permissions[1].category} label={subPerm} permissions={newRolePermissions} setPermissions={setRolePermissions} />
+                                )
+                            })}
 
 
                         </section>
+
                         <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">Insights and Reports</p>
-                            <RadioToggle parent={"Insight"} label={"Insights and Reports"} permissions={permissions} setPermissions={setRolePermissions} position={11} access={{ edit: "EDIT_REPORTS", view: "VIEW_REPORTS", hide: false }} />
-
+                            {/* <RadioToggle parent={"Insight"} label={"Insights and Reports"} permissions={permissions} setPermissions={setRolePermissions} position={11} access={{ edit: "EDIT_REPORTS", view: "VIEW_REPORTS", hide: false }} /> */}
+                            {permissions[2].sub.map((subPerm, index) => {
+                                return (
+                                    <RadioToggle parent={permissions[1].category} label={subPerm} permissions={newRolePermissions} setPermissions={setRolePermissions} />
+                                )
+                            })}
                         </section>
+
                         <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">Support</p>
-                            <RadioToggle parent={"Support"} label={"Ticket Management"} permissions={permissions} setPermissions={setRolePermissions} position={12} access={{ edit: "EDIT_TICKET_MANAGEMENT", hide: false }} />
+                            {/* <RadioToggle parent={"Support"} label={"Ticket Management"} permissions={permissions} setPermissions={setRolePermissions} position={12} access={{ edit: "EDIT_TICKET_MANAGEMENT", hide: false }} />
                             <RadioToggle parent={"Support"} label={"Bulk Notification"} permissions={permissions} setPermissions={setRolePermissions} position={13} access={{ edit: "EDIT_BULK_NOTIFICATION", hide: false }} />
-                            <RadioToggle parent={"Support"} label={"Audits"} permissions={permissions} setPermissions={setRolePermissions} position={14} access={{ edit: "EDIT_AUDITS", hide: false }} />
-
+                            <RadioToggle parent={"Support"} label={"Audits"} permissions={permissions} setPermissions={setRolePermissions} position={14} access={{ edit: "EDIT_AUDITS", hide: false }} /> */}
+                            {permissions[3].sub.map((subPerm, index) => {
+                                return (
+                                    <RadioToggle parent={permissions[3].category} label={subPerm} permissions={newRolePermissions} setPermissions={setRolePermissions} />
+                                )
+                            })}
                         </section>
-                        {/* <section className="flex mt-4 flex-col">
+                        <section className="flex mt-4 flex-col">
                             <p className="font-500 text-[18px] leading-[23px] font-pushpennyMedium">Loan</p>
-                            <RadioToggle parent={"Loan"} label={"Loan Performance"} />
-                            <RadioToggle parent={"Loan"} label={"Credit Call"} />
-                        </section> */}
+                            {/* <RadioToggle parent={"Loan"} label={"Loan Performance"} />
+                            <RadioToggle parent={"Loan"} label={"Credit Call"} /> */}
+                            {permissions[4].sub.map((subPerm, index) => {
+                                return (
+                                    <RadioToggle parent={permissions[1].category} label={subPerm} permissions={newRolePermissions} setPermissions={setRolePermissions} />
+                                )
+                            })}
+                        </section>
                         <div className=" flex w-[320px] justify-start self-end">
                             <div className='w-[120px] mt-[40px] h-[40px] rounded-[28.5px]'>
                                 <UserButton onClick={saveRole} type="gradient" text="Save Role" />
@@ -258,7 +324,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                 </TableContainer>
             </section>
 
-            {/* <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.rolesModal ? "block" : "hidden"}`}>
+            <section ref={getModalRef} className={`w-full left-0 z-50 h-full absolute ${modals.rolesModal ? "block" : "hidden"}`}>
                 <section className={`absolute bg-[#F9F9F9] z-50 top-[20%] left-[30%] flex-col px-8 py-8 w-[600px] h-[579px] rounded-[48px] bg-[#FFFFFF] flex`}>
                     <section className="flex justify-between">
                         <p className="font-pushpennyBold font-700 text-[28px] leading-[36.46px]">Finance role</p>
@@ -312,7 +378,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                     </form>
                 </section>
 
-            </section> */}
+            </section>
         </div>
     )
 }

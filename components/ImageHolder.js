@@ -6,7 +6,7 @@ export default function ImageHolder({src, alt="image", priority=true, uop=false}
             <>
             <Image
             unoptimized
-            src={`data:image/jpeg;base64,${src}`}
+            src={src}
             alt={alt}
             // layout="fill"
             fill

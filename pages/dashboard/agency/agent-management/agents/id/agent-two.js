@@ -12,8 +12,8 @@ import { testEnv } from "../../../../../../components/Endpoints"
 import { editApi, patchApi, deleteApi } from "../../../../../../components/Endpoints"
 import { convertFromHTML } from "draft-js"
 import { useRef } from "react"
-import Cookies from "js-cookie"
-import { cookies } from 'next/headers'
+// import Cookies from "js-cookie"
+// import { cookies } from 'next/headers'
 
 
 export default function Agent({ modals, setModalState, editFormState, setToken, setActiveDashboard, setActiveState, setLoading }) {
