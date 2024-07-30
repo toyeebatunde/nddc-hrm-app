@@ -5,7 +5,7 @@ import down from '../../../public/icons/down.svg'
 import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
 import useSWR, { mutate } from "swr"
 // import TheCalendar from "../../components/calendar"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import DateSelector from "../../../components/DateSelector"
 import { testEnv } from "../../../components/Endpoints"
 import MetricLayoutTemplate from "../../../components/MetricLayoutTemplate"
@@ -15,16 +15,27 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export default function AgentMetrics({ setToken, setDateRange, dateRange, week, setActiveDashboard, setActiveState, reformatDate }) {
     // const [isCalendar, setIsCalendar] = useState(false)
-    const [analytics, setAnalytics] = useState()
+    const [analytics, setAnalytics] = useState({ dayTotal: 0, weekTotal: 0, monthTotal: 0, yearTotal: 0 })
     const [mount, setMount] = useState(1)
     const [totalTransactions, setTotalTransactions] = useState({ total: null, successful: 0, failed: 0, reversed: 0 })
-    const [agentStats, setAgentSats] = useState([])
+    const [agentStats, setAgentStats] = useState({
+        activeAgents: 0,
+        inActiveAgents: 0,
+        allAgents: 0,
+        dailyActiveAgents: 0,
+        monthlyActiveAgents: 0,
+        alluvialAgents: 0,
+        mercyCorpsAgents: 0,
+        usaidAgents: 0,
+        totalNewAgents: 0
+    })
     const [todaysTransactions, setTodaysTransactions] = useState({ total: 0, successful: 0, failed: 0, reversed: 0 })
-
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data: transactionsTodayData, error: transactionsTodayDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=2022-01-16&to=2022-01-17`, fetching)
+    const { data: transactionsTodayData, error: transactionsTodayDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=2024-06-27&to=2024-06-29`, fetching)
     const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
-    const { data: agentsData, error: agentsDataError } = useSWR(`${testEnv}v1/analytics/agents_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
+    const { data: agentsData, error: agentsDataError } = useSWR(`${testEnv}v1/analytics/agents_stats`, fetching)
+    const auth = { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
+
     // const { data: transactionsData, error: transactionsDataError } = useSWR(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`, fetching)
     // https://admapis-staging.payrail.co/v1/analytics/transaction_stats/filter_by_dates_between?from=2022-01-01&to=2022-05-29
     // ${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${formatDate(dateRange.dateFrom)}&to=${formatDate(dateRange.dateTo)}
@@ -62,53 +73,131 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
         if (m.length === 1) {
             m = '0' + m;
         }
-        formatted = {to: y + '-' + m + '-' + dPlusOne, from: y + '-' + m + '-' + d}
+        formatted = { to: y + '-' + m + '-' + dPlusOne, from: y + '-' + m + '-' + d }
         // debugger
         // setMount(mount+1)
         return formatted;
     }
 
     useEffect(() => {
-        // formatDate(dateRange.dateFrom)
-        // debugger
-        console.log("tomorrow: ", newFormatDate())
-    }, [dateRange.dateFrom, dateRange.dateTo])
-
-
-
-
-    // function getPreviousDay(date = new Date()) {
-    //     const previous = new Date(date.getTime());
-    //     previous.setDate(date.getDate() - 7);
-    //     return previous;
-    // }
+        const currAnalytics = localStorage.getItem("currentAnalytics")
+        const agentsData = localStorage.getItem("agentStats")
+        if (currAnalytics) {
+            setAnalytics(JSON.parse(currAnalytics))
+        }
+        if (agentsData) {
+            setAgentStats(JSON.parse(agentsData))
+        }
+    }, [])
 
     useEffect(() => {
-        console.log("Success Percentage: ", Math.floor((totalTransactions.successful / totalTransactions.total) * 100) + " Failure Percentage: ", Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100))
-        axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateFrom)}`,
-            { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
-        )
-            .then(response => {
-                console.log("today: ", response.data)
-            })
+        const fetchAnalytics = async () => {
+          try {
+            const dateRanges = getDateRanges();
+            const dayData = axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${dateRanges.day.from}&to=${dateRanges.day.to}`, auth);
+            const weekData = axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${dateRanges.week.from}&to=${dateRanges.day.to}`, auth);
+            const monthData = axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${dateRanges.month.from}&to=${dateRanges.day.to}`, auth);
+            const yearData = axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${dateRanges.year.from}&to=${dateRanges.day.to}`, auth);
+    
+            const [dayResponse, weekResponse, monthResponse, yearResponse] = await Promise.all([dayData, weekData, monthData, yearData]);    
+            const currentAnalytics = {
+              dayTotal: dayResponse.data.data.noOfSuccessfulTransactions + dayResponse.data.data.noOfReversedTransactions + dayResponse.data.data.noOfFailedTransactions,
+              weekTotal: weekResponse.data.data.noOfSuccessfulTransactions + weekResponse.data.data.noOfReversedTransactions + weekResponse.data.data.noOfFailedTransactions,
+              monthTotal: monthResponse.data.data.noOfSuccessfulTransactions + monthResponse.data.data.noOfReversedTransactions + monthResponse.data.data.noOfFailedTransactions,
+              yearTotal: yearResponse.data.data.noOfSuccessfulTransactions + yearResponse.data.data.noOfReversedTransactions + yearResponse.data.data.noOfFailedTransactions,
+            };
+    
+            localStorage.setItem("currentAnalytics", JSON.stringify(currentAnalytics));
+            setAnalytics(currentAnalytics);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+    
+        fetchAnalytics();
+      }, []);
+
+
+    function getDateRanges() {
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        const today = new Date();
+        const yesterday = new Date(today);
+        const tomorrow = new Date(today);
+        const lastDayOfLastMonth = new Date(today);
+        const lastDayOfLastYear = new Date(today);
+        const lastSundayOrSaturday = new Date(today);
+
+        yesterday.setDate(today.getDate() - 1);
+        tomorrow.setDate(today.getDate() + 1);
+
+        lastDayOfLastMonth.setMonth(today.getMonth() - 1);
+        lastDayOfLastMonth.setDate(0);
+
+        lastDayOfLastYear.setFullYear(today.getFullYear() - 1);
+        lastDayOfLastYear.setMonth(11);
+        lastDayOfLastYear.setDate(31);
+
+        if (today.getDay() === 0) {
+            lastSundayOrSaturday.setDate(today.getDate() - 1);
+        } else {
+            lastSundayOrSaturday.setDate(today.getDate() - today.getDay());
+        }
+
+        return {
+            day: {
+                from: formatDate(yesterday),
+                to: formatDate(tomorrow),
+            },
+            week: {
+                from: formatDate(lastSundayOrSaturday),
+            },
+            month: {
+                from: formatDate(lastDayOfLastMonth),
+            },
+            year: {
+                from: formatDate(lastDayOfLastYear),
+            }
+        };
+    }
+
+    // useEffect(() => {
+    //     console.log("Success Percentage: ", Math.floor((totalTransactions.successful / totalTransactions.total) * 100) + " Failure Percentage: ", Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100))
+    //     axios.get(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateFrom)}`,
+    //         { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
+    //     )
+    //         .then(response => {
+    //             console.log("today: ", response.data)
+    //         })
+    // }, [dateRange.dateFrom, dateRange.dateTo])
+
+
+    useEffect(() => {
+        setTotalTransactions({...totalTransactions, total: null})
+        mutate(`${testEnv}v1/analytics/transaction_stats/filter_by_dates_between?from=${reformatDate(dateRange.dateFrom)}&to=${reformatDate(dateRange.dateTo)}`)
     }, [dateRange.dateFrom, dateRange.dateTo])
 
     useEffect(() => {
-        // setActiveTab("Agents")
-        // resetSearchParams()
-        // setToken()
         setActiveDashboard("AgentMetrics")
         setActiveState("0")
         if (transactionsData) {
-            // console.log("setting analytics")
-            setAnalytics(transactionsData.data)
             setTotalTransactions({ ...totalTransactions, total: transactionsData.data.noOfSuccessfulTransactions + transactionsData.data.noOfReversedTransactions + transactionsData.data.noOfFailedTransactions, successful: transactionsData.data.noOfSuccessfulTransactions, failed: transactionsData.data.noOfFailedTransactions, reversed: transactionsData.data.noOfReversedTransactions })
-            // console.log(Math.ceil())
         }
         if (transactionsDataError) {
             console.log(transactionsDataError)
         }
-    }, [transactionsData, dateRange.dateFrom, dateRange.dateTo])
+    }, [transactionsData])
+
+    
+
+    useEffect(() => {
+        if (agentsData) {
+            setAgentStats(agentsData.data)
+            localStorage.setItem("agentStats", JSON.stringify(agentsData.data))
+        }
+    }, [agentsData])
 
     function dateSearch() { }
     //  ${totalTransactions.reversed == 0 ? Math.ceil((totalTransactions.failed / totalTransactions.total) * 100) + Math.ceil((totalTransactions.successful / totalTransactions.total) * 100) : Math.floor((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}
@@ -252,59 +341,27 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
                             </section>
                         </section>
                     )}
-                    {/* <section className="w-[100%] rounded-[8px] h-[231px] relative bg-brand-light-yellow flex justify-between items-center px-4">
-                        <section className="flex flex-col justify-center items-center w-[180px] h-[180px]">
-                            <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">{totalTransactions.total}</p>
-                            <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">Total</p>
-                            <div id="first-chart" className="pie z-30 animate-two no-round" style={{ "--p": `${Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
-                            <div id="second-chart" className="pie z-20 animate no-round" style={{ "--p": `${Math.floor((totalTransactions.failed / totalTransactions.total) * 100) + Math.floor((totalTransactions.successful / totalTransactions.total) * 100)}`, "--c": "black", "--b": "20px" }}></div>
-                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "100", "--c": "gray", "--b": "15px" }}></div>
-                            <div id="first-chart" className="pie flex flex-col items-center z-10 animate-three no-round" style={{ "--p": "70", "--c": "rgba(251, 244, 235, 1)", "--b": "25px" }}></div>
-                        </section>
-                        <section className="flex  justify-between h-[180px] flex-col">
-                            <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.successful}</p>
-                                <div className="flex justify-between w-[90px] items-center">
-                                    <div className="w-[13px] h-[13px] rounded-[50%] bg-brand-yellow"></div>
-                                    <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Successful</p>
-                                </div>
-                            </section>
-                            <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.failed}</p>
-                                <div className="flex justify-between w-[90px] items-center">
-                                    <div className="w-[13px] h-[13px] rounded-[50%] bg-black"></div>
-                                    <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Failed</p>
-                                </div>
-                            </section>
-                            <section className="flex flex-col">
-                                <p className="font-pushpennyMedium flex justify-end text-[20px] font-500 leading-[26px] text-[#6e7883]">{totalTransactions.reversed}</p>
-                                <div className="flex justify-between w-[90px] items-center">
-                                    <div className="w-[13px] h-[13px] rounded-[50%] bg-gray"></div>
-                                    <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Reversed</p>
-                                </div>
-                            </section>
-                        </section>
-                    </section> */}
                     <section className="flex justify-between h-[44px] px-2 w-full">
                         <section className="flex flex-col">
-                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">20</p>
+                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">{analytics.dayTotal}</p>
                             <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Today</p>
                         </section>
                         <section className="flex flex-col">
-                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">1358</p>
+                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">{analytics.weekTotal}</p>
                             <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Week</p>
                         </section>
                         <section className="flex flex-col">
-                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">1389</p>
+                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">{analytics.monthTotal}</p>
                             <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Month</p>
                         </section>
                         <section className="flex flex-col">
-                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">21049</p>
+                            <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px]">{analytics.yearTotal}</p>
                             <p className="font-pushpennyBook font-400 text-[12px] leading-[18px]">Year</p>
                         </section>
                     </section>
                 </section>
             </section>
+
             <section className="w-[97.5%] h-fit border border-[#dddddd] rounded-[10px] flex flex-col xl:flex-row items-center justify-between px-4">
                 <section className="flex sm:w-[70%] xl:w-fit xl:justify-betwen justify-around">
                     <section className="flex justify-between items-center">
@@ -314,7 +371,7 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
                                 Secs
                             </section>
                         </section>
-                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                        <section className="flex w-[120px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
                             Avg. completed transaction time
                         </section>
                     </section>
@@ -326,7 +383,7 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
                                 %
                             </section>
                         </section>
-                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                        <section className="flex w-[108px] borde ml-[10px] h-[33px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
                             Payment <br></br>
                             Conversion rate
                         </section>
@@ -340,7 +397,7 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
                             N
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                    <section className="flex w-[108px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
                         Lifetime Value <br></br>
                         Calculation
                     </section>
@@ -353,7 +410,7 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
                                 %
                             </section>
                         </section>
-                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                        <section className="flex w-[108px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
                             Rate of <br></br>
                             returning users
                         </section>
@@ -374,44 +431,57 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
 
 
             </section>
-            <section className="flex flex-col xl:flex-row items-center justify-between w-full px-4 mt-4">
-                <section className="lg:w-[396px] border rounded-[8px] border-[#dddddd] h-[381px] flex flex-col items-center justify-between py-2 ">
+
+            <section className="flex flex-col xl:flex-row items-center justify-between w-full mt-4">
+                <section className="lg:w-[405px] border rounded-[8px] border-[#dddddd] h-[381px] flex flex-col items-center justify-between py-2 ">
                     <section className="flex justify-between w-full px-4">
                         <p className="font-pushpennyMedium font-500 text-[13px] leading-[20px]">Agent Growth</p>
                         <p className="font-400 font-pushpennyBook text-[14px] leading-[22px] cursor-pointer underline underline-offset-1">
                             View all agents
                         </p>
                     </section>
-                    <section className="flex w-full justify-between">
-                        <section className="flex pl-2 relative justify-around flex-col">
-
-                            <section className="flex w-[180px] h-[180px] flex-col justify-center items-center ">
-                                <div id="first-chart" className="pie z-50 animate-two no-round" style={{ "--p": "90", "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
-                                <div id="second-chart" className="pie z-30 animate no-round" style={{ "--p": "100", "--c": "black", "--b": "20px" }}></div>
-
-                                <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">5000</p>
-                                <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">All Agents</p>
-                            </section>
-                            <section className="flex flex-col w-[176px] h-[44px]">
-                                <section className=" w-full justify-between flex">
-                                    <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px] text-[#6E7883]">00</p>
-                                    <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px] text-[#6E7883]">00</p>
-                                    <p className="font-pushpennyMedium font-500 text-[20px] leading-[26px] text-[#6E7883]">00</p>
+                    <section className="flex borde w-full justify-between">
+                        <section className="flex pl-[4px] relative justify-around flex-col">
+                            {agentStats.allAgents == 0 && (
+                                <section className={`w-[80%] rounded-[8px] h-[231px] relative flex justify-between items-center px-4`}>
+                                    <Box className="justify-center w-full flex">
+                                        <CircularProgress sx={{ color: "#dddddd" }} className=" border-[#dddddd]" />
+                                    </Box>
                                 </section>
-                                <section className=" w-full justify-between flex font-400 font-pushpennyBook text-[12px] leading-[18px]">
-                                    <p>Alluvial</p>
-                                    <p>Mercy Corps</p>
-                                    <p>USAID</p>
+                            )}
+                            {agentStats.allAgents > 0 && (
+                                <section className="flex w-[160px] h-[180px] flex-col justify-center items-center ">
+                                    <div id="first-chart" className="pie z-50 animate-two no-round" style={{ "--p": `${Math.ceil((agentStats.activeAgents / agentStats.allAgents) * 100).toString()}`, "--c": "rgba(233, 158, 36, 1)", "--b": "25px" }}></div>
+                                    <div id="second-chart" className="pie z-30 animate no-round" style={{ "--p": "100", "--c": "black", "--b": "20px" }}></div>
+
+                                    <p className="font-pushpennyMedium text-[40px] leading-[52px] text-[#6e7883] font-500">{agentStats.allAgents}</p>
+                                    <p className="font-pushpennyBook text-[12px] leading-[18px] text-black font-400">All Agents</p>
+                                </section>
+                            )}
+
+
+                            <section className="flex w-[180px] pr-[5px] justify-between borde h-[44px]">
+                                <section className="flex flex-col">
+                                    <h2 className="font-pushpennyMedium borde font-500 text-[20px] leading-[26px] text-[#6E7883]">{agentStats.alluvialAgents}</h2>
+                                    <h2 className="font-400 font-pushpennyBook text-[12px] leading-[18px]">Alluvial</h2>
+                                </section>
+                                <section className="flex flex-col">
+                                    <h2 className="font-pushpennyMedium borde font-500 text-[20px] leading-[26px] text-[#6E7883]">{agentStats.mercyCorpsAgents}</h2>
+                                    <h2 className="font-400 font-pushpennyBook text-[12px] leading-[18px]">Mercy Corps</h2>
+                                </section>
+                                <section className="flex flex-col">
+                                    <h2 className="font-pushpennyMedium borde font-500 text-[20px] leading-[26px] text-[#6E7883]">{agentStats.usaidAgents}</h2>
+                                    <h2 className="font-400 font-pushpennyBook text-[12px] leading-[18px]">USAID</h2>
                                 </section>
                             </section>
                         </section>
                         <section className="w-[160px] h-[282px] rounded-[10px] bg-brand-light-yellow flex flex-col items-center justify-between">
-                            <div className="flex relative flex-col w-[106px] h-[80px] items-center">
-                                <p className="font-pushpennyMedium font-500 text-[60px] leading-[78px]">100</p>
-                                <section className="font-400 leading-[18px] font-pushpennyBook text-[12px]">Daily Active Users</section>
+                            <div className="flex relative flex-col borde w-full items-center">
+                                <p className="font-pushpennyMedium font-500 text-[60px] leading-[78px]">{agentStats.dailyActiveAgents}</p>
+                                <section className="font-400 borde leading-[18px] font-pushpennyBook text-[12px]">Daily Active Users</section>
                             </div>
-                            <div className="flex flex-col w-[106px] h-[80px] justify-between items-center">
-                                <p className="font-pushpennyMedium font-500 text-[60px] leading-[78px]">98</p>
+                            <div className="flex flex-col w-full justify-between items-center">
+                                <p className="font-pushpennyMedium font-500 text-[60px] leading-[78px]">{agentStats.monthlyActiveAgents}</p>
                                 <p className="font-400 leading-[18px] font-pushpennyBook text-[12px]">Monthly Active Users</p>
                             </div>
                             <div className="flex w-full justify-around">
@@ -485,5 +555,7 @@ export default function AgentMetrics({ setToken, setDateRange, dateRange, week, 
         </div>
     )
 }
+
+// 
 
 AgentMetrics.Layout = MetricLayoutTemplate

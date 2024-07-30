@@ -40,7 +40,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                 setLoading(false);
                 window.alert("Something went wrong, loading is taking longer than usual. Please refresh page")
             }
-        }, 10000); // 5 seconds
+        }, 20000);
 
         if (allTransactions) {
             setLoading(false)
@@ -79,6 +79,8 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
 
     useEffect(() => {
         mutate(`${testEnv}v1/transaction/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
+        console.log("date from: ", formatDate(dateRange.dateFrom))
+        console.log("date to: ", formatDate(dateRange.dateTo))
         if (dateFiltered) {
             setFilteredData(dateFiltered.data.Transactions)
             if (search) {
@@ -88,17 +90,20 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered, entryValue])
+    }, [dateFiltered, entryValue, dateRange])
 
     useEffect(() => {
+        setLoading(true)
         // if(dateRange.dateTo < dateRange.dateFrom) {
         //     console.log("valid date range")
         // }
         // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
+            setLoading(false)
             // setSearchedField(searchBarData)
         }
         if (searchBarDataError) {
+            setLoading(false)
             console.log(searchBarDataError)
         }
     }, [searchBarData])
@@ -134,8 +139,8 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                     <th className="font-400 text-left  w-[91px] break-words text-[12px] leading-[15.62px] font-pushpennyBook">SERVICE</th>
                                     <th className="font-400 text-left  w-[125px] text-[12px] leading-[15.62px] font-pushpennyBook">SERVICE REFERENCE</th>
                                     <th className="font-400 text-left  w-[90px] text-[12px] leading-[15.62px] font-pushpennyBook">AMOUNT</th>
-                                    <th className="font-400 text-left  w-[50px] text-[12px] leading-[15.62px] font-pushpennyBook">CHARGE</th>
-                                    <th className="font-400 text-left  w-[69px]  text-[12px] leading-[15.62px] font-pushpennyBook">STATUS</th>
+                                    <th className="font-400 text-left  w-[59px] text-[12px] leading-[15.62px] borde font-pushpennyBook">CHARGE</th>
+                                    <th className="font-400 text-left  w-[60px]  text-[12px] leading-[15.62px] borde font-pushpennyBook">STATUS</th>
                                     <th className="font-400 text-left  w-[88px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTION</th>
                                 </tr>
                             </thead>
@@ -145,14 +150,14 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                         return (
                                             <tr key={index} className="h-[60px]">
                                                 <td className="font-pushpennyBook    font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.date)}</td>
-                                                <td className="font-pushpennyBook  truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.reference}</td> 
-                                                <td className="font-pushpennyBook truncate w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.transType || "n/a"}</td> 
+                                                <td className="font-pushpennyBook  truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.reference}</td>
+                                                <td className="font-pushpennyBook truncate w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.transType || "n/a"}</td>
                                                 <td className="font-pushpennyBook   truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.customerInfo?.name || "n/a"}</td>
-                                                <td className="font-pushpennyBook   truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceInfo.serviceName || "n/a"}</td> 
-                                                <td className="font-pushpennyBook truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceReference || "n/a"}</td> 
-                                                <td className="font-pushpennyBook    font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td> 
+                                                <td className="font-pushpennyBook   truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceInfo.serviceName || "n/a"}</td>
+                                                <td className="font-pushpennyBook truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceReference || "n/a"}</td>
+                                                <td className="font-pushpennyBook    font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
                                                 <td className="font-pushpennyBook    font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.charge || "n/a"}</td>
-                                                <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td> 
+                                                <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
                                                 <td className="font-pushpennyBook  ">
                                                     <div className="w-[88px] h-[36px]">
                                                         <UserButton type="view" text="View" onClick={() => { setActiveTransaction(transaction.reference) }} />
@@ -160,7 +165,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 </td>
                                             </tr>
                                         )
-                                    }) : 
+                                    }) :
                                     searchBarData?.data.map((transaction, index) => {
                                         return (
                                             <tr key={index} className="h-[60px]">
@@ -184,6 +189,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                 }
                             </tbody>
                         </table>
+                        {(transactionsData.length == 0) && <h2 className="ml-[45%] mt-[15%]">Data Loading...</h2>}
                     </TableContainer>
                 </section>
                 <section></section>

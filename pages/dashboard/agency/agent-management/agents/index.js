@@ -63,6 +63,7 @@ export default function Agents({
 
     useEffect(() => {
         setActiveTab("Agents")
+        setLoading(true)
         setToken()
         setActiveDashboard("AgentManagement")
         setActiveState("2")
@@ -109,6 +110,7 @@ export default function Agents({
             handleCurrentData(newCurrentData, newHeaders)
         }
         if (agentsError) {
+            setLoading(false)
             console.log(agentsError)
         }
     }, [agents])
@@ -148,16 +150,16 @@ export default function Agents({
     }, [createView])
 
     useEffect(() => {
-        // if(dateRange.dateTo > dateRange.dateFrom) {
-        //     console.log("valid date range")
-        // }
-        // console.log(dateRange)
+        console.log("searched")
         mutate(`${testEnv}v1/agent/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`)
+        setLoading(false)
         if (searchBarData) {
             // setSearchedField(searchBarData)
+            // setLoading(false)
             console.log("updated based on search")
         }
         if (searchBarDataError) {
+            setLoading(false)
             console.log(searchBarDataError)
         }
     }, [searchField, entryValue])
@@ -257,7 +259,7 @@ export default function Agents({
                 setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
             })
             .catch(error => {
-                debugger
+                // debugger
                 console.log("error response: ", error.response.data.data)
                 setLoading(false)
                 // setCustomerEdit({ ...agentEdit, editView: false })

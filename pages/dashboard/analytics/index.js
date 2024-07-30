@@ -7,13 +7,13 @@ import arrowUpGreen from '../../../public/icons/arrow-up-green-circle.svg'
 import { useState, useEffect } from "react"
 import DateSelector from "../../../components/DateSelector"
 
-export default function AgentMetrics({setToken, setDateRange, dateRange, week}) {
+export default function AgentMetrics({ setToken, setDateRange, dateRange, week }) {
     const [isCalendar, setIsCalendar] = useState(false)
     // const [dateRange, setDateRange] = useState({ dateFrom: getPreviousDay(), dateTo: new Date() })
 
-    useEffect(()=>{
+    useEffect(() => {
         setToken()
-    },[])
+    }, [])
 
     // function getPreviousDay(date = new Date()) {
     //     const previous = new Date(date.getTime());
@@ -170,30 +170,30 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
             </section>
             <section className="w-[97.5%] h-fit border border-[#dddddd] rounded-[10px] flex flex-col xl:flex-row items-center justify-between px-4">
                 <section className="flex sm:w-[70%] xl:w-fit xl:justify-betwen justify-around">
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">03</p>
-                        <section className="z-10 bg-brand-light-yellow -ml-[10px] h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            Secs
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">03</p>
+                            <section className="z-10 bg-brand-light-yellow -ml-[10px] h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                Secs
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Avg. completed transaction time
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Avg. completed transaction time
-                    </section>
-                </section>
 
-                <section className="flex justify-between items-center">
-                    <section className=" z-30 flex w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">98</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" z-30 flex w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">98</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Payment <br></br>
+                            Conversion rate
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Payment <br></br>
-                        Conversion rate
-                    </section>
-                </section>
 
                 </section>
                 <section className="flex sm:w-[40%] justify-around xl:w-fit xl:justify-between items-center">
@@ -209,30 +209,30 @@ export default function AgentMetrics({setToken, setDateRange, dateRange, week}) 
                     </section>
                 </section>
                 <section className="flex sm:w-[70%] justify-around xl:w-fit xl:justify-betwen">
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">40</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">40</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Rate of <br></br>
+                            returning users
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Rate of <br></br>
-                        returning users
-                    </section>
-                </section>
-                <section className="flex justify-between items-center">
-                    <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
-                        <p className="z-30">05</p>
-                        <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
-                            %
+                    <section className="flex justify-between items-center">
+                        <section className=" flex z-30 w-fit relative h-[52px] font-500 leading-[52px] text-[#6E7883] font-pushpennyMedium text-[40px]">
+                            <p className="z-30">05</p>
+                            <section className="z-10 -ml-[10px] bg-brand-light-yellow h-[20px] w-[20px] flex justify-center items-center rounded-[30px] font-pushpennyMedium font-700 text-[6px] leading-[8px] ">
+                                %
+                            </section>
+                        </section>
+                        <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
+                            Abandonment <br></br>
+                            Rate
                         </section>
                     </section>
-                    <section className="flex w-[78px] ml-[10px] h-[23px] font-400 font-pushpennyBook text-[10px] leading-[13px]">
-                        Abandonment <br></br>
-                        Rate
-                    </section>
-                </section>
                 </section>
 
 

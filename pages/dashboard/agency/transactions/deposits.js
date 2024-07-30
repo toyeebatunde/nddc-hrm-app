@@ -11,7 +11,7 @@ import TableContainer from "../../../../components/TableContainer";
 
 export default function Transactions({ modals, setToken, setActiveDashboard, setActiveState, setLoading, activeTab, setActiveTab, entryValue, pageSelector, search, setSearch, formatDate, dateRange, searchField, resetSearchParams, day, resetDay, rangeParam }) {
 
-    const [transactionsData, setTransactionsData] = useState()
+    const [transactionsData, setTransactionsData] = useState([])
     const [filteredData, setFilteredData] = useState()
     const [transactionToView, setTransactionToView] = useState()
     const [viewState, setViewState] = useState(true)
@@ -20,7 +20,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const { data: allTransactions, error: allTransactionsError } = useSWR(`${testEnv}v1/transaction/deposit/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/transaction/deposit/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/transaction/deposit/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/deposit?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const router = useRouter()
 
@@ -56,7 +56,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered, entryValue])
+    }, [dateFiltered, entryValue, dateRange])
 
     useEffect(() => {
         let newSearch
@@ -84,9 +84,11 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         // }
         // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
+            setLoading(false)
             // setSearchedField(searchBarData)
         }
         if (searchBarDataError) {
+            setLoading(false)
             console.log(searchBarDataError)
         }
     }, [searchBarData])
@@ -127,7 +129,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 <td className="font-pushpennyBook    font-400 text-[14px] leading-[18px] text-[#6E7883]">{dateFormatter(transaction.date)}</td>
                                                 <td className="font-pushpennyBook  truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.reference}</td>
                                                 <td className="font-pushpennyBook truncate w-[124px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.transType || "n/a"}</td>
-                                                <td className="font-pushpennyBook   truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.customerInfo.name || "n/a"}</td>
+                                                <td className="font-pushpennyBook   truncate   font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.customerInfo?.name || "n/a"}</td>
                                                 <td className="font-pushpennyBook   truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceInfo.serviceName || "n/a"}</td>
                                                 <td className="font-pushpennyBook truncate font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.serviceReference || "n/a"}</td>
                                                 <td className="font-pushpennyBook    font-400 text-[14px] leading-[14px] text-[#6E7883]">{transaction.amount}</td>
@@ -135,7 +137,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
                                                 <td className="font-pushpennyBook  ">
                                                     <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.reference}`) }} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -155,7 +157,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
                                                 <td className="font-pushpennyBook  ">
                                                     <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.reference}`) }} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -164,6 +166,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                 }
                             </tbody>
                         </table>
+                        {(transactionsData.length == 0) && <h2 className="ml-[45%] mt-[15%]">Data Loading...</h2>}
                     </TableContainer>
                 </section>
                 <section></section>

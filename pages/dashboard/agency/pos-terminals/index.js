@@ -12,18 +12,19 @@ import ImageHolder from "../../../../components/ImageHolder";
 import TableContainer from "../../../../components/TableContainer";
 
 export default function Pos({ modals, setToken, setActiveDashboard, setActiveState, setActiveTab, viewState, setView, isLoading, setLoading, entryValue, pageSelector, searchField, resetSearchParams, setSearchParam }) {
-    const initialView = { agentId: "", agentName:"", agentPhone: "", status: "", posType: "", comment: "" }
+    const initialView = { agentId: "", agentName: "", agentPhone: "", status: "", posType: "", comment: "" }
 
     const [posData, setPosData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data:requestData, error:requestDataError } = useSWR(`${testEnv}v1/pos_request/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: requestData, error: requestDataError } = useSWR(`${testEnv}v1/pos_request/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: searchBarData, error: searchBarError } = useSWR(`${testEnv}v1/pos_request/search?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [viewPos, setViewPos] = useState(initialView)
 
-    function posToView(e,view, id, name, phone, status, comment) {
+    function posToView(e, view, id, name, phone, status, comment) {
         e.preventDefault()
         if (view) {
-            setViewPos({ ...viewPos, agentId: id, agentName: `${name.firstName} ${name.lastName}`, agentPhone: phone, status: status, comment: comment })
+            // setViewPos({ ...viewPos, agentId: id})
+            setViewPos({ ...viewPos, agentId: id, agentName: name, agentPhone: phone, status: status })
             return
         }
         setViewPos(initialView)
@@ -106,38 +107,38 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                                     </tr>
 
                                     {searchField == "" ?
-                                    posData?.data.map((data, index) => {
-                                        return (
-                                            <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
-                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
-                                                <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.firstName} {data.agent.lastName}</td>
-                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.phoneNumber || "n/a"}</td>
-                                                <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
-                                                <td className="font-pushpennyBook  w-[106px] pr-[20px] truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
-                                                <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
-                                                    <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={(e) => {posToView(e,true,data.agent.id, {firstName:data.agent.firstName, lastName: data.agent.lastName}, data.agent.phoneNumber, data.status, data.serviceName)}} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    }) :
-                                    searchBarData?.data.map((data, index) => {
-                                        return (
-                                            <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
-                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
-                                                <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.firstName} {data.agent.lastName}</td>
-                                                <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.phoneNumber || "n/a"}</td>
-                                                <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
-                                                <td className="font-pushpennyBook  w-[106px] pr-[20px] truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
-                                                <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
-                                                    <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={(e) => {posToView(e,true,data.agent.id, {firstName:data.agent.firstName, lastName: data.agent.lastName}, data.agent.phoneNumber, data.status, data.serviceName)}} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
+                                        posData?.data.map((data, index) => {
+                                            return (
+                                                <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
+                                                    <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.dateCreated || "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.id}</td>
+                                                    <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.id || "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                                    <td className="font-pushpennyBook  w-[106px] pr-[20px] truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.reason}</td>
+                                                    <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
+                                                        <div className="w-[88px] h-[36px]">
+                                                            <UserButton type="view" text="View" onClick={(e) => { posToView(e, true, data.id, data.id, data.id, data.status) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }) :
+                                        searchBarData?.data.map((data, index) => {
+                                            return (
+                                                <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
+                                                    <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.dateCreated || "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.id}</td>
+                                                    <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.id || "n/a"}</td>
+                                                    <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+                                                    <td className="font-pushpennyBook  w-[106px] pr-[20px] truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.reason}</td>
+                                                    <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
+                                                        <div className="w-[88px] h-[36px]">
+                                                            <UserButton type="view" text="View" onClick={(e) => { posToView(e, true, data.id, data.id, data.id, data.status) }} />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
                                     }
 
 
@@ -155,9 +156,9 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                             <div className="relative h-[66px] w-[65px]">
                                 <ImageHolder src="/icons/book-remove.svg" />
                             </div>
-                                <h2 className="font-[400] leading-[18px] text-[#6E7883] font-pushpennyBook text-[14px] text-center">
-                                    Please select an agent process POS Terminal
-                                </h2>
+                            <h2 className="font-[400] leading-[18px] text-[#6E7883] font-pushpennyBook text-[14px] text-center">
+                                Please select an agent process POS Terminal
+                            </h2>
                         </div>
                         <form className={`${viewPos.agentId == "" ? "hidden" : "flex"} pb-[20px] gap-[15px] flex-col items-center w-full`}>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
@@ -170,17 +171,17 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
                                 <Textfield formEdit={formEdit} title="Agent Phone No." name="agentPhone" bg="bg-white" value={viewPos.agentPhone} />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
-                                <Textfield formEdit={formEdit} title="Status" value={viewPos.status} name="status" type="select" selectOptions={["SUCCESSFUL", "PROCESSING", "PENDING"]} bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Status" value={viewPos.status} name="status" type="select" selectOptions={["SUCCESSFUL", "PENDING"]} bg="bg-white" />
                             </div>
                             <div className="w-full xl:w-[336px] h-[57px] rounded-[28.5px]">
                                 <Textfield formEdit={formEdit} title="POS Type" value={viewPos.posType} name="posType" type="select" selectOptions={["GA Linux Terminal", "GA POS Android Terminal"]} bg="bg-white" />
                             </div>
                             <div className="w-[95%] xl:w-[336px] h-[76px] rounded-[28.5px]">
-                                <Textfield formEdit={formEdit} title="Comment" value={viewPos.comment} name="comment" type="textbox"  bg="bg-white" />
+                                <Textfield formEdit={formEdit} title="Comment" value={viewPos.comment} name="comment" type="textbox" bg="bg-white" />
                             </div>
                             <div className="w-full flex justify-between items-center xl:w-[336px] mt-auto h-[57px]">
                                 <div className="w-[49%] h-[36px]">
-                                    <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" onClick={(e)=>{posToView(e,false)}} />
+                                    <UserButton text="Cancel" bg="bg-[#DDDDDD]" textColor="text-white" onClick={(e) => { posToView(e, false) }} />
                                 </div>
                                 <div className="w-[49%] h-[36px]">
                                     <UserButton type="gradient" text="Save" />
@@ -195,6 +196,20 @@ export default function Pos({ modals, setToken, setActiveDashboard, setActiveSta
         </div>
     )
 }
+
+
+{/* <tr key={index} className="h-[50px] border-b px-[10px] border-[#979797]">
+    <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(data.dateCreated)}</td>
+    <td className="font-pushpennyBook  w-[74px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.firstName} {data.agent.lastName}</td>
+    <td className="font-pushpennyBook  w-[106px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.agent.phoneNumber || "n/a"}</td>
+    <td className="font-pushpennyBook  w-[70px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.status}</td>
+    <td className="font-pushpennyBook  w-[106px] pr-[20px] truncate  font-400 text-[14px] leading-[14px] text-[#6E7883]">{data.serviceName}</td>
+    <td className="font-pushpennyBook gap-[5px] flex w-[88px]  flex items-start">
+        <div className="w-[88px] h-[36px]">
+            <UserButton type="view" text="View" onClick={(e) => { posToView(e, true, data.agent.id, { firstName: data.agent.firstName, lastName: data.agent.lastName }, data.agent.phoneNumber, data.status, data.serviceName) }} />
+        </div>
+    </td>
+</tr> */}
 
 
 

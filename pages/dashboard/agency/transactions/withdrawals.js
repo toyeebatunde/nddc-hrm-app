@@ -20,7 +20,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
     const { data: allTransactions, error: allTransactionsError } = useSWR(`${testEnv}v1/transaction/withdrawal/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/transaction/withdrawal/filter_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const { data: dayFiltered, error: dayFilteredError } = useSWR(`${testEnv}v1/transaction/withdrawal/filter_by_days?days=${day}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/withdrawal?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/transaction/search/all?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
 
     const router = useRouter()
 
@@ -78,7 +78,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         if (filteredError) {
             console.log(filteredError)
         }
-    }, [dateFiltered, entryValue])
+    }, [dateFiltered, entryValue, dateRange])
 
 
 
@@ -88,9 +88,11 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
         // }
         // mutate(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`)
         if (searchBarData) {
+            setLoading(false)
             // setSearchedField(searchBarData)
         }
         if (searchBarDataError) {
+            setLoading(false)
             console.log(searchBarDataError)
         }
     }, [searchBarData])
@@ -107,8 +109,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
             <section className={`py-2 w-full mt-[20px] ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <section className={`min-h-[674px] w-full  pt-4 pl-[5px]`}>
                     <TableContainer totalPages={totalPages} entryValue={entryValue} pageSelector={pageSelector}>
-
-                        <table className="table-fixed w-full">
+                        <table className="table-fixed w-full ">
                             <thead>
                                 <tr className="">
                                     <th className="font-400 text-left   w-[75px]  text-[12px] leading-[15.62px] font-pushpennyBook">DATE</th>
@@ -123,6 +124,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                     <th className="font-400 text-left  w-[88px] text-[12px] leading-[15.62px] font-pushpennyBook">ACTION</th>
                                 </tr>
                             </thead>
+
                             <tbody className="mt-6 ">
                                 {searchField == "" ?
                                     (search ? filteredData : transactionsData)?.map((transaction, index) => {
@@ -139,7 +141,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
                                                 <td className="font-pushpennyBook  ">
                                                     <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.reference}`) }} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -159,7 +161,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                                 <td className="font-pushpennyBook    font-[600]  truncate text-[11px] leading-[14px] text-[#6E7883]">{transaction.status}</td>
                                                 <td className="font-pushpennyBook  ">
                                                     <div className="w-[88px] h-[36px]">
-                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.id}`) }} />
+                                                        <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/agency/transactions/${transaction.reference}`) }} />
                                                     </div>
                                                 </td>
                                             </tr>
@@ -168,6 +170,7 @@ export default function Transactions({ modals, setToken, setActiveDashboard, set
                                 }
                             </tbody>
                         </table>
+                        {(transactionsData.length == 0) && <h2 className="ml-[45%] mt-[15%]">Data Loading...</h2>}
                     </TableContainer>
                 </section>
                 <section></section>

@@ -11,7 +11,7 @@ export default function TableContainer({ children, pageSelector, entryValue, col
     const pageButtons = []
     for (let i = currentRange.start; i < currentRange.end; i++) {
         pageButtons.push(
-            <button disabled={i > totalPages} className={`borde min-w-[40px] ${i > totalPages ? "text-[grey]" : ""}`} onClick={(e) => { pageSelector(e, "page") }}>
+            <button key={i} disabled={i > totalPages} className={`borde min-w-[40px] ${i > totalPages ? "text-[grey]" : ""}`} onClick={(e) => { pageSelector(e, "page") }}>
                 {i}
             </button>
         )
@@ -32,7 +32,7 @@ export default function TableContainer({ children, pageSelector, entryValue, col
     return (
         <div className="w-full flex gap-[10px] flex-col">
             <div className="w-full  overflow-x-auto">
-                <div className={`w-[1115px] px-[20px] xl:w-full pt-[20px] ${color} border border-[#DDDDDD] rounded-[10px] pt-[10px] min-h-[674px]`}>
+                <div className={`w-[1115px] px-[5px] xl:w-full pt-[20px] ${color} border border-[#DDDDDD] rounded-[10px] pt-[10px] min-h-[674px]`}>
                     {children}
                 </div>
 
@@ -40,8 +40,8 @@ export default function TableContainer({ children, pageSelector, entryValue, col
             <div className="flex px-[20px] justify-between flex-col md:flex-row items-center gap-[5px] md:gap-0 w-full">
                 <div className="flex items-center gap-[10px]">
                     <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">Show</h2>
-                    <div className="w-[83px] h-[51px] rounded-[25.5px] border-[#D1D1D1] border">
-                        <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[10, 15, 5]} />
+                    <div className="w-[90px] h-[51px] rounded-[25.5px] border-[#D1D1D1] border">
+                        <Textfield formEdit={pageSelector} type="pageSize" bg="bg-white" selectOptions={[25, 50, 100]} />
                     </div>
                     <h2 className="font-pushpennyBook font-[400] text-[#6E7883] text-[14px] leading-[18px]">entries</h2>
                 </div>

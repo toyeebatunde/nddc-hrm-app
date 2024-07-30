@@ -10,7 +10,7 @@ import { useRouter } from "next/router"
 
 export default function Modal({ modal, closeModal, values, formFields, setFormFields, formEdit, modalSuccessNotify, modalCloser, setLoading, closeEdge }) {
     const router = useRouter()
-    console.log("values: ", values)
+    // console.log("values: ", values)
 
     const chargeSelectOptions = [
         "TRANSFER",
@@ -473,7 +473,7 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                                         // "name": "string",
                                         // "pushNotificationId": "string",
                                         // "status": "ACTIVE"
-                                      },
+                                    },
                                     localStorage.getItem('token'),
                                     modalCloser,
                                     setLoading,
@@ -557,19 +557,26 @@ export default function Modal({ modal, closeModal, values, formFields, setFormFi
                 <p className="font-pushpennyBook font-[700] text-[12px] text-[#6E7883] md:text-[18px] leading-[26px]">Note that all changes are effected immediately</p>
                 <form className="flex flex-col justify-between w-full mt-[10px] min-h-[333px]">
 
-                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                    {/* <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
                             <Textfield type="text" title="List of Agent ID" name="agentId" formEdit={formEdit} value={values.values.agentId || ""} bg="bg-[#FBF4EB]" />
                         </div>
-                    </section>
+                    </section> */}
+
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield charType="number" type="text" title="Agent Name (Autofill)" name="agentName" formEdit={formEdit} value={values.values.agentName || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield type="select" selectOptions={values.values.idList} title="List of Agent IDs" name="agentId" formEdit={formEdit} value={values.values.agentId || ""} bg="bg-[#FBF4EB]" />
+                        </div>
+                    </section>
+
+                    <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
+                        <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
+                            <Textfield  type="text" title="Agent Name (Autofill)" name="agentName" formEdit={formEdit} value={values.values.agentName || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
                     <section className="flex  flex-col mt-[20px] lg:flex-row lg:justify-between gap-[20px] lg:gap-0 relative self-center items-center w-[95%]">
                         <div className="flex items-center justify-center w-full h-[62px] relative rounded-[28.5px]">
-                            <Textfield type="text" title="POS Terminal" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminal || ""} bg="bg-[#FBF4EB]" />
+                            <Textfield type="text" title="POS Terminal" name="posTerminalType" formEdit={formEdit} value={values.values.posTerminalType || ""} bg="bg-[#FBF4EB]" />
                         </div>
                     </section>
 

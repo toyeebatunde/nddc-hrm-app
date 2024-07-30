@@ -21,10 +21,17 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
 
 
     useEffect(() => {
-        // setLoading(true)
+        setLoading(true)
         setView(false)
         setActiveDashboard("Reconciliation")
         setActiveState("2")
+
+        const timeout = setTimeout(() => {
+            if (!recon) {
+                setLoading(false);
+                window.alert("Something went wrong, loading is taking longer than usual. Please refresh page")
+            }
+        }, 10000);
         if (recon) {
             setLoading(false)
             // debugger
@@ -34,6 +41,7 @@ export default function Reconciliation({ modals, setToken, setActiveDashboard, s
         if (reconError) {
             console.log(reconError)
         }
+        return () => clearTimeout(timeout);
     }, [recon])
 
     useEffect(() => {

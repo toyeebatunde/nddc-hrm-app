@@ -6,7 +6,7 @@ import ImageHolder from '../../../../components/ImageHolder'
 import searchIcon from '../../../../public/icons/search-icon.svg'
 import closeIcon from '../../../../public/icons/close-modal.svg'
 import { useState, useRef, useEffect, useMemo } from "react"
-import RadioToggle from "../../../../components/RadioToggle"
+import RadioToggle from "../../../../components/radioToggle"
 import ButtonTab from "../../../../components/ButtonTab"
 import nookies from 'nookies'
 import useSWR, { mutate } from 'swr'

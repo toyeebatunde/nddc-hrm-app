@@ -14,7 +14,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
 
     const [ticketData, setTicketData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/ticket/OPEN_TICKETS/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/ticket/OPEN/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const router = useRouter()
 
 
@@ -36,6 +36,12 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
     const dateFormatter = (stamp) => {
         const date = new Date(stamp)
         return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
+    }
+
+    function viewSingleTicket(id) {
+        localStorage.setItem("ticketId", id)
+        router.push(`/dashboard/support/ticket-management/single-ticket`)
+
     }
 
 
@@ -92,7 +98,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                                         <td className="font-pushpennyBook  w-[46px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{ticket.ticketStatus}</td>
                                         <td className="font-pushpennyBook  group:ml-[10px] w-[88px]">
                                             <div className="w-[88px] h-[30px] rounded-[24px]">
-                                                <UserButton type="view" text="View" onClick={() => { router.push(`/dashboard/support/ticket-management/${ticket.id}`) }} />
+                                                <UserButton type="view" text="View" onClick={() => { viewSingleTicket(ticket.id) }} />
                                             </div>
                                         </td>
                                     </tr>

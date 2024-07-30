@@ -12,7 +12,7 @@ import TableContainer from "../../../../components/TableContainer";
 
 export default function Tickets({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, entryValue, pageSelector, setActiveTab }) {
 
-    const [ticketData, setTicketData] = useState()
+    const [ticketData, setTicketData] = useState({data:[]})
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data, error } = useSWR(`${testEnv}v1/ticket/CLOSED/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const router=useRouter()
@@ -106,6 +106,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
                             })}
                         </tbody>
                     </table>
+                    {(ticketData.data.length == 0) && <h2 className="ml-[45%] mt-[15%]">Data Loading...</h2>}
                 </TableContainer>
             </section>
 

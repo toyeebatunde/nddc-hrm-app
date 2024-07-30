@@ -13,6 +13,7 @@ import TableContainer from "../../../../../components/TableContainer";
 export default function Inventory({ modals, setToken, setActiveDashboard, setActiveState, viewState, setView, isLoading, setLoading, setModalState, editFormState, entryValue, pageSelector, search, searchField, resetSearchParams, setSearchParam }) {
 
     const [posData, setPosData] = useState()
+    const [posRequests, setPosRequests] = useState([])
     const [searchedField, setSearchedField] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     const { data: inventoryData, error: inventoryDataError } = useSWR(`${testEnv}v1/device/pos/inventory?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
@@ -46,6 +47,18 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
             console.log(searchInventoryDataError)
         }
     }, [searchInventoryData])
+
+    useEffect(()=>{
+        const fetchRequestIds = async function() {
+            const requests = await axios.get(`${testEnv}v1/pos_request/all?pageNo=0&pageSize=100`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+            // console.log("requests: ", requests.data.data)
+            const allIds = requests.data.data.map(req => req.id)
+            setPosRequests(allIds)
+
+        }
+
+        fetchRequestIds()
+    },[])
 
     function posEdit(modalState, modal, fields, id) {
         // debugger
@@ -115,10 +128,10 @@ export default function Inventory({ modals, setToken, setActiveDashboard, setAct
                                                     <UserButton type="edit" text="Edit" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.terminalId, serialNumber: data.serialNumber, posTerminalType: data.serviceName, action: "Edit" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] group ml-[10px] inline-flex h-[36px]">
-                                                    <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: "", action: "Assign" }, data.id) }} />
+                                                    <UserButton type="accept" text="Assign" onClick={() => { posEdit(true, "posModalAssign", { agentId: "", agentName: "", posTerminalType: data.terminalId, action: "Assign", idList:posRequests }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
-                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.deviceId, serialNumber: data.retrievalReferenceNumber, posTerminalType: data.serviceName, action: "Retrieve" }, data.id) }} />
+                                                    <UserButton type="decline" text="Retrieve" onClick={() => { posEdit(true, "posModalAdd", { terminalId: data.terminalId, serialNumber: data.serialNumber, posTerminalType: data.serviceName, action: "Retrieve" }, data.id) }} />
                                                 </div>
                                                 <div className="w-[108px] ml-[10px] inline-flex h-[36px]">
                                                     <UserButton type="view" text="View" />

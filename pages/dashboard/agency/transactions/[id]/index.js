@@ -73,11 +73,11 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                             <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Reference</h2>
-                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails.reference}</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails?.reference || "n/a"}</h2>
                                 </div>
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Type</h2>
-                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails.transType}</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails?.transType || "n/a"}</h2>
                                 </div>
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Amount</h2>
@@ -144,7 +144,7 @@ export default function Agent({ modals, setModalState, setToken, setActiveDashbo
                             <div className=" flex grow flex-col bg-[#FBF4EB] px-4 py-4 rounded-[10px]">
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device ID</h2>
-                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails.deviceDto?.id}</h2>
+                                    <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">{tranDetails?.deviceDto?.id || "n/a"}</h2>
                                 </div>
                                 <div className="flex h-[24px] border-b-[1px] mt-2 justify-between border-white items-start">
                                     <h2 className="font-pushpennyBook text-[#6E7883] text-[14px] font-[400]">Device Name</h2>

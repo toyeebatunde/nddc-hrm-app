@@ -92,9 +92,11 @@ export default function MyApp({ Component, pageProps }) {
   const [entryValue, setEntryValue] = useState({ size: 15, page: 0 })
   // const[pageData, setPageData] = useState({size: 10, page: 0})
   const [passwordCaution, setCreatePasswordCaution] = useState(false)
+  const [passwordChangeError, setPasswordChangeError] = useState(false)
   const [loginFail, setLoginFail] = useState(false)
   const [searchField, setSearchField] = useState("")
   const [agentFormAction, setAgentFormAction] = useState("add")
+  const [isClicked, setIsClicked] = useState(false)
 
 
   const Layout = Component.Layout || EmptyLayout
@@ -126,8 +128,19 @@ export default function MyApp({ Component, pageProps }) {
     gender: ""
   }
 
-  function setSearchParam(e) {
-    setSearchField(e.target.value)
+  function setSearchParam(e, source) {
+    console.log("search ref: ", e.current.value)
+    if (e.current.value == "") {
+      // setLoading(true)
+      setSearch(false)
+      setSearchField(e.current.value)
+      return
+    }
+
+    if (source == "button") {
+      setLoading(true)
+      setSearchField(e.current.value)
+    }
   }
   function resetSearchParams() {
     setSearchField("")
@@ -164,6 +177,13 @@ export default function MyApp({ Component, pageProps }) {
       return
     }
     setCreatePasswordCaution(true)
+  }
+  function changePasswordError() {
+    if (passwordChangeError) {
+      setPasswordChangeError(false)
+      return
+    }
+    setPasswordChangeError(true)
   }
 
   function setTab(tab) {
@@ -233,6 +253,7 @@ export default function MyApp({ Component, pageProps }) {
       })
       .catch(response => {
         if (response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {
+          setIsLoading(false)
           caution()
         }
       })
@@ -241,8 +262,7 @@ export default function MyApp({ Component, pageProps }) {
   function logout() {
     setIsLoading(true)
     // debugger 
-    localStorage.clear('token')
-    localStorage.clear('user')
+    localStorage.clear()
     Cookies.remove('token')
     Cookies.remove('user')
     setIsLoading(false)
@@ -260,18 +280,18 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function createPassword(details, caution, setDetails) {
+    setIsClicked(true)
+    // debugger
     if (details.password !== details.confirmPassword) {
       // debugger
       caution()
+      setIsClicked(false)
       return
     }
-    // console.log(`${testEnv}v1/auth/reset_password?code=${details.code}`)
     const url = `${testEnv}v1/auth/reset_password?code=${details.code}`
     const thePassword = details.password.replaceAll(" ", "")
     const theConfirmation = details.confirmPassword.replaceAll(" ", "")
-    const body = {newPassword: thePassword, confirmPassword: theConfirmation}
-    // console.log(url)
-    debugger
+    const body = { newPassword: thePassword, confirmPassword: theConfirmation }
     axios.patch(url,
       {
         "newPassword": thePassword,
@@ -279,19 +299,19 @@ export default function MyApp({ Component, pageProps }) {
       },
       {
         headers: {
-          "Host":`${testEnv}`,
-          "Content-Length":JSON.stringify(body).length.toString(),
+          "Host": `${testEnv}`,
+          "Content-Length": JSON.stringify(body).length.toString(),
           "Content-Type": "application/json"
         }
       }
     )
       .then(response => {
-        debugger
         setDetails({ password: "", confirmPassword: "", code: "" })
         router.push("/success")
       })
       .catch(response => {
-        // debugger
+        setPasswordChangeError(true)
+        setIsClicked(false)
         console.log("did not reset: ", response)
       })
   }
@@ -409,6 +429,7 @@ export default function MyApp({ Component, pageProps }) {
       <LoginLayout>
         <Component
           {...pageProps}
+          isLoading={isLoading}
           login={login}
           setPasswordDisplay={setPasswordDisplay}
           showPassword={showPassword}
@@ -423,7 +444,9 @@ export default function MyApp({ Component, pageProps }) {
           createCaution={passwordCaution}
           changer={changePasswordCaution}
           createPassword={createPassword}
-
+          isClicked={isClicked}
+          changePasswordError={changePasswordError}
+          passwordChangeError={passwordChangeError}
         />
       </LoginLayout>
     )

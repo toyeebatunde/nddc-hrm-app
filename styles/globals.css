@@ -329,7 +329,7 @@ input {
   --p: 20;
   --b: 22px;
   --c: darkred;
-  --w: 180px;
+  --w: 160px;
 
   width: var(--w);
   aspect-ratio: 1;

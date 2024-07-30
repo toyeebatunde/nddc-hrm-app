@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import DateSelector from "../components/DateSelector"
 import ButtonTab from "./ButtonTab"
 import ImageHolder from "./ImageHolder"
@@ -10,8 +10,10 @@ import { CSVLink } from "react-csv";
 
 
 
+
 export default function MetricLayoutTemplate({ children, modals, activeAgency, viewState, setView, activeTab, setActiveTab, activeState, dateRange, week, setDateRange, setDateSearchRange, setSearch, setSearchParam, changeCreateView, setRangeParam, downloadData, currentData, headers }) {
     const [tab, setTab] = useState()
+    const searchRef = useRef(null)
 
     useEffect(() => {
         if (activeState) {
@@ -70,7 +72,7 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
         },
         {
             name: "Wallet Fundings",
-            url: "/dashboard/agency/transactions/wallet-funding"
+            url: "#"
         },
     ]
     const ticketTabs = [
@@ -108,6 +110,13 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
     //     return previous;
     // }
 
+    function enterToSearch(e) {
+        if(e.code == "Enter") {
+            setSearchParam(searchRef, "button")            
+        }
+        return
+    }
+
     return (
         <div className="flex flex-col items-center  w-full">
 
@@ -133,10 +142,10 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
                 <section className={`px-4 ${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : activeAgency == "Revenue" ? "hidden" : activeAgency == "Analytics" ? "hidden" : activeAgency == "AgentMetrics" ? "hidden" : "flex"} justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                     <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${viewState ? "hidden" : "flex"} flex-col mdxl:flex-row ${activeAgency == "Reconciliation" ? "justify-end" : "justify-between"} items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                         <section className={`md:w-[280px] flex h-[40px] bg-white rounded-[20px] px-2 relative ${activeAgency == "Reconciliation" ? "hidden" : "flex"} items-center justify-between`}>
-                            <input onChange={(e) => { setSearchParam(e) }} className="search-tab rounded-[20px] w-[80%]" placeholder={activeAgency == "AgentManagement" ? "Search with tags" : "Search Data"} />
-                            <div className="w-[28px] h-[28px] relative">
+                            <input onKeyDown={(e)=>{enterToSearch(e)}} ref={searchRef} onChange={() => { setSearchParam(searchRef) }} className="search-tab rounded-[20px] w-[80%]" placeholder={activeAgency == "AgentManagement" ? "Search with tags" : "Search Data"} />
+                            <button onClick={() => { setSearchParam(searchRef, "button") }} className="w-[28px] h-[28px] relative">
                                 <ImageHolder src='/icons/search-icon.svg' />
-                            </div>
+                            </button>
                         </section>
                         <div className={`grow flex flex-col lg:mt-0 mt-[10px] w-full lg:flex-row lg:justify-end gap-[10px] lg:h-[35px]`}>
                             <div className={`h-[35px] w-full lg:w-[200px] ${activeAgency == "Reconciliation" ? "hidden" : ""}`}>

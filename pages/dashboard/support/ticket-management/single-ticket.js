@@ -48,14 +48,14 @@ export default function Ticket({ modals, setModalState, editFormState, setToken,
             let messageAttachments = []
             setLoading(false)
             setTicketData(ticket)
-            ticket.data.messages.map((message) => {
-                // const messageToPush = []
-                if (Array.isArray(JSON.parse(message.attachment1))) {
-                    messageAttachments = [...messageAttachments, message.attachment1]
-                    return
-                }
-                messageAttachments.push(message.attachment1 || "", message.attachment2 || "", message.attachment3 || "")
-            })
+            // ticket.data.messages.map((message) => {
+            //     // const messageToPush = []
+            //     if (Array.isArray(JSON.parse(message.attachment1))) {
+            //         messageAttachments = [...messageAttachments, message.attachment1]
+            //         return
+            //     }
+            //     messageAttachments.push(message.attachment1 || "", message.attachment2 || "", message.attachment3 || "")
+            // })
             const finalAttachments = messageAttachments.filter((attachment) => {
                 if (attachment) {
                     return attachment
@@ -135,8 +135,6 @@ export default function Ticket({ modals, setModalState, editFormState, setToken,
         )
     }
 
-    function downloadImage(url) { }
-
     async function viewAttachment(modalState, modal, id, fileKey = "") {
         // debugger
         // api/file-view/presign-url- returns image url /v1/api/presign-url/view-file?fileKey
@@ -165,7 +163,6 @@ export default function Ticket({ modals, setModalState, editFormState, setToken,
                 <section className="flex flex-col w-full lg:w-[60%] gap-[10px]">
                     <div className="flex flex-col gap-[10px]">
                         <div className="w-full min-h-[460px] rounded-[10px] border-[#F3F3F3] flex-col border">
-                            {/* <EditorComponent initialContent={editorState}  onContentChange={onEditorStateChange} /> */}
                             {memoizedEditor}
                         </div>
                         <div className="flex justify-between items-center flex-col lg:flex-row lg:flex-wrap items-center gap-[10px] w-full min-h-[57px]">
@@ -294,18 +291,7 @@ export default function Ticket({ modals, setModalState, editFormState, setToken,
                                     </button>
                                 )
                             })}
-                            {/* <div className="w-[90%] gap-[10px] py-[5px] flex">
-                                <div className="w-[20px] h-[20px] relative">
-                                    <ImageHolder src="/icons/file-download.svg" />
-                                </div>
-                                <h2 className="font-[400] text-[#6f6f6f] font-pushpennyBook text-[14px] leading-[22px]">IMG109112  02-17-2022 7.20.21AM.png</h2>
-                            </div>
-                            <div className="w-[90%] gap-[10px] py-[5px] flex">
-                                <div className="w-[20px] h-[20px] relative">
-                                    <ImageHolder src="/icons/file-download.svg" />
-                                </div>
-                                <h2 className="font-[400] text-[#6f6f6f] font-pushpennyBook text-[14px] leading-[22px]">IMG109112  02-17-2022 7.20.21AM.png</h2>
-                            </div> */}
+                            
                         </div>
                     </div>
                     <div className="flex flex-col w-full min-h-[204px] mt-[31px] gap-[10px]">

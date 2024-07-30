@@ -8,7 +8,7 @@ import splash from '../public/icons/splash.svg'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 
-export default function Home({ showPassword, login, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, createCaution, changer }) {
+export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, createCaution, changer }) {
   const passwordField = useRef()
   const router = useRouter()
   useEffect(() => { }, [passwordDisplay])
@@ -66,8 +66,8 @@ export default function Home({ showPassword, login, token, passwordDisplay, setP
             </section>
           </section>
           <section className='mt-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
-            <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span className='underline text-yellow'> Reset now </span></section>
-            <button onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Log in</button>
+            <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={()=>{router.push("/reset")}} className='underline cursor-pointer text-yellow'> Reset now </span></section>
+            <button disabled={isLoading} onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] active:bg-white active:text-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{isLoading ? "Logging in" : "Login"}</button>
           </section>
         </div>
       </div>

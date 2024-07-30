@@ -8,10 +8,11 @@ import splash from '../public/icons/splash.svg'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 
-export default function Home({ showPassword, login, token, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, newPasswordDisplay, setNewPasswordDisplay, newLoginDetails, setNewLoginDetails, createCaution, changer, createPassword }) {
+export default function Home({ showPassword, login, token, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, newPasswordDisplay, setNewPasswordDisplay, newLoginDetails, setNewLoginDetails, createCaution, changer, createPassword, isClicked, changePasswordError, passwordChangeError }) {
     const newPassword = useRef()
     const confirmPassword = useRef()
     const router = useRouter()
+    // const [isClicked, setIsClicked] = useState(false)
 
     useEffect(() => {
         setNewLoginDetails({ ...newLoginDetails, code: router.query.code })
@@ -26,6 +27,16 @@ export default function Home({ showPassword, login, token, setPasswordDisplay, c
         }
 
     }, [createCaution])
+
+    useEffect(() => {
+        if (passwordChangeError) {
+            let timer = setTimeout(() => {
+                changePasswordError()
+            }, 2000)
+            return () => clearTimeout(timer);
+        }
+
+    }, [passwordChangeError])
 
 
 
@@ -60,10 +71,17 @@ export default function Home({ showPassword, login, token, setPasswordDisplay, c
                                 Please enter your new password and confirm it
                             </section>
                         }
+                        {passwordChangeError ?
+                            <section className='text-center mt-[30px] font-pushpennyBook text-[20px] leading-[15.62px] font-[700] w-3/5 self-center'>
+                                Error occured. Try again
+                            </section> :
+                            <section className='text-center mt-[30px] font-pushpennyBook text-[12px] leading-[15.62px] font-[400] w-3/5 self-center'>                                
+                            </section>
+                        }
                         <section className='w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
                             <input value={newLoginDetails.password} onChange={(e) => { changeForm(e, newLoginDetails, setNewLoginDetails) }} id='password' ref={newPassword} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={newPasswordDisplay.password} placeholder='Password' />
                             <button onClick={() => { showPassword(newPassword, setNewPasswordDisplay, newPasswordDisplay) }} className='bg-input-gray z-30 px-3 ml-auto cursor-pointer rounded-[10px]'>
-                            {newPasswordDisplay.password == "password" ? "show" : "hide"}
+                                {newPasswordDisplay.password == "password" ? "show" : "hide"}
                             </button>
                         </section>
                         <section className='w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
@@ -73,11 +91,11 @@ export default function Home({ showPassword, login, token, setPasswordDisplay, c
                             </button>
                         </section>
                     </section>
-                    <section className='mt-[44px] px-14 flex items-center justify-end'>
-                        <button onClick={() => {        
+                    <section className='mt-[44px]  px-14 flex items-center justify-end'>
+                        <button disabled={isClicked} onClick={() => {
                             // console.log(router.query.code)        
                             createPassword(newLoginDetails, changer, setLoginDetails)
-                        }} className='bg-[#EA6212] text-white w-[217px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>Create new password
+                        }} className={`bg-[#EA6212] active:bg-[gray] w-[217px] h-[46px] font-[400] ${isClicked ? "text-[gray]" : "text-[#ffffff]"} rounded-[23px]`}>Create new password
                         </button>
                     </section>
                 </div>

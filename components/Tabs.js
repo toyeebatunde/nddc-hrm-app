@@ -230,7 +230,7 @@ export const tabs = [
     },
     {
         text: "Support",
-        height: "hover:h-[120px]",
+        height: "hover:h-[140px]",
         1: "[50px]",
         2: "[85px]",
         3: "[120px]",
@@ -238,7 +238,7 @@ export const tabs = [
         5: "[170px]",
         6: "[200px]",
         7: "[230px]",
-        full: "h-[120px]",
+        full: "h-[140px]",
         data: "4",
         subTexts: [
             {
@@ -263,6 +263,14 @@ export const tabs = [
                 inactive: '/icons/audits-inactive.svg',
                 data: "4",
                 link: "/dashboard/support/audits",
+                permission: ["EDIT_AUDITS"]
+            },
+            {
+                text: "AML Audits",
+                active: '/icons/audits.svg',
+                inactive: '/icons/audits-inactive.svg',
+                data: "4",
+                link: "/dashboard/support/aml-audits",
                 permission: ["EDIT_AUDITS"]
             },
         ]
