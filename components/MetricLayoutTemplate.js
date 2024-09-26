@@ -31,11 +31,11 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
 
     const agencyTabs = [
         {
-            name: "Agents",
+            name: "Users",
             url: "/dashboard/agency/agent-management/agents"
         },
         {
-            name: "New Agents",
+            name: "New Users",
             url: "/dashboard/agency/agent-management/new-agents"
         },
         {
@@ -123,7 +123,7 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
             <section className=" sticky top-0 pb-[5px] pt-[60px] z-[100] bg-[white] w-full">
                 <section className="w-full flex flex-col sm:flex-row px-4 justify-between">
                     <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
-                        {tab || tab == 0 ? tabs[tab].text : "Agency"}
+                        {tab || tab == 0 ? tabs[tab]?.text : "Agency"}
                     </h4>
                     <div className={`${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : viewState ? "hidden" : activeAgency == "Revenue" ? "hidden" :"flex"} justify-end grow`}>
                         <DateSelector setRangeParam={setRangeParam} week={week} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setDateSearchRange={setDateSearchRange} directionDown="/icons/direction-down.svg" />

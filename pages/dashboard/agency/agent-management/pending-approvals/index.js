@@ -53,7 +53,7 @@ export default function PendingKYC({
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
     // const [searchData, setSearchData] = useState("")
     const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/kyc/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
-    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
+    const { data: dateFiltered, error: filteredError } = useSWR(`${testEnv}v1/external/agent/filter_all_by_dates?from=${formatDate(dateRange.dateFrom)}&pageNo=${entryValue.page}&pageSize=${entryValue.size}&to=${formatDate(dateRange.dateTo)}`, fetching)
     const { data: searchBarData, error: searchBarDataError } = useSWR(`${testEnv}v1/kyc/search/pending_approval?pattern=${searchField}&pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [filter, setFilter] = useState(false)
     const router = useRouter()

@@ -249,7 +249,7 @@ export default function MyApp({ Component, pageProps }) {
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(user))
         setIsLoading(false)
-        router.push("/dashboard/agency/agent-management/pending-approvals")
+        router.push("/dashboard/agency/agent-management/agents")
       })
       .catch(response => {
         if (response.response.data.status == 400 || response.response.data.data == "Incorrect Password") {

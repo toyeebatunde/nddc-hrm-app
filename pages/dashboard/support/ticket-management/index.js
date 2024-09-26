@@ -14,7 +14,7 @@ export default function Tickets({ modals, setToken, setActiveDashboard, setActiv
 
     const [ticketData, setTicketData] = useState()
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data)
-    const { data, error } = useSWR(`${testEnv}v1/ticket/OPEN/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data, error } = useSWR(`${testEnv}v1/external/ticket/OPEN/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const router = useRouter()
 
 
