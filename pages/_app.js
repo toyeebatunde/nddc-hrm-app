@@ -1,4 +1,4 @@
-
+import '../styles/landing-page.css'
 import '../styles/globals.css'
 import { useState, useEffect } from 'react'
 import LayoutAuthed from '../components/LayoutAuthed'

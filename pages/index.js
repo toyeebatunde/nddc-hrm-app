@@ -1,76 +1,143 @@
+import Head from 'next/head';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
-import Head from 'next/head'
-import ImageHolder from '../components/ImageHolder'
-import logoIcon from '../public/icons/logo-icon-gradient.svg'
-import payrailIcon from '../public/icons/payrail-logo-black.svg'
-import { useRef, useState, useEffect } from 'react'
-import splash from '../public/icons/splash.svg'
-import { useRouter } from 'next/router'
-import Cookies from 'js-cookie'
+import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, createCaution, changer }) {
-  const passwordField = useRef()
-  const router = useRouter()
-  useEffect(() => { }, [passwordDisplay])
-  // console.log(router)
-
+export default function Home() {
   useEffect(() => {
-    if (createCaution) {
-      let timer = setTimeout(() => {
-        changer()
-      }, 2000)
-      return () => clearTimeout(timer);
-    }
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
 
-  }, [createCaution])
+  const services = [
+    { title: "Access Emerging Talent", description: "Benefit from skilled, motivated interns eager to apply their knowledge and contribute to your company's success." },
+    { title: "Cost-Effective Labor", description: "The program provides interns with a monthly stipend, removing the financial burden from employers." },
+    { title: "Corporate Social Responsibility", description: "Play a key role in youth development and economic growth in the Niger Delta." },
+    { title: "Long-term Benefits", description: "Internships often lead to long-term employment opportunities, reducing your recruitment costs." },
+    { title: "Sector-Specific Talent", description: "Gain interns trained in key areas relevant to your business sector, with sector leads ensuring alignment between interns' skills and industry needs." },
+  ];
 
   return (
-    <div className="w-full lg:w-[529px] h-full flex flex-col items-center p-[20px] h-full">
+    <div className="min-h-screen bg-gray-100">
+      <Head>
+        <title>NDDC Youth Internship Scheme</title>
+        <link rel="icon" href="/NDDC-icon.png" />
+      </Head>
 
-      <div className='flex flex-col items-center px-[20px] w-full py-[5px] '>
-        <section className='flex m-auto w-fit min-h-logo-height py-1 px-1 items-center'>
-          <div className=' relative w-[44px] h-[53px]'>
-            <ImageHolder src="/icons/logo-icon-gradient.svg" />
-          </div>
-          <div className=' relative ml-[10px] w-[109px] h-[37px]'>
-            <ImageHolder src="/icons/payrail-logo-black.svg" />
+      <Navbar />
+
+      <main>
+        {/*===--- Hero Section ---===*/}
+        <section id="hero-section">
+          <div className="bg-[#2DCD7C] pry-color h-full">
+            <div className="home-content-wrapper max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+              <div className="md:w-1/2 mb-8 md:mb-0" data-aos="fade-right">
+                <h1 className="home-title">Niger Delta (ND) Youth Internship Scheme</h1>
+                <p className="text-[24px] mt-[30px] mb-[50px]">Empowering the next generation of skilled professionals in the Niger Delta</p>
+                <a href="#about" className="hero-learnmore-btn bg-white text-teal-800 font-medium transition duration-300">
+                  Learn More
+                </a>
+              </div>
+              <div className="md:w-1/2 text-right" data-aos="fade-left">
+                <img src="/images/hero-1.jpg" alt="Youth Internship" className="rounded-[20px] shadow-xl w-[80%] float-right" />
+              </div>
+            </div>
           </div>
         </section>
-        <div id='container' className='mt-[80.04px] flex flex-col w-full lg:w-[529px] min-h-[555px] border border-border-gray rounded-[48px]'>
-          <section className='flex justify-center  h-[61px] w-full w-[90%] lg:w-[307px] items-center box-border m-auto mt-[30px] rounded-[30.5px] bg-[#f9f9f9]'>
-            <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] '>Log in</section>
-          </section>
-          <section className='flex flex-col'>
-            <section className='font-pushpennyMedium text-[20px] md:text-[30px] text-center'>
-              Welcome back, Admin
-            </section>
-            <section className='text-center mt-[30px] font-pushpennyBook text-[12px] leading-[15.62px] font-[400] w-3/5 self-center'>
-              Please, check your browser’s address bar to be sure you’re on
-              https://agencyadm.payrail.co
-            </section>
+        {/*===--- end of Hero Section ---===*/}
 
-           
-              <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
-                {createCaution? "Incorrect Password or Username, try again." : ""}
-              </section>
-            
+        {/*===--- About Section ---===*/}
+        <section id="about" className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="section-title text-3xl font-bold text-center mb-8" data-aos="fade-up">About the Program</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div data-aos="fade-right">
+                <div>
+                  <p className="text-lg mb-4">
+                    The Niger Delta Youth Internship Scheme is a transformative initiative designed to bridge the gap between education and employment by providing 12-month internships to 10,000 young people across various industries.
+                  </p>
+                  <p className="text-lg">
+                    These sectors align with the region's growth potential, helping to develop a workforce ready for the challenges of tomorrow.
+                  </p>
+                </div>
 
-            <section className=' w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
-              <input value={loginDetails.username} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
-            </section>
-            <section className='w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
-              <input value={loginDetails.password} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='password' ref={passwordField} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={passwordDisplay.password} placeholder='Password' />
-              <button onClick={() => { showPassword(passwordField, setPasswordDisplay, passwordDisplay) }} className='bg-input-gray z-30 px-3 ml-auto cursor-pointer rounded-[10px]'>
-                {passwordDisplay.password == "password" ? "Show" : "Hide"}
-              </button>
-            </section>
-          </section>
-          <section className='mt-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
-            <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={()=>{router.push("/reset")}} className='underline cursor-pointer text-yellow'> Reset now </span></section>
-            <button disabled={isLoading} onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] active:bg-white active:text-[#F6BC18] text-white w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{isLoading ? "Logging in" : "Login"}</button>
-          </section>
-        </div>
-      </div>
+                <div className="industries-wrapper mt-6">
+                  <h3 className="text-xl font-semibold mb-4">Key Industries:</h3>
+                  <ul className="industries-list">
+                    <li>
+                      <img src="/images/industries/information-technology.png" alt="information-technology" className="industry-icon" />
+                      <span>Information Technology</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/agriculture.png" alt="agriculture" className="industry-icon" />
+                      <span>Agriculture</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/renewable-energy.png" alt="renewable-energy" className="industry-icon" />
+                      <span>Renewable Energy</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/doctors-bag.png" alt="doctors-bag" className="industry-icon" />
+                      <span>Healthcare</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/training.png" alt="training" className="industry-icon" />
+                      <span>Education and Skills Training</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/engineering.png" alt="engineering" className="industry-icon" />
+                      <span>Manufacturing and Engineering</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/creativity.png" alt="creativity" className="industry-icon" />
+                      <span>Creative Arts and Media</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/construction.png" alt="construction" className="industry-icon" />
+                      <span>Construction</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/public-transportation.png" alt="public-transportation" className="industry-icon" />
+                      <span>Logistics and Transportation</span>
+                    </li>
+                    <li>
+                      <img src="/images/industries/idea.png" alt="idea" className="industry-icon" />
+                      <span>Entrepreneurship</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div data-aos="fade-left">
+                <img src="/images/hero-4.jpg" alt="internship" className="rounded-[20px] shadow-xl w-[90%] float-right" />
+              </div>
+            </div>
+          </div>
+        </section>
+        {/*===--- end of About Section ---===*/}
+
+        {/*===--- Why-Host-An-Intern Section ---===*/}
+        <section id="why-host-an-intern" className="py-16 bg-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-8" data-aos="fade-up">Why Host an Intern?</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => (
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay={index * 100}>
+                  <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
+                  <p>{service.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        {/*===--- end of Why-Host-An-Intern Section ---===*/}
+      </main>
+
+      <Footer />
     </div>
-  )
+  );
 }
