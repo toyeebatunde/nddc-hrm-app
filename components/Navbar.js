@@ -44,8 +44,9 @@ export default function Navbar() {
             </div>
           </div>
           <div className="nav-link-btns">
-            <Link href="/login" className="nav-sec-btn hover-scale text-sm font-normal">Login</Link>
-            <Link href="/signup" className="nav-pry-btn hover-scale text-sm font-normal">Sign Up</Link>
+
+            <Link href="/login" className="nav-sec-btn text-sm font-normal">Login</Link>
+            <Link href="/signup" className="nav-pry-btn text-sm font-normal">Apply</Link>
           </div>
         </div>
       </div>

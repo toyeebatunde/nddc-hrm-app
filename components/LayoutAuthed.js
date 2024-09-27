@@ -1,6 +1,6 @@
 
 import ImageHolder from "../components/ImageHolder"
-import { tabs } from "../components/Tabs"
+import { tabs, newTabs } from "../components/Tabs"
 import SideTabs from "../components/SideTabs"
 import SingleTab from "./SingleTab"
 import { useEffect, useState, useRef } from "react"
@@ -52,19 +52,19 @@ export default function Dashboard({
 
 
     useEffect(() => {
-        const today = new Date()
-        const exp = jwt.decode(localStorage.getItem("token"))?.exp
-        // console.log("exp: ", exp)
-        // debugger
-        if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
-            const expValue = exp < (new Date().getTime() + 1) / 1000
-            // debugger
-            router.push("/")
-            logout()
-            return
-        }
-        setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
-        setAuthed(true)
+        // const today = new Date()
+        // const exp = jwt.decode(localStorage.getItem("token"))?.exp
+        // // console.log("exp: ", exp)
+        // // debugger
+        // if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
+        //     const expValue = exp < (new Date().getTime() + 1) / 1000
+        //     // debugger
+        //     router.push("/")
+        //     logout()
+        //     return
+        // }
+        // setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
+        // setAuthed(true)
 
         window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {
@@ -111,11 +111,11 @@ export default function Dashboard({
         setEdgeFunction(edgeState)
     }
 
-    if(!authed) {
-        return (
-            <div>Loading</div>
-        )
-    }
+    // if(!authed) {
+    //     return (
+    //         <div>Loading</div>
+    //     )
+    // }
 
     return (
         <div className={`w-full h-screen border flex overflow-hidden justify-between`}>
@@ -142,8 +142,10 @@ export default function Dashboard({
 
 
             <div onClick={openSideBar} className={`${token ? "fixed" : "hidden"} left-[10px] cursor-pointer lg:left-[50px] z-[158]`}>
-                <div className="relative side-bar mt-[46px] w-[40px] h-[40px] lg:w-[66.32px] lg:h-[66.32px]">
+                {/* <div className="relative side-bar mt-[46px] w-[40px] h-[40px] lg:w-[66.32px] lg:h-[66.32px]">
                     <ImageHolder src="/icons/payrail-logo-circle.svg" />
+                </div> */}
+                <div style={{ backgroundImage: "url(/icons/nddc-logo.jpeg)" }} className="absolute borde h-[50px] w-[250px] top-[10px] bg-center bg-cover">
                 </div>
             </div>
             <div onClick={openSideBar} className={`w-[45px] ${token ? "fixed" : "hidden"} ${isFull ? "ml-0" : "-ml-[46px]"} h-screen sticky top-0 bg-[#FAFBFC] block z-[90] pl-[10px] relative`}>
@@ -153,101 +155,31 @@ export default function Dashboard({
                     </div>
                 </div>
             </div>
+
+
             <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
-                <div className="borde h-[500px] overflow-y-auto sticky pl-[40px] top-[90px]">
-                    <ul className="borde flex flex-col w-[197px]  h-fit overflow-y-auto pb-2">
-                        {tabs.map((tab, index) => {
-                            if (index == 1) {
-                                let newSubs = tab.subTexts.filter((sub, index) => {
-                                    if (permissions?.includes(sub.permission)) {
-                                        return sub
-                                    }
-                                })
-                                if (newSubs.length === 0) {
-                                    return
-                                }
-                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                            }
+                <div className="borde h-[500px] overflow-y-auto sticky pl-[5px] top-[90px]">
+                    <ul className=" flex flex-col w-[95%] borde h-fit overflow-y-auto pb-2">
+                        {newTabs.map((tab, index) => {                 
+                                // let newSubs = tab.subTexts.filter((sub, index) => {
+                                //     if (!sub.hasOwnProperty("permission")) {
+                                //         return sub
+                                //     }
+                                //     if (sub.hasOwnProperty("permission") && permissions?.includes(sub.permission[0])) {
+                                //         return sub
+                                //     }
+                                // })
+                                // if (newSubs.length === 0) {
+                                //     return
+                                // }
+                                // debugger
+                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
 
-                            if (index == 2) {
-                                let newSubs = (tab.subTexts.map((sub, index) => {
-                                    if (permissions?.includes(sub.permission[0])) {
-                                        return sub
-                                    }
-                                    if (permissions?.includes(sub.permission[1])) {
-                                        return sub
-                                    }
-                                }))
-                                let filteredSubs = newSubs.filter(sub => sub != undefined)
-                                if (filteredSubs.length == 0) {
-                                    return
-                                }
-                                // console.log(newSubs.length.toString())
-                                const newHeight = newSubs.length.toString()
-                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                            }
-                            // if (index == 3) {
-                            //     let newSubs = (tab.subTexts.map((sub, index) => {
-                            //         if (permissions?.includes(sub.permission[0])) {
-                            //             return sub
-                            //         }
-                            //         if (permissions?.includes(sub.permission[1])) {
-                            //             return sub
-                            //         }
-                            //     }))
-
-                            //     let filteredSubs = newSubs.filter(sub => sub != undefined)
-                            //     if (filteredSubs.length == 0) {
-                            //         return
-                            //     }
-                            //     // console.log(filteredSubs.length)                              
-                            //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                            // }
-                            // if (index == 4) {
-                            //     let newSubs = (tab.subTexts.map((sub, index) => {
-                            //         if (permissions?.includes(sub.permission[0])) {
-                            //             return sub
-                            //         }
-                            //         if (permissions?.includes(sub.permission[1])) {
-                            //             return sub
-                            //         }
-                            //     }))
-                            //     //     let newerSubs = (tab.subTexts.filter((sub, index) => {
-                            //     //         if(permissions?.includes(sub.permission[0]))  {
-                            //     //             return sub
-                            //     //         }                              
-                            //     //     }) )   
-                            //     //     let newerSubsToo = (tab.subTexts.filter((sub, index) => {
-                            //     //         if(permissions?.includes(sub.permission[1]))  {
-                            //     //             return sub
-                            //     //         }                              
-                            //     //     }) )   
-
-                            //     //     let mergedNewSubs = newerSubs.concat(newerSubsToo)
-                            //     //    let filteredMerge = mergedNewSubs.filter((currentValue, currentIndex) => mergedNewSubs.indexOf(currentValue) !== currentIndex)
-
-                            //     //    let finalSubs = filteredMerge.length > 0 ? filteredMerge : mergedNewSubs
-
-                            //     //     console.log(newerSubs)  
-                            //     //     console.log(newerSubsToo)  
-                            //     //     console.log(mergedNewSubs)  
-                            //     //     console.log("fm:",filteredMerge)  
-                            //     //     console.log("fs:",finalSubs)  
-                            //     // console.log(newSubs)  
-                            //     let filteredSubs = newSubs.filter(sub => sub != undefined)
-                            //     if (filteredSubs.length == 0) {
-                            //         return
-                            //     }
-                            //     // console.log(filteredSubs.length)                              
-                            //     return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
-                            // }
-
-                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
                         })}
                     </ul>
 
                 </div>
-                <div className="borde pl-[40px] flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
+                {/* <div className="borde pl-[40px] flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
                     <button onClick={logout} className="flex flex-col">
                         Logout
@@ -255,11 +187,51 @@ export default function Dashboard({
                         <div className="font-[400] text-[12px] leading-[15.62px] font-pushPennyBook text-brand-yellow">
                             Change Password</div>
                     </button>
-                </div>
+                </div> */}
             </div>
-            <div className="grow lg:w-[70%] overflow-auto lg:h-screen pb-[50px]">
+            <div className="grow  lg:w-[70%] overflow-auto lg:h-screen pb-[50px]">
                 {children}
             </div>
         </div>
     )
 }
+
+
+
+
+
+{/* <ul className="borde flex flex-col w-[197px]  h-fit overflow-y-auto pb-2">
+{tabs.map((tab, index) => {
+    if (index == 1) {
+        let newSubs = tab.subTexts.filter((sub, index) => {
+            if (permissions?.includes(sub.permission)) {
+                return sub
+            }
+        })
+        if (newSubs.length === 0) {
+            return
+        }
+        return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={newSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+    }
+
+    if (index == 2) {
+        let newSubs = (tab.subTexts.map((sub, index) => {
+            if (permissions?.includes(sub.permission[0])) {
+                return sub
+            }
+            if (permissions?.includes(sub.permission[1])) {
+                return sub
+            }
+        }))
+        let filteredSubs = newSubs.filter(sub => sub != undefined)
+        if (filteredSubs.length == 0) {
+            return
+        }
+        // console.log(newSubs.length.toString())
+        const newHeight = newSubs.length.toString()
+        return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={filteredSubs} height={`hover:h-${tab[newSubs.length]}`} full={`h-${tab[newSubs.length]}`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+    }
+
+    return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={tab.height} full={tab.full} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+})}
+</ul> */}
