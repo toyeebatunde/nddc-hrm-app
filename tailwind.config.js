@@ -30,6 +30,12 @@ module.exports = {
       width: {
         "logo-width":"164px",
       },
+      colors: {
+        teal: {
+          800: '#115e59',
+          900: '#134e4a',
+        },
+      },
       height: {
         "logo-height":"53px",
         // "1": "50px",
