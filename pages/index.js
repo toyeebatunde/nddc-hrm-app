@@ -36,8 +36,8 @@ export default function Home() {
       <main>
         {/*===--- Hero Section ---===*/}
         <section id="hero" className="bg-[#ffffff] pry-color float-left w-full">
-          <div className="h-full relative z-[1]">
-            <div className="home-content-wrapper max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+          <div className="h-full relative z-[5]">
+            <div className="home-content-wrapper max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-8 md:mb-0" data-aos="fade-right">
                 <h1 className="home-title">Niger Delta (ND) Youth Internship Scheme</h1>
                 <p className="text-[24px] mt-[10px] mb-[50px]">Empowering the next generation of skilled professionals in the Niger Delta</p>
@@ -46,7 +46,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="md:w-1/2 text-right" data-aos="fade-left">
-                <img src="/images/hero-1.jpg" alt="Youth Internship" className="rounded-[20px] shadow-xl w-[80%] float-right" />
+                <img src="/images/hero-1.jpg" alt="Youth Internship" className="hero-img rounded-[20px] shadow-xl w-[80%]" />
               </div>
             </div>
           </div>
@@ -56,6 +56,8 @@ export default function Home() {
             height="536.25"
           ></canvas>
           <Script src="/flourish.js" strategy="lazyOnload" />
+
+          <img src="/images/hero-1.jpg" alt="Youth Internship" className="hero-img-2 rounded-[20px] shadow-xl w-[80%]" />
         </section>
         {/*===--- end of Hero Section ---===*/}
 
@@ -63,8 +65,8 @@ export default function Home() {
         <section id="about" className="py-16 bg-white float-left w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="section-title font-bold" data-aos="fade-up">About the Program</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div data-aos="fade-right">
+            <div className="about-content-wrapper grid md:grid-cols-2 gap-8">
+              <div className="about-txt-side" data-aos="fade-right">
                 <div>
                   <p className="text-lg mb-4">
                     The Niger Delta Youth Internship Scheme is a transformative initiative designed to bridge the gap between education and employment by providing 12-month internships to 10,000 young people across various industries.
@@ -120,7 +122,7 @@ export default function Home() {
                   </ul>
                 </div>
               </div>
-              <div data-aos="fade-left">
+              <div className="about-img-side" data-aos="fade-left">
                 <img src="/images/hero-4.jpg" alt="internship" className="rounded-[20px] shadow-xl w-[90%] float-right" />
               </div>
             </div>

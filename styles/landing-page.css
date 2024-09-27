@@ -166,6 +166,9 @@ nav.main-nav.scrolled-nav .anchor-links a {
     color: var(--pry-color);
     font-weight: bold;
 }
+img.nav-logo {
+    width: 160px;
+}
 
 section#hero {
     height: 100vh;
@@ -305,6 +308,9 @@ section#how-to-apply ol li:nth-child(odd) span.hta-num {
     border-radius: 20px;
     padding: 30px;
 }
+img.hero-img-2 {
+    display: none;
+}
 
 @media(min-width: 993px) {
     section#how-to-apply ol {
@@ -317,8 +323,88 @@ section#how-to-apply ol li:nth-child(odd) span.hta-num {
     section#how-to-apply ol li > div {
         width: 50%;
     }
+    section#hero img.hero-img {
+        float: right;
+    }
 }
 
+@media(max-width: 992px) {
+    .anchor-links {
+        display: none !important;
+    }
+    h1.home-title {
+        font-size: 7.75vw;
+        line-height: 1.15;
+    }
+    .home-content-wrapper {
+        flex-direction: column !important;
+        gap: 20px;
+    }
+    .home-content-wrapper > div {
+        width: 100% !important;
+    }
+    section#about .about-content-wrapper {
+        grid-template-columns: 100%;
+    }
+    section#about .about-img-side img {
+        width: 100%;
+    }
+    section#how-to-apply ol {
+        padding: 0 20px;
+    }
+    section#how-to-apply ol li > div {
+        min-height: 60px;
+    }
+    section#how-to-apply ol li:not(:last-child) {
+        margin-bottom: 50px;
+    }
+}
+
+@media(max-width: 600px) {
+    section#hero::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background-color: var(--sec-color);
+        z-index: 1;
+        opacity: 0.9;
+    }
+    section#hero img.hero-img {
+        width: 100%;
+        display: none;
+    }
+    img.hero-img-2 {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        -o-object-fit: cover;
+        object-fit: cover;
+        object-position: center;
+        top: 0;
+        right: 0;
+        border-radius: 0;
+        display: block;
+        opacity: 0.2;
+        z-index: 1;
+    }
+    h1.home-title {
+        font-size: 9.75vw;
+        line-height: 1.25;
+    }
+    h2.section-title {
+        font-size: 30px;
+    }
+    .nav-link-btns a {
+        padding: 10px 15px;
+        border-radius: 24px;
+    }
+    img.nav-logo {
+        width: 160px;
+    }
+}
 
 /* Footer Section */
 .social-icon {
