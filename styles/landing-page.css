@@ -117,6 +117,7 @@
 }
 .flex-div{
     display: flex;
+    align-items: center;
 }
 .justify-content-btw {
     justify-content: space-between;
@@ -167,7 +168,7 @@ nav.main-nav.scrolled-nav .anchor-links a {
 }
 
 section#hero {
-    height: 99vh;
+    height: 100vh;
     min-height: 600px;
     position: relative;
 }
@@ -242,4 +243,84 @@ h2.section-title {
     color: var(--pry-color);
     text-align: left;
     margin-bottom: 22px;
+}
+h2.section-title.text-center {
+    text-align: center;
+}
+h2.section-title.text-white {
+    color: white;
+}
+section#how-to-apply ol li > div{
+    position: relative;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+section#how-to-apply ol li:nth-child(even) {
+    float: right;
+}
+section#how-to-apply ol li:nth-child(even) > div {
+    background-color: var(--pry-color);
+    color: white;
+    float: right;
+    padding-right: 40px;
+}
+section#how-to-apply ol li:nth-child(odd) {
+    float: left;
+}
+section#how-to-apply ol li:nth-child(odd) > div {
+    background-color: var(--sec-color);
+    color: var(--pry-color);
+    float: left;
+    padding-left: 40px;
+}
+section#how-to-apply ol li:not(:last-child) {
+    margin-bottom: 20px;
+}
+span.hta-num {
+    position: absolute;
+    top: -30px;
+    font-weight: bolder;
+    font-size: 40px;
+    display: inline-block;
+    background: gray;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border-radius: 50%;
+    color: white;
+}
+section#how-to-apply ol li:nth-child(even) span.hta-num {
+    right: -30px;
+    background-color: var(--sec-color);
+    /* color: var(--pry-color); */
+}
+section#how-to-apply ol li:nth-child(odd) span.hta-num {
+    left: -30px;
+    background-color: var(--pry-color);
+}
+
+.contact-us-block {
+    border-radius: 20px;
+    padding: 30px;
+}
+
+@media(min-width: 993px) {
+    section#how-to-apply ol {
+        width: 90%;
+        margin-left: 5%;
+    }
+    section#how-to-apply ol li {
+        width: 100%;
+    }
+    section#how-to-apply ol li > div {
+        width: 50%;
+    }
+}
+
+
+/* Footer Section */
+.social-icon {
+    width: 25px;
 }
