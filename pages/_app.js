@@ -223,7 +223,7 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function changeForm(e, form, setter) {
-    setter({ ...form, [e.target.id]: e.target.value })
+    // setter({ ...form, [e.target.id]: e.target.value })
   }
 
   function editFormState(formState, id) {
