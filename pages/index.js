@@ -35,9 +35,9 @@ export default function Home() {
 
       <main>
         {/*===--- Hero Section ---===*/}
-        <section id="hero" className="bg-[#ffffff] pry-color">
-          <div className="h-full relative z-[1]">
-            <div className="home-content-wrapper max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+        <section id="hero" className="bg-[#ffffff] pry-color float-left w-full">
+          <div className="h-full relative z-[5]">
+            <div className="home-content-wrapper max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-8 md:mb-0" data-aos="fade-right">
                 <h1 className="home-title">Niger Delta (ND) Youth Internship Scheme</h1>
                 <p className="text-[24px] mt-[10px] mb-[50px]">Empowering the next generation of skilled professionals in the Niger Delta</p>
@@ -46,7 +46,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="md:w-1/2 text-right" data-aos="fade-left">
-                <img src="/images/hero-1.jpg" alt="Youth Internship" className="rounded-[20px] shadow-xl w-[80%] float-right" />
+                <img src="/images/hero-1.jpg" alt="Youth Internship" className="hero-img rounded-[20px] shadow-xl w-[80%]" />
               </div>
             </div>
           </div>
@@ -56,15 +56,17 @@ export default function Home() {
             height="536.25"
           ></canvas>
           <Script src="/flourish.js" strategy="lazyOnload" />
+
+          <img src="/images/hero-1.jpg" alt="Youth Internship" className="hero-img-2 rounded-[20px] shadow-xl w-[80%]" />
         </section>
         {/*===--- end of Hero Section ---===*/}
 
         {/*===--- About Section ---===*/}
-        <section id="about" className="py-16 bg-white">
+        <section id="about" className="py-16 bg-white float-left w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="section-title font-bold" data-aos="fade-up">About the Program</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div data-aos="fade-right">
+            <div className="about-content-wrapper grid md:grid-cols-2 gap-8">
+              <div className="about-txt-side" data-aos="fade-right">
                 <div>
                   <p className="text-lg mb-4">
                     The Niger Delta Youth Internship Scheme is a transformative initiative designed to bridge the gap between education and employment by providing 12-month internships to 10,000 young people across various industries.
@@ -120,7 +122,7 @@ export default function Home() {
                   </ul>
                 </div>
               </div>
-              <div data-aos="fade-left">
+              <div className="about-img-side" data-aos="fade-left">
                 <img src="/images/hero-4.jpg" alt="internship" className="rounded-[20px] shadow-xl w-[90%] float-right" />
               </div>
             </div>
@@ -129,7 +131,7 @@ export default function Home() {
         {/*===--- end of About Section ---===*/}
 
         {/*===--- Why-Host-An-Intern Section ---===*/}
-        <section id="why-host-an-intern" className="py-16 bg-gray-100">
+        <section id="why-host-an-intern" className="py-16 bg-gray-100 float-left w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="section-title font-bold text-center" data-aos="fade-up">Why Host an Intern?</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -148,6 +150,95 @@ export default function Home() {
           </div>
         </section>
         {/*===--- end of Why-Host-An-Intern Section ---===*/}
+
+        {/*===--- How-To-Apply Section ---===*/}
+        <section id="how-to-apply" className="py-16 bg-white  float-left w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 float-left">
+            <h2 className="section-title font-bold text-center mb-8" data-aos="fade-up">How to Apply</h2>
+            <div className="prose prose-lg mx-auto float-left" data-aos="fade-up" data-aos-delay="100">
+              <p className="text-center text-[18px] max-w-[900px] mx-auto">
+                If your company is ready to help shape the future of the Niger Delta while benefiting from fresh 
+                talent, we encourage you to apply to host interns. The application process is simple, and 
+                our team is here to support you every step of the way.
+              </p>
+              <ol className="float-left my-[50px]">
+                <li data-aos="fade-left" data-aos-delay="100">
+                  <div>
+                    <span className="hta-num">1</span>
+                    <span className="hta-txt">
+                      Review the program details and ensure your company meets the eligibility criteria.
+                    </span>
+                  </div>
+                </li>
+                <li data-aos="fade-right" data-aos-delay="100">
+                  <div>
+                    <span>
+                      Fill out the online application form, providing details about your company and the 
+                      internship opportunities you can offer.
+                    </span>
+                    <span className="hta-num">2</span>
+                  </div>
+                </li>
+                <li data-aos="fade-left" data-aos-delay="100">
+                  <div>
+                    <span className="hta-num">3</span>
+                    <span>
+                      Our team will review your application and may contact you for additional information if needed.
+                    </span>
+                  </div>
+                </li>
+                <li data-aos="fade-right" data-aos-delay="100">
+                  <div>
+                    <span>
+                      If approved, you'll receive an acceptance notification and further instructions on how to proceed.
+                    </span>
+                    <span className="hta-num">4</span>
+                  </div>
+                </li>
+                <li data-aos="fade-left" data-aos-delay="100">
+                  <div>
+                    <span className="hta-num">5</span>
+                    <span>
+                      Prepare to welcome your intern(s) and provide them with a rewarding learning experience!
+                    </span>
+                  </div>
+                </li>
+              </ol>
+
+              <p className="text-center text-[18px] float-left w-full">
+                Start your journey with us today and help empower the next generation!
+              </p>
+            </div>
+          </div>
+        </section>
+      {/*===--- end of How-To-Apply Section ---===*/}
+
+      {/*===--- Contact-Us Section ---===*/}
+      <section id="contact-us" className="py-16 bg-gray-100 float-left w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div data-aos="fade-up">
+            <div className="contact-us-block pry-bg text-white text-center">
+              <h2 className="section-title text-center font-bold text-white">Get in Touch</h2>
+              <p className="mb-4 text-[18px]">For more information or any questions about the application process, please reach out to our Employer Relations team:</p>
+              <ul className="space-y-2 my-[30px]">
+                <li className="flex-div gap-2 justify-center">
+                  <img src="/images/email-white.png" alt="email" className="w-[20px]" />
+                  <a href="mailto:employer.relations@nddc.gov.ng">employer.relations@nddc.gov.ng</a>
+                </li>
+                <li className="flex-div gap-2 justify-center">
+                  <img src="/images/phone-white.png" alt="phone" className="w-[20px]" />
+                  <a href="tel:+2348001234567">+234 (0) 800 123 4567</a>
+                </li>
+                <li className="flex-div gap-2 justify-center">
+                  <img src="/images/address-white.png" alt="address" className="w-[20px]" />
+                  <a>NDDC Headquarters, Eastern Bypass, Port Harcourt, Rivers State</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/*===--- end of Contact-Us Section ---===*/}
       </main>
 
       <Footer />
