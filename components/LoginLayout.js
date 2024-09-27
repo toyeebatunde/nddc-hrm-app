@@ -12,7 +12,7 @@ import UserButton from "./ButtonMaker"
 
 export default function LoginLayout({ children, modals, setModalState, setActiveDashboard, activeDashboard, activeState, switchActive, switchBoard, closeModals, token, editForm, setEditForm, formEdit, modalSuccessNotify, isLoading, setLoading }) {
     return (
-        <div className={`w-full h-screen flex justify-center`}>
+        <div className={`w-full h-screen justify-center`}>
             {children}
         </div>
     )
