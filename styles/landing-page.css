@@ -154,8 +154,9 @@ nav.main-nav {
     font-weight: bold;
     top: 0;
 }
-nav.main-nav .anchor-links a:hover {
+nav.main-nav .anchor-links a {
     color: var(--pry-color);
+    font-weight: bold;
 }
 nav.main-nav.scrolled-nav {
     background-color: rgba(251, 251, 251, 0.9);
@@ -165,9 +166,17 @@ nav.main-nav.scrolled-nav .anchor-links a {
     font-weight: bold;
 }
 
-section#hero-section {
+section#hero {
     height: 99vh;
     min-height: 600px;
+    position: relative;
+}
+canvas#header_canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .home-content-wrapper {
     margin: auto;
@@ -206,20 +215,31 @@ a.hero-learnmore-btn {
     width: 190px;
     text-align: center;
     height: 62px;
-    line-height: 64px;
+    line-height: 62px;
     padding: 0;
     font-size: 18px;
     border-radius: 30px;
+    border: 1px solid var(--sec-color);
 }
 ul.industries-list {
     display: flex;
     flex-wrap: wrap;
+    gap: 12px;
 }
 ul.industries-list li {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
 }
 img.industry-icon {
-    width: 40px;
+    width: 35px;
+}
+h2.section-title {
+    font-size: 38px;
+    color: var(--pry-color);
+    text-align: left;
+    margin-bottom: 22px;
 }

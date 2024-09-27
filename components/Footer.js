@@ -2,12 +2,12 @@ import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="bg-teal-900 text-white">
+    <footer className="sec-bg pry-color">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             {/* <Image src={logoIcon} alt="NDDC Logo" width={100} height={100} /> */}
-            <img src="/images/logo.jpg" alt="NDDC Logo" style={{width: '100px'}} />
+            <img src="/images/logo-transparent.png" alt="NDDC Logo" style={{width: '170px'}} />
             <p className="mt-4 text-sm">
               <strong>NDDC VISION:</strong> "To offer a lasting solution to the socio-economic difficulties of the Niger Delta region."
             </p>
