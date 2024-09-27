@@ -2,6 +2,8 @@ import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+import Script from "next/script";
+
 import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -33,13 +35,13 @@ export default function Home() {
 
       <main>
         {/*===--- Hero Section ---===*/}
-        <section id="hero-section">
-          <div className="bg-[#2DCD7C] pry-color h-full">
+        <section id="hero" className="bg-[#ffffff] pry-color">
+          <div className="h-full relative z-[1]">
             <div className="home-content-wrapper max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-8 md:mb-0" data-aos="fade-right">
                 <h1 className="home-title">Niger Delta (ND) Youth Internship Scheme</h1>
-                <p className="text-[24px] mt-[30px] mb-[50px]">Empowering the next generation of skilled professionals in the Niger Delta</p>
-                <a href="#about" className="hero-learnmore-btn bg-white text-teal-800 font-medium transition duration-300">
+                <p className="text-[24px] mt-[10px] mb-[50px]">Empowering the next generation of skilled professionals in the Niger Delta</p>
+                <a href="#about" className="hero-learnmore-btn hover-scale bg-white sec-color font-medium transition duration-300">
                   Learn More
                 </a>
               </div>
@@ -48,13 +50,19 @@ export default function Home() {
               </div>
             </div>
           </div>
+          <canvas
+            id="header_canvas"
+            width="1898.000015258789"
+            height="536.25"
+          ></canvas>
+          <Script src="/flourish.js" strategy="lazyOnload" />
         </section>
         {/*===--- end of Hero Section ---===*/}
 
         {/*===--- About Section ---===*/}
         <section id="about" className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="section-title text-3xl font-bold text-center mb-8" data-aos="fade-up">About the Program</h2>
+            <h2 className="section-title font-bold" data-aos="fade-up">About the Program</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div data-aos="fade-right">
                 <div>
@@ -69,43 +77,43 @@ export default function Home() {
                 <div className="industries-wrapper mt-6">
                   <h3 className="text-xl font-semibold mb-4">Key Industries:</h3>
                   <ul className="industries-list">
-                    <li>
+                    <li className="bg-[#4A90E2]">
                       <img src="/images/industries/information-technology.png" alt="information-technology" className="industry-icon" />
                       <span>Information Technology</span>
                     </li>
-                    <li>
+                    <li className="bg-[#7ED321]">
                       <img src="/images/industries/agriculture.png" alt="agriculture" className="industry-icon" />
                       <span>Agriculture</span>
                     </li>
-                    <li>
+                    <li className="bg-[#50E3C2]">
                       <img src="/images/industries/renewable-energy.png" alt="renewable-energy" className="industry-icon" />
                       <span>Renewable Energy</span>
                     </li>
-                    <li>
+                    <li className="bg-[#FF5A5F]">
                       <img src="/images/industries/doctors-bag.png" alt="doctors-bag" className="industry-icon" />
                       <span>Healthcare</span>
                     </li>
-                    <li>
+                    <li className="bg-[#F5A623]">
                       <img src="/images/industries/training.png" alt="training" className="industry-icon" />
                       <span>Education and Skills Training</span>
                     </li>
-                    <li>
+                    <li className="bg-[#BD10E0]">
                       <img src="/images/industries/engineering.png" alt="engineering" className="industry-icon" />
                       <span>Manufacturing and Engineering</span>
                     </li>
-                    <li>
+                    <li className="bg-[#FF9500]">
                       <img src="/images/industries/creativity.png" alt="creativity" className="industry-icon" />
                       <span>Creative Arts and Media</span>
                     </li>
-                    <li>
+                    <li className="bg-[#D0021B]">
                       <img src="/images/industries/construction.png" alt="construction" className="industry-icon" />
                       <span>Construction</span>
                     </li>
-                    <li>
+                    <li className="bg-[#4A4A4A]">
                       <img src="/images/industries/public-transportation.png" alt="public-transportation" className="industry-icon" />
                       <span>Logistics and Transportation</span>
                     </li>
-                    <li>
+                    <li className="bg-[#9013FE]">
                       <img src="/images/industries/idea.png" alt="idea" className="industry-icon" />
                       <span>Entrepreneurship</span>
                     </li>
@@ -123,10 +131,15 @@ export default function Home() {
         {/*===--- Why-Host-An-Intern Section ---===*/}
         <section id="why-host-an-intern" className="py-16 bg-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-8" data-aos="fade-up">Why Host an Intern?</h2>
+            <h2 className="section-title font-bold text-center" data-aos="fade-up">Why Host an Intern?</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay={index * 100}>
+                <div 
+                  key={index} 
+                  className="bg-white p-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl" 
+                  data-aos="fade-up" 
+                  data-aos-delay={index * 100}
+                >
                   <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
                   <p>{service.description}</p>
                 </div>
