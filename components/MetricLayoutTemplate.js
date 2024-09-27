@@ -35,22 +35,22 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
             url: "/dashboard/agency/agent-management/agents"
         },
         {
-            name: "New Users",
+            name: "Applicants",
             url: "/dashboard/agency/agent-management/new-agents"
         },
-        {
-            name: "KYC Pending approvals",
-            url: "/dashboard/agency/agent-management/pending-approvals"
-        },
+        // {
+        //     name: "KYC Pending approvals",
+        //     url: "/dashboard/agency/agent-management/pending-approvals"
+        // },
     ]
     const loanTabs = [
         {
-            name:"All Loans",
-            url:"/dashboard/loans"
+            name: "All Loans",
+            url: "/dashboard/loans"
         },
         {
-            name:"Loan Metrics",
-            url:"/dashboard/loans/loan-metrics"
+            name: "Loan Metrics",
+            url: "/dashboard/loans/loan-metrics"
         },
     ]
     const transactionTabs = [
@@ -111,8 +111,8 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
     // }
 
     function enterToSearch(e) {
-        if(e.code == "Enter") {
-            setSearchParam(searchRef, "button")            
+        if (e.code == "Enter") {
+            setSearchParam(searchRef, "button")
         }
         return
     }
@@ -120,26 +120,28 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
     return (
         <div className="flex flex-col items-center  w-full">
 
-            <section className=" sticky top-0 pb-[5px] pt-[60px] z-[100] bg-[white] w-full">
+            <section className="sticky top-0 pb-[5px] pt-[60px] z-[100] bg-[white] w-full">
                 <section className="w-full flex flex-col sm:flex-row px-4 justify-between">
-                    <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
+                    {/* <h4 className="font-pushpennyMedium text-[36px] leading-[47px]">
                         {tab || tab == 0 ? tabs[tab]?.text : "Agency"}
-                    </h4>
-                    <div className={`${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : viewState ? "hidden" : activeAgency == "Revenue" ? "hidden" :"flex"} justify-end grow`}>
+                    </h4> */}
+                    {/* <div className={`${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : viewState ? "hidden" : activeAgency == "Revenue" ? "hidden" :"flex"} justify-end grow`}>
                         <DateSelector setRangeParam={setRangeParam} week={week} dateRange={dateRange} setDateRange={setDateRange} setSearch={setSearch} setDateSearchRange={setDateSearchRange} directionDown="/icons/direction-down.svg" />
-                    </div>
+                    </div> */}                  
+
+
                 </section>
-                <section className={`borde h-[44px] ${activeAgency == "AgentManagement" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex" : activeAgency == "TicketManagement" ? "flex" : activeAgency == "Loans"? "flex": "hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                <section className={`borde  h-[44px] ${activeAgency == "AgentManagement" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex" : activeAgency == "TicketManagement" ? "flex" : activeAgency == "Loans" ? "flex" : "hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                     <div className="flex w-full z-[40] absolute h-full top-[1px] approvals-tab justify-start relative">
-                        {activeAgency == "AgentManagement" ? agencyTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) 
-                        : activeAgency == "Transactions" ? transactionTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) 
-                        : activeAgency == "TicketManagement" ? ticketTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
-                        : activeAgency == "Loans" ? loanTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>) 
-                        : PosTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)}
+                        {activeAgency == "AgentManagement" ? agencyTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
+                            : activeAgency == "Transactions" ? transactionTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
+                                : activeAgency == "TicketManagement" ? ticketTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
+                                    : activeAgency == "Loans" ? loanTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
+                                        : PosTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)}
                     </div>
-                    <div className="border-b-[2px] z-[10] mt-auto z-10 border-[#979797]"></div>
+                    <div className="border-b-[2px] z-[10] mt-auto z-10 border-[#2dcd7c]"></div>
                 </section>
-                <section className={`px-4 ${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : activeAgency == "Revenue" ? "hidden" : activeAgency == "Analytics" ? "hidden" : activeAgency == "AgentMetrics" ? "hidden" : "flex"} justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                {/* <section className={`px-4 ${activeAgency == "Payment" ? "hidden" : activeAgency == "POSTerminals" ? "hidden" : activeAgency == "TicketManagement" ? "hidden" : activeAgency == "Revenue" ? "hidden" : activeAgency == "Analytics" ? "hidden" : activeAgency == "AgentMetrics" ? "hidden" : "flex"} justify-center w-full ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                     <section className={`px-[40px] mdxl:px-[10px] pt-2 pb-2 w-fit md:w-full mt-8 h-fit lg:h-[61px] ${viewState ? "hidden" : "flex"} flex-col mdxl:flex-row ${activeAgency == "Reconciliation" ? "justify-end" : "justify-between"} items-center rounded-[48px] bg-[#F3F3F3] md:pr-[60px]`}>
                         <section className={`md:w-[280px] flex h-[40px] bg-white rounded-[20px] px-2 relative ${activeAgency == "Reconciliation" ? "hidden" : "flex"} items-center justify-between`}>
                             <input onKeyDown={(e)=>{enterToSearch(e)}} ref={searchRef} onChange={() => { setSearchParam(searchRef) }} className="search-tab rounded-[20px] w-[80%]" placeholder={activeAgency == "AgentManagement" ? "Search with tags" : "Search Data"} />
@@ -159,15 +161,15 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
                             </div>
                         </div>
                     </section>
-                </section>
+                </section> */}
             </section>
 
 
             <section className={`w-full relative mt-[10px] px-5`}>
-            {/* <div className={``}>form</div> */}
-            <div className={``}>
-                {children}
-            </div>
+                {/* <div className={``}>form</div> */}
+                <div className={``}>
+                    {children}
+                </div>
             </section>
         </div>
     )

@@ -132,11 +132,11 @@ export const tabs = [
         // full: "h-[230px]",
         subTexts: [
             {
-                text: "Agent Management",
+                text: "Recruitment/Onboarding",
                 active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "/dashboard/agency/agent-management/agents",
+                link: "/dashboard/agency/agent-management/agents", // pages/dashboard/agency/agent-management
                 permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
             // {
@@ -298,6 +298,215 @@ export const tabs = [
     //         },
     //     ]
     // },
+]
+
+
+export const newTabs = [
+    {
+        text: "Employee Management",
+        data: "2",
+        subTexts: [
+            {
+                text: "Recruitment/Onboarding",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "2",
+                link: "/dashboard/agency/agent-management/agents", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Post Internship Positions",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "2",
+                link: "/dashboard/agency/post-internship-positions", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Staff",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "2",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+        ]
+    },
+    {
+        text: "Attendance/Time Management",
+        data: "3",
+        subTexts: [
+            {
+                text: "Attendance Monitoring",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "3",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Leave Management",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "3",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Shift Scheduling",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "3",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Overtime Calculation",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "3",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+        ]
+    },
+    {
+        text: "Payroll Management",
+        data: "4",
+        subTexts: [
+            {
+                text: "Salary/Wage Computation",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "4",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Tax/Compliance",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "4",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Expense Reimbursement",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "4",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Direct Deposit/Pay Stub",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "4",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+        ]
+    },
+    {
+        text: "Performance Management",
+        data: "5",
+        subTexts: [
+            {
+                text: "Goalsetting/tracking",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "5",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Performance reviews/appraisals",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "5",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "360-degree feedback",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "5",
+                link: "#",// pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Employee development plans",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "5",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+        ]
+    },
+    {
+        text: "Learning and Development",
+        data: "6",
+        subTexts: [
+            {
+                text: "Training Programs",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "6",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Skill and competency tracking",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "6",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Certification management",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "6",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+            {
+                text: "Training feedback and evaluation",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "6",
+                link: "#", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            },
+        ]
+    },
+    {
+        text: "Support",
+        data: "7",
+        subTexts: [
+            {
+                text: "Ticket Management",
+                active: '/icons/ticket-management.svg',
+                inactive: '/icons/ticket-management-inactive.svg',
+                data: "7",
+                link: "#",
+                permission: ["EDIT_TICKET_MANAGEMENT"]
+            },
+            {
+                text: "Bulk Notification",
+                active: '/icons/bulk-notification.svg',
+                inactive: '/icons/bulk-notification-inactive.svg',
+                data: "7",
+                link: "#",
+                permission: ["EDIT_BULK_NOTIFICATION"]
+            }
+        ]
+    },
+
 ]
 
 
