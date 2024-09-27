@@ -25,37 +25,31 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
   }, [createCaution])
 
   return (
-    <div className="w-full lg:w-[529px] h-full flex flex-col items-center p-[20px]">
+    <div className="w-full lg:w-[529px] h-full m-auto flex flex-col items-center p-[20px]">
 
-      <div className='flex flex-col items-center px-[20px] w-full py-[5px] '>
+      <div className='flex flex-col items-center px-[20px] m-auto w-full py-[5px] '>
         <section className='flex m-auto w-fit min-h-logo-height py-1 px-1 items-center'>
-          <div className=' relative w-[44px] h-[53px]'>
+          {/* <div className=' relative w-[44px] h-[53px]'>
             <ImageHolder src="/icons/logo-icon-gradient.svg" />
-          </div>
-          <div className=' relative ml-[10px] w-[109px] h-[37px]'>
-            <ImageHolder src="/icons/payrail-logo-black.svg" />
+          </div> */}
+          <div className=' relative w-[209px] h-[37px]'>
+            <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
         </section>
-        <div id='container' className='mt-[80.04px] flex flex-col w-full lg:w-[529px] min-h-[555px] border border-border-gray rounded-[48px]'>
-          <section className='flex justify-center  h-[61px] w-[90%] lg:w-[307px] items-center box-border m-auto mt-[30px] rounded-[30.5px] bg-[#f9f9f9]'>
-            <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] '>Log in</section>
+        <div id='container' className='mt-[60px] flex flex-col w-full lg:w-[529px] min-h-[550px] mb-[50px] border border-border-gray rounded-[48px]'>
+          <section className='flex justify-center h-[61px] w-[90%] lg:w-[307px] items-center box-border m-auto my-[30px] rounded-[30.5px] bg-[#f9f9f9]'>
+            <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#003B49] to-[#2DCD7C]'>Log in</section>
           </section>
           <section className='flex flex-col'>
             <section className='font-pushpennyMedium text-[20px] md:text-[30px] text-center'>
               Welcome back, Admin
             </section>
-            <section className='text-center mt-[30px] font-pushpennyBook text-[12px] leading-[15.62px] font-[400] w-3/5 self-center'>
-              Please, check your browser’s address bar to be sure you’re on
-              https://agencyadm.payrail.co
+            
+            <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
+              {createCaution? "Incorrect Password or Username, try again." : ""}
             </section>
 
-           
-              <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
-                {createCaution? "Incorrect Password or Username, try again." : ""}
-              </section>
-            
-
-            <section className=' w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
+            <section className='w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
               <input value={loginDetails.username} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
             </section>
             <section className='w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
@@ -65,9 +59,9 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
               </button>
             </section>
           </section>
-          <section className='mt-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
-            <section className=' font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={()=>{router.push("/reset")}} className='underline cursor-pointer text-yellow'> Reset now </span></section>
-            <button disabled={isLoading} onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] active:bg-white active:text-[#F6BC18] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{isLoading ? "Logging in" : "Login"}</button>
+          <section className='my-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
+            <section className='font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={()=>{router.push("/reset")}} className='underline cursor-pointer sec-color'> Reset now </span></section>
+            <button disabled={isLoading} onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{isLoading ? "Logging in..." : "Login"}</button>
           </section>
         </div>
       </div>
