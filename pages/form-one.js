@@ -1,14 +1,12 @@
 
-import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
-// import ImageHolder from "../../../../components/ImageHolder";
-import UserButton from "../../../../../components/ButtonMaker";
+
 import { useEffect, useState, useRef } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv } from "../../../../../components/Endpoints";
-import TableContainer from "../../../../../components/TableContainer";
-import Textfield from "../../../../../components/TextField";
+import { ngrok, testEnv } from "../components/Endpoints";
+import TableContainer from "../components/TableContainer";
+import Textfield from "../components/TextField";
 import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 
@@ -88,8 +86,6 @@ export default function CompanyDetails({
 
 
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
-    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
-    const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/external/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
@@ -217,30 +213,18 @@ export default function CompanyDetails({
         // Add form submission logic here
     }
 
+    // useEffect(() => {
+    //     resetSearchParams()
+    //     resetDay()
+    // }, [])
 
-
-
-
-
-
-
-    const url = {
-        update: `${testEnv}v1/agent/${agentEdit.editForm.id}/update`,
-        add: `${testEnv}v1/agent/add_agent`
-    }
-
-    useEffect(() => {
-        resetSearchParams()
-        resetDay()
-    }, [])
-
-    useEffect(() => {
-        setActiveTab("Agents")
-        // setLoading(false)
-        setToken()
-        setActiveDashboard("AgentManagement")
-        setActiveState("2")
-    }, [])
+    // useEffect(() => {
+    //     setActiveTab("Agents")
+    //     // setLoading(false)
+    //     setToken()
+    //     setActiveDashboard("AgentManagement")
+    //     setActiveState("2")
+    // }, [])
 
 
 
@@ -273,7 +257,7 @@ export default function CompanyDetails({
     return (
         <div className="w-full">
             <form className="flex flex-col items-center pb-[50px]" onSubmit={submitForm}>
-                {/* <div className="flex flex-col w-[500px] mt-[30px] border p-[10px] gap-[5px]">
+                <div className="flex flex-col w-[500px] mt-[30px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] border bg-brand-yellow px-[5px]">COMPANY DETAILS</h2>
                     <div className="flex flex-col gap-[5px]">
                         <input onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Name" />
@@ -313,11 +297,11 @@ export default function CompanyDetails({
                             <input onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
                         )}
                     </div>
-                </div> */}
+                </div>
 
                 {/* Internship Positions Section */}
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">INTERNSHIP POSITIONS</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className="border bg-brand-yellow px-[5px]">INTERNSHIP POSITIONS</h2>
                     <div className="flex flex-col gap-[5px]">
                         <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[5px] outline-none" type="number" placeholder="How many slots are available?" />
                         <div className="flex flex-col gap-[5px]">
@@ -337,11 +321,11 @@ export default function CompanyDetails({
                             ))}
                         </div>
                     </div>
-                </div> */}
+                </div>
 
                 {/* Work Environment Section */}
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">WORK ENVIRONMENT</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className="border bg-brand-yellow px-[5px]">WORK ENVIRONMENT</h2>
                     <div className="flex flex-col gap-[5px]">
                         <select onChange={handleFormChange} name="workType" value={formDetails.workType} className="outline-none">
                             {workType.map((item, index) => (
@@ -362,12 +346,12 @@ export default function CompanyDetails({
                         <label htmlFor="opportunities">Please enter available opportunities for intern's professional development</label>
                         <input onChange={handleFormChange} value={formDetails.opportunities} name="opportunities" className="pl-[5px] outline-none" type="text" placeholder="Enter opportunities separated by commas" />
                     </div>
-                </div> */}
+                </div>
 
                 {/* Add more sections here (Duration and Stipend, Mentorship and Supervision, etc.) */}
 
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">DURATION AND STIPEND</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className=" border bg-brand-yellow px-[5px]">DURATION AND STIPEND</h2>
                     <div className="flex flex-col gap-[5px]">
                         <input onChange={(e) => { handleFormChange(e) }} value={formDetails.duration} name="duration" className="pl-[5px] outline-none" type="number" placeholder="Please enter the internship duration in months" />
                         <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="outline-none">
@@ -390,10 +374,10 @@ export default function CompanyDetails({
                         </select>
                         <input onChange={(e) => { handleFormChange(e) }} value={formDetails.amount} name="amount" className={`${formDetails.stipend == "" || formDetails.stipend == "NO" ? "hidden" : ""} pl-[5px] outline-none`} type="text" placeholder="How much will you be paying" />
                     </div>
-                </div> */}
+                </div>
 
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">MENTORSHIP AND SUPERVISION</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className=" border bg-brand-yellow px-[5px]">MENTORSHIP AND SUPERVISION</h2>
                     <div className="flex flex-col gap-[5px]">
                         <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
                         {mentors.list.map((item, index) => {
@@ -410,10 +394,10 @@ export default function CompanyDetails({
                             )
                         })}
                     </div>
-                </div> */}
+                </div>
 
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">EMPLOYMENT OPPORTUNITIES</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className=" border bg-brand-yellow px-[5px]">EMPLOYMENT OPPORTUNITIES</h2>
                     <div className="flex flex-col gap-[5px]">
                         <select onChange={(e) => handleFormChange(e)} name="employment" value={formDetails.employment} className="outline-none">
                             {["IS EMPLOYMENT AVAILABLE AFTER INTERNSHIP?", "NO", "YES"].map((item, index) => {
@@ -453,11 +437,11 @@ export default function CompanyDetails({
                             })}
                         </select>
                     </div>
-                </div> */}
+                </div>
 
 
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLIANCE AND LEGAL</h2>
+                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
+                    <h2 className=" border bg-brand-yellow px-[5px]">COMPLIANCE AND LEGAL</h2>
                     <div className="flex flex-col gap-[5px]">
                         <select onChange={(e) => handleFormChange(e)} name="guidelines" value={formDetails.guidelines} className="outline-none">
                             {["DO YOU AGREE TO COMPLY WITH THE NDDC INTERNSHIP GUIDELINES?", "NO", "YES"].map((item, index) => {
@@ -514,12 +498,10 @@ export default function CompanyDetails({
                             })}
                         </select>
                     </div>
-                </div> */}
+                </div>
 
 
             </form>
         </div>
     )
 }
-
-CompanyDetails.Layout = MetricLayoutTemplate

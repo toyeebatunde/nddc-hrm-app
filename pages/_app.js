@@ -191,6 +191,7 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   function switchBoard(e, board, active) {
+    // debugger
     setActiveDashboard(board)
     setActiveState(active)
   }

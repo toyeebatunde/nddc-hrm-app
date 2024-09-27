@@ -48,8 +48,6 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
               Please, check your browser’s address bar to be sure you’re on
               https://agencyadm.payrail.co
             </section>
-
-           
               <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
                 {createCaution? "Incorrect Password or Username, try again." : ""}
               </section>
