@@ -4,17 +4,29 @@
 // import payrailIcon from '../public/icons/payrail-logo-black.svg'
 // import splash from '../public/icons/splash.svg'
 // import Cookies from 'js-cookie'
-import { useRef, useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import axios from 'axios'
+import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import axios from "axios";
 
-export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, createCaution, changer }) {
-  const passwordField = useRef()
-  const router = useRouter()
-  const [loginCaution, setLoginCaution] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
-  useEffect(() => { }, [passwordDisplay])
+export default function Home({
+  showPassword,
+  login,
+  isLoading,
+  token,
+  passwordDisplay,
+  setPasswordDisplay,
+  createCaution,
+  changer,
+}) {
+  const passwordField = useRef();
+  const router = useRouter();
+  const [loginCaution, setLoginCaution] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loginDetails, setLoginDetails] = useState({
+    username: "",
+    password: "",
+  });
+  useEffect(() => {}, [passwordDisplay]);
 
   useEffect(() => {
     if (createCaution) {
@@ -67,27 +79,34 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
       );
       debugger
       if (isLogged.status === 200) {
-        debugger
-        const {user} = isLogged.data
-        const token = isLogged.token
+        const { data } = isLogged.data;
+        const { user, token, employ } = data;
+
         if (!user.status) {
-          const newOtp = await axios.post("http://35.158.104.113:55/api/v1/auth/resend-otp", {
-            "phoneNumber": `+234${userNumber}`
-          })
-          router.push("/otp-verification")
-          return
+          const newOtp = await axios.post(
+            "https://nddc-api.payrail.co/api/v1/auth/resend-otp",
+            {
+              phoneNumber: `+234${userNumber}`,
+            }
+          );
+          router.push("/otp-verification");
+          return;
         }
 
         if (user.needSetup) {
-          localStorage.setItem("token", token)
-          localStorage.setItem("userDetails", user)
-          router.push("/success")
-          return
+          localStorage.setItem("token", token);
+          localStorage.setItem("userDetails", user);
+          localStorage.setItem("employ", employ);
+          router.push("/success");
+          return;
         }
-        
-        localStorage.setItem("userDetails", user)
-        router.push("/dashboard/agency/post-internship-positions")
-        setLoading(false)
+
+        // localStorage.setItem("userNumber", `+234${userNumber}`)
+        // localStorage.setItem("token", isLogged.data.token)
+        // localStorage.setItem("userID", isLogged.data.data.id)
+        localStorage.setItem("userDetails", user);
+        router.push("/dashboard/agency/post-internship-positions");
+        setLoading(false);
         // console.log("logged in: ", isLogged.data)
       }
     } catch (error) {
