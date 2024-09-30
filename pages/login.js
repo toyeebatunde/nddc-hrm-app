@@ -65,6 +65,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         
         localStorage.setItem("userNumber", `+234${userNumber}`)
         localStorage.setItem("token", isLogged.data.token)
+        localStorage.setItem("userID", isLogged.data.data.id)
         router.push("/dashboard/agency/post-internship-positions")
         setLoading(false)
         console.log("logged in: ", isLogged.data)

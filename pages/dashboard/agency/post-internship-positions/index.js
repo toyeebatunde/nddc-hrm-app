@@ -55,28 +55,17 @@ export default function CompanyDetails({
 }) {
 
     const initialFormDetails = {
-        companyName: "",
-        location: "",
-        state: "",
-        country: "",
-        lga: "",
-        companyType: "",
-        industry: "",
-        cacRegistered: "",
-        yearsPostIncorporation: "",
-        email: "",
-        phone: "",
-        website: "",
-        fax: "",
-        bvn: "",
-        cac: "",
         slots: "",
         roles: "",
         tasks: "",
         qualifications: "",
+        skills: "",
         mentor: "",
         workType: "",
         workLocation: "",
+        country: "",
+        state:"",
+        lga:"",
         resources: "",
         opportunities: "",
         duration: "",
@@ -91,49 +80,66 @@ export default function CompanyDetails({
 
 
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
-    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
-    const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/external/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    // const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
+    // const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/external/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
     const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
 
 
-    async function submitForm() {
+    async function submitForm(e) {
+        e.preventDefault()
+        const id = JSON.parse(localStorage.getItem("companyDetails")).id
+        const token = localStorage.getItem("token")
+        // debugger
+
+        const roleSkills = formDetails.skills.split(",")
         const formData = {
-            employer: {
-                companyName: "",
-                industry: "",
-                cacCertificationAvailable: "",
-                companyType: "",
-                yearsPostIncorporation: "",
-                location: {
-                    address: "",
-                    state: "",
-                    country: "",
-                    lga: "",
-                    longitude: "",
-                    latitude: ""
-                },
-                contactInformation: {
-                    email: "",
-                    phoneNumber: "",
-                    website: "",
-                    faxNumber: ""
-                }
+            department: formDetails.roles,
+            numberOfSlot: formDetails.slots,
+            requiredQualifications: formDetails.qualifications,
+            requiredSkills: roleSkills,
+            tasksAndOutcomes: formDetails.tasks,
+            workHours: formDetails.workType,
+            workLocation: {
+                address: formDetails.workLocation,
+                state: formDetails.state,
+                country: formDetails.country,
+                lga: formDetails.lga,
+                longitude: 0,
+                latitude: 0
             },
-            "department": formDetails.roles,
-            "numberOfSlot": formDetails.slots,
-            "requiredQualifications": formDetails.qualifications,
-            "tasksAndOutcomes": formDetails.tasks,
-            "workHours": formDetails.workHours,
-            "workLocation": formDetails.workLocation,
-            "additionalStipend": formDetails.stipend,
-            "stipendAmount": formDetails.amount,
-            "opportunityForPD": formDetails.opportunities,
-            "possibilityForRetaining": formDetails.employment,
-            "possibilityOfExtendingDuration": formDetails.extension,
-            "willCompleteDuration": true,
+            additionalStipend: formDetails.stipend == "YES" ? true : false,
+            stipendAmount: formDetails.amount,
+            opportunityForPD: formDetails.opportunities,
+            possibilityForRetaining: formDetails.employment == "YES" ? true : false,
+            possibilityOfExtendingDuration: formDetails.extension == "YES" ? true : false,
+            willCompleteDuration: formDetails.duration == "YES" ? true : false
+
+        }
+
+        debugger
+
+        try {
+            const isLogged = await axios.post(`http://localhost:8080/api/internship-positions/employer/${id}`, 
+                formData,
+                {
+                    headers:{
+                        Authorization:`Bearer ${token}`
+                    }
+                }
+            )
+            if (isLogged.status === 200) {
+                console.log("done")
+                // localStorage.setItem("companyDetails", isLogged.data)
+                // router.push("/dashboard/agency/post-internship-positions")
+            }
+        } catch (error) {
+            console.error("Form error:", error)
+            // setSubmitting(false)
+        } finally {
+            // setSubmitting(false)
         }
     }
 
@@ -208,16 +214,6 @@ export default function CompanyDetails({
         return str.split(',').map(item => item.trim())
     }
 
-    function submitForm(e) {
-        e.preventDefault()
-        // Add form submission logic here
-    }
-
-
-
-
-
-
 
 
     const url = {
@@ -269,56 +265,17 @@ export default function CompanyDetails({
     return (
         <div className="w-full">
             <form className="flex flex-col items-center pb-[50px]" onSubmit={submitForm}>
-                {/* <div className="flex flex-col w-[500px] mt-[30px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] border bg-brand-yellow px-[5px]">COMPANY DETAILS</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Name" />
-                        <input onChange={handleFormChange} value={formDetails.email} name="email" className="pl-[5px] outline-none" type="email" placeholder="Enter Company Email" />
-                        <input onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[5px] outline-none" type="tel" placeholder="Enter Company Phone Number" />
-                        <input onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Address" />
-                        <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Website" />
-                        <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Fax Number" />
-                        <select onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="outline-none">
-                            {companyTypes.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="industry" value={formDetails.industry} className="outline-none">
-                            {industries.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="outline-none">
-                            {["ARE YOU REGISTERED WITH CAC", "NO", "YES"].map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        {formDetails.cacRegistered === "YES" && (
-                            <input onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none" type="text" placeholder="Enter Your CAC Number" />
-                        )}
-                        {formDetails.cacRegistered === "YES" && (
-                            <input onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none" type="text" placeholder="Enter number of years post incorporation" />
-                        )}
-                        {formDetails.cacRegistered === "NO" && (
-                            <input onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
-                        )}
-                    </div>
-                </div> */}
+
 
                 {/* Internship Positions Section */}
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">INTERNSHIP POSITIONS</h2>
                     <div className="flex flex-col gap-[5px]">
                         <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="How many slots are available?" />
-                        <input onChange={handleFormChange} value={formDetails.roles} name="roles" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="Enter the name of the role" />
-                        <input onChange={handleFormChange} value={formDetails.tasks} name="tasks" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="Whata are the expected tasks to be handled in this role?" />
-                        <input onChange={handleFormChange} value={formDetails.qualifications} name="qualifications" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="What are the qualifications for this role?" />
+                        <input onChange={handleFormChange} value={formDetails.roles} name="roles" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter the name of the role" />
+                        <input onChange={handleFormChange} value={formDetails.tasks} name="tasks" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Whata are the expected tasks to be handled in this role?" />
+                        <input onChange={handleFormChange} value={formDetails.qualifications} name="qualifications" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="What are the qualifications for this role?" />
+                        <input onChange={handleFormChange} value={formDetails.skills} name="skills" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter a list of required skills separated by commas?" />
                         {/* <div className="flex flex-col gap-[5px]">
                             <button onClick={addRole}>Add Role +</button>
                             {roles.map((item, index) => (
@@ -349,13 +306,10 @@ export default function CompanyDetails({
                                 </option>
                             ))}
                         </select>
-                        <select onChange={handleFormChange} name="workLocation" value={formDetails.workLocation} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
-                            {workLocation.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
+                        <input onChange={handleFormChange} value={formDetails.workLocation} name="workLocation" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter the work location address" />
+                        <input onChange={handleFormChange} value={formDetails.country} name="country" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter the country name" />
+                        <input onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter the state name" />
+                        <input onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter the lga" />
                         <label htmlFor="resources">Please enter available resources to support the intern's work</label>
                         <input onChange={handleFormChange} value={formDetails.resources} name="resources" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter resources separated by commas" />
                         <label htmlFor="opportunities">Please enter available opportunities for intern's professional development</label>
@@ -368,7 +322,42 @@ export default function CompanyDetails({
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">DURATION AND STIPEND</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <input onChange={(e) => { handleFormChange(e) }} value={formDetails.duration} name="duration" className="pl-[5px] outline-none" type="number" placeholder="Please enter the internship duration in months" />
+                        <select onChange={(e) => handleFormChange(e)} name="duration" value={formDetails.duration} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+                            {["DO YOU CONFIRM THIS A 12 MONTH INTERNSHIP?", "NO", "YES"].map((item, index) => {
+
+                                if (index === 0) {
+                                    // The first item is the placeholder and should be disabled
+                                    return (
+                                        <option key={item} value="" disabled selected>
+                                            {item}
+                                        </option>
+                                    );
+                                }
+                                return (
+                                    <option key={item} value={item}>
+                                        {item}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+                            {["IS EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map((item, index) => {
+
+                                if (index === 0) {
+                                    // The first item is the placeholder and should be disabled
+                                    return (
+                                        <option key={item} value="" disabled selected>
+                                            {item}
+                                        </option>
+                                    );
+                                }
+                                return (
+                                    <option key={item} value={item}>
+                                        {item}
+                                    </option>
+                                );
+                            })}
+                        </select>
                         <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["WILL ADDITIONAL STIPEND BE PAID?", "NO", "YES"].map((item, index) => {
 
@@ -451,24 +440,6 @@ export default function CompanyDetails({
                             })}
                         </select>
 
-                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
-                            {["IS EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
                     </div>
                 </div>
 
@@ -532,6 +503,8 @@ export default function CompanyDetails({
                         </select>
                     </div>
                 </div>
+
+                <button className="border px-[15px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">Submit</button>
 
 
             </form>
