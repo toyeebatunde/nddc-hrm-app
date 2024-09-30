@@ -44,13 +44,13 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
     // const deviceId = localStorage.getItem("deviceId")
 
     try {
-      const isLogged = await axios.post("http://localhost:8080/api/v1/auth/login", {
+      const isLogged = await axios.post("http://35.158.104.113:55/api/v1/auth/login", {
         "password": `${loginDetails.password}`,
         "phoneNumber": `+234${userNumber}`
       })
       if (isLogged.status === 200) {
         if(!isLogged.data.data.status) {
-          const newOtp = await axios.post("http://localhost:8080/api/v1/auth/resend-otp", {
+          const newOtp = await axios.post("http://35.158.104.113:55/api/v1/auth/resend-otp", {
             "phoneNumber": `+234${userNumber}`
           })
           router.push("/otp-verification")

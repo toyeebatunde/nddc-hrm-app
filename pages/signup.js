@@ -53,7 +53,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
     debugger
     try {
       // const deviceId = uuidv4()
-      const signupResponse = await axios.post("http://localhost:8080/api/v1/auth/signup", { //http://localhost:8080/  http://35.158.104.113:55
+      const signupResponse = await axios.post("http://35.158.104.113:55/api/v1/auth/signup", { //http://localhost:8080/  http://35.158.104.113:55
         confirmPassword: loginDetails.passwordOne,
         password: loginDetails.passwordOne,
         phoneNumber: `${loginDetails.code}${userNumber}`,

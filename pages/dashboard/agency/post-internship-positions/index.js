@@ -122,7 +122,7 @@ export default function CompanyDetails({
         debugger
 
         try {
-            const isLogged = await axios.post(`http://localhost:8080/api/internship-positions/employer/${id}`, 
+            const isLogged = await axios.post(`http://35.158.104.113:55/api/internship-positions/employer/${id}`, 
                 formData,
                 {
                     headers:{
@@ -132,10 +132,12 @@ export default function CompanyDetails({
             )
             if (isLogged.status === 200) {
                 console.log("done")
+                window.alert("Your form has been submitted successfully")
                 // localStorage.setItem("companyDetails", isLogged.data)
                 // router.push("/dashboard/agency/post-internship-positions")
             }
         } catch (error) {
+            window.alert("Something went wrong, try again")
             console.error("Form error:", error)
             // setSubmitting(false)
         } finally {
@@ -380,23 +382,9 @@ export default function CompanyDetails({
                     </div>
                 </div>
 
-                <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">MENTORSHIP AND SUPERVISION</h2>
                     <div className="flex flex-col gap-[5px]">
-                        {/* <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
-                        {mentors.list.map((item, index) => {
-                            return (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="name" value={mentors.list[index].name} type="text" placeholder="Enter Nentor's name" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="contact" value={mentors.list[index].contact} type="text" placeholder="Enter Mentor's phone number" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="support" value={mentors.list[index].support} type="text" placeholder="Enter Mentor's support role" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="evaluation" value={mentors.list[index].evaluation} type="text" placeholder="Enter Mentor's evaluation criteria" />
-                                        <button onClick={(e) => { removeMentor(e, index) }}>Remove Mentor</button>
-                                    </div>
-                                </Fragment>
-                            )
-                        })} */}
                         <select onChange={(e) => handleFormChange(e)} name="mentor" value={formDetails.mentor} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["Select a mentor", "Charles", "Peter", "Michael"].map((item, index) => {
 
@@ -416,7 +404,7 @@ export default function CompanyDetails({
                             })}
                         </select>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">EMPLOYMENT OPPORTUNITIES</h2>
