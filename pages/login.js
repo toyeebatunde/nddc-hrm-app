@@ -45,6 +45,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
   }, [loginCaution]);
 
   async function userLogin(e) {
+    // debugger
     e.preventDefault();
     setLoading(true);
 
@@ -64,7 +65,9 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
           phoneNumber: `+234${userNumber}`,
         }
       );
+      debugger
       if (isLogged.status === 200) {
+        debugger
         const {user} = isLogged.data
         const token = isLogged.token
         if (!user.status) {
@@ -81,10 +84,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
           router.push("/success")
           return
         }
-
-        // localStorage.setItem("userNumber", `+234${userNumber}`)
-        // localStorage.setItem("token", isLogged.data.token)
-        // localStorage.setItem("userID", isLogged.data.data.id)
+        
         localStorage.setItem("userDetails", user)
         router.push("/dashboard/agency/post-internship-positions")
         setLoading(false)
