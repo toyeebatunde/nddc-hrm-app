@@ -58,8 +58,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         password: loginDetails.passwordOne,
         phoneNumber: `${loginDetails.code}${userNumber}`,
         userType: "ORGANIZATION",
-        classification: "INDIVIDUAL",
-        email:"ekpan@ekpa-ntan.com"
+        classification: "INDIVIDUAL"
       });
 
 
