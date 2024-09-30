@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router'
 
 export default function OtpPage() {
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputs = [useRef(), useRef(), useRef(), useRef()];
   const [loading, setLoading] = useState(false)
   const [timer, setTimer] = useState(true)
   const [userNumber, setUserNumber] = useState("")
+  const router = useRouter()
 
   const [timeLeft, setTimeLeft] = useState(0);
 
@@ -61,7 +63,7 @@ export default function OtpPage() {
   async function validateOtp() {
     try {
       // debugger
-      const verifyOtp = await axios.post(`http://35.158.104.113:55/api/v1/auth/verify-otp`, {
+      const verifyOtp = await axios.post(`http://localhost:8080/api/v1/auth/verify-otp`, {
         "otp": otp.join(''),
         "userName": userNumber        
       })
@@ -97,7 +99,7 @@ export default function OtpPage() {
     }
     if (!element.nextSibling) {
       console.log(element.value)
-      // validateOtp()
+      validateOtp()
     }
   };
 
