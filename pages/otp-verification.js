@@ -50,6 +50,8 @@ export default function OtpPage() {
       return;
     }
 
+
+
     setUserNumber((currentValue) => {
       const storedNumber = localStorage.getItem("phoneNumber");
       return storedNumber !== null ? storedNumber : currentValue;
@@ -76,7 +78,8 @@ export default function OtpPage() {
       );
 
       if (verifyOtp.status === 200) {
-        router.push("/login");
+        localStorage.removeItem("phoneNumber")
+        router.push("/login")
         console.log("otp successful:", verifyOtp.data);
       }
     } catch (error) {
@@ -190,6 +193,7 @@ export default function OtpPage() {
           {loading ? "Verifying" : "Verify OTP"}
         </button>
       </section>
+      <AlertDialog props={dialogue} />
     </div>
   );
 }

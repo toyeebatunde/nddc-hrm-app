@@ -36,6 +36,8 @@ export default function Home({
   useEffect(() => {}, [passwordDisplay]);
   // console.log(router)
 
+ 
+
   useEffect(() => {
     if (createCaution) {
       let timer = setTimeout(() => {
@@ -82,7 +84,7 @@ export default function Home({
       );
 
       if (signupResponse.status === 200) {
-        console.log(signupResponse.data);
+        // console.log(signupResponse.data);
         const userLogin = {
           number: `${loginDetails.code}${userNumber}`,
           password: loginDetails.passwordOne,
@@ -90,7 +92,7 @@ export default function Home({
         const phoneNumber = `+234${userNumber}`;
         // localStorage.setItem("deviceId", deviceId)
         localStorage.setItem("phoneNumber", phoneNumber);
-        localStorage.setItem("login", JSON.stringify(userLogin));
+        // localStorage.setItem("login", JSON.stringify(userLogin));
         router.push("/otp-verification");
         console.log("Signup successful:", signupResponse.data);
       }
@@ -237,6 +239,7 @@ export default function Home({
           </section>
         </div>
       </div>
+      {/* <AlertDialog props={dialogue} /> */}
     </div>
   );
 }
