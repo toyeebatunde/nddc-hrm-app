@@ -44,7 +44,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
     // const deviceId = localStorage.getItem("deviceId")
 
     try {
-      const isLogged = await axios.post("https://agencyapis.payrail.co/agents/login", {
+      const isLogged = await axios.post("http://35.158.104.113:55/api/v1/auth/login", {
         "password": `${loginDetails.password}`,
         "phoneNumber": `+234${userNumber}`
       })
@@ -58,12 +58,14 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         }
         
         if(isLogged.data.data.needSetup) {
+          localStorage.setItem("token", isLogged.data.token)
           router.push("/success")
           return
         }
         
         localStorage.setItem("userNumber", `+234${userNumber}`)
         localStorage.setItem("token", isLogged.data.token)
+        localStorage.setItem("userID", isLogged.data.data.id)
         router.push("/dashboard/agency/post-internship-positions")
         setLoading(false)
         console.log("logged in: ", isLogged.data)

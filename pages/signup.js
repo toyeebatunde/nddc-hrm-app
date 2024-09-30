@@ -72,12 +72,12 @@ export default function Home({
       const signupResponse = await axios.post(
         "http://35.158.104.113:55/api/v1/auth/signup",
         {
+          //http://localhost:8080/  http://35.158.104.113:55
           confirmPassword: loginDetails.passwordOne,
           password: loginDetails.passwordOne,
           phoneNumber: `${loginDetails.code}${userNumber}`,
           userType: "ORGANIZATION",
           classification: "INDIVIDUAL",
-          email: "ekpa.ntan@gil.com",
         }
       );
 

@@ -140,6 +140,7 @@ export default function CompanyDetails({
 
   async function sendForm(e) {
     console.log("submitting")
+    const token = localStorage.getItem("token")
     setSubmitting(true)
     e.preventDefault()
     const formInfo = {
@@ -149,7 +150,7 @@ export default function CompanyDetails({
       companyType: formDetails.companyType,
       yearsPostIncorporation: formDetails.yearsPostIncorporation,
       location: {
-        address: formDetails.address,
+        address: formDetails.location,
         state: formDetails.state,
         country: formDetails.country,
         lga: formDetails.lga,
@@ -161,28 +162,84 @@ export default function CompanyDetails({
         phoneNumber: formDetails.phone,
         website: formDetails.website,
         faxNumber: formDetails.fax
-      }
+      },
+      authId: 10
     }
 
-    try {
-      const isLogged = await axios.post("https://agencyapis.payrail.co/agents/login", formInfo,
-      )
-      if (isLogged.status === 200) {
-        // localStorage.setItem("userNumber", `234${userNumber}`)
-        // localStorage.setItem("token", isLogged.data.token)
-        if (isLogged) {
+    debugger
+
+    let verified = true
+
+    // if (formDetails.cacRegistered == "NO") {
+    //   try {
+    //     const bvnResponse = await axios.post("http://localhost:9090/kyc/verify-bvn",
+    //       {
+    //         bvn: formDetails.bvn,
+    //         userName: localStorage.getItem("phoneNumber")
+    //       },
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //           // "Content-Type": "application/json"
+    //         },
+    //         withCredentials: true
+    //       }
+    //     )
+
+    //     if (bvnResponse.status == 200) {
+    //       verified = true
+    //     }
+
+    //   } catch (error) {
+    //     verified = false
+    //     console.log(error)
+    //   }
+    // }
+    // if (formDetails.cacRegistered == "YES") {
+    //   try {
+    //     const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
+    //       bvn: formDetails.bvn,
+    //       userName: localStorage.getItem("phoneNumber")
+    //     }, {
+    //       headers: {
+    //         "Authorization": `Bearer ${token}`
+    //       }
+    //     })
+
+    //     if (bvnResponse.status == 200) {
+    //       verified = true
+    //     }
+
+    //   } catch (error) {
+    //     verified = false
+    //     console.log(error)
+    //   }
+    // }
+
+    if (verified) {
+      console.log("token: ", token)
+      debugger
+      try {
+        const isLogged = await axios.post("http://localhost:8080/api/employers", 
+          formInfo,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+        if (isLogged.status === 200) {
+          localStorage.setItem("companyDetails", isLogged.data)
           router.push("/dashboard/agency/post-internship-positions")
-        } else {
-          // router.push("/onboarded")
         }
-        // setLoading(false)
-        // console.log("logged in: ", isLogged.data)
+      } catch (error) {
+        console.error("Form error:", error)
+        setSubmitting(false)
+      } finally {
+        // setSubmitting(false)
       }
-    } catch (error) {
-      console.error("Form error:", error)
-      setSubmitting(false)
-    } finally {
-      // setSubmitting(false)
+    } else {
+      console.log("unverified")
     }
   }
 
@@ -315,35 +372,41 @@ export default function CompanyDetails({
   return (
     <div className="w-full borde">
       <div style={{ backgroundImage: "url(/icons/nddc-logo.jpeg)" }} className="relative borde mt-[5px] h-[50px] w-[250px] bg-center bg-cover">
-
       </div>
       <form onSubmit={(e) => { sendForm(e) }} className="flex flex-col  items-center pb-[50px] mt-[20px]">
         <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
           <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLETE VERIFICATION TO PROCEED</h2>
           <div className="flex flex-col gap-[20px]">
-            <input onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[10px] rounded-[10px]  outline-none border border-[lightgreen] py-[5px] " type="text" placeholder="Enter Company Name" />
+            <input required onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[10px] rounded-[10px]  outline-none border border-[lightgreen] py-[5px] " type="text" placeholder="Enter Company Name" />
             <input onChange={handleFormChange} value={formDetails.email} name="email" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="email" placeholder="Enter Company Email" />
-            <input onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="tel" placeholder="Enter Company Phone Number" />
-            <input onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Address" />
-            <input onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter State" />
-            <input onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Lga" />
+            <input required onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="tel" placeholder="Enter Company Phone Number" />
+            <input required onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Address" />
+            <select required onChange={handleFormChange} name="country" value={formDetails.country} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+              {["Choose a Country", "Nigeria"].map((item, index) => (
+                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <input required onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter State" />
+            <input required onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Lga" />
             <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Website" />
             <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Fax Number" />
-            <select onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            <select required onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {companyTypes.map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
             </select>
-            <select onChange={handleFormChange} name="industry" value={formDetails.industry} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            <select required onChange={handleFormChange} name="industry" value={formDetails.industry} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {industries.map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
             </select>
-            <select onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            <select required onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {["ARE YOU REGISTERED WITH CAC", "NO", "YES"].map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
@@ -351,13 +414,13 @@ export default function CompanyDetails({
               ))}
             </select>
             {formDetails.cacRegistered === "YES" && (
-              <input onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter Your CAC Number" />
+              <input required onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter Your CAC Number" />
             )}
             {formDetails.cacRegistered === "YES" && (
-              <input onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter number of years post incorporation" />
+              <input required onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter number of years post incorporation" />
             )}
             {formDetails.cacRegistered === "NO" && (
-              <input onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
+              <input required onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
             )}
           </div>
         </div>
