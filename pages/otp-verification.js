@@ -78,7 +78,8 @@ export default function OtpPage() {
       );
 
       if (verifyOtp.status === 200) {
-        router.push("/login");
+        localStorage.removeItem("phoneNumber")
+        router.push("/login")
         console.log("otp successful:", verifyOtp.data);
       }
     } catch (error) {

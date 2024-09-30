@@ -179,8 +179,8 @@ export default function CompanyDetails({
     // }
 
     if (verified) {
-      console.log("token: ", token)
-      debugger
+      // console.log("token: ", token)
+      // debugger
       try {
         const isLogged = await axios.post("http://localhost:8080/api/employers", 
           formInfo,
