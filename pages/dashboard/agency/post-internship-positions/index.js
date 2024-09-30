@@ -57,21 +57,24 @@ export default function CompanyDetails({
     const initialFormDetails = {
         companyName: "",
         location: "",
-        state:"",
-        country:"",
-        lga:"",
+        state: "",
+        country: "",
+        lga: "",
         companyType: "",
         industry: "",
         cacRegistered: "",
-        yearsPostIncorporation:"",
+        yearsPostIncorporation: "",
         email: "",
         phone: "",
-        website:"",
-        fax:"",
+        website: "",
+        fax: "",
         bvn: "",
         cac: "",
         slots: "",
+        roles: "",
         tasks: "",
+        qualifications: "",
+        mentor: "",
         workType: "",
         workLocation: "",
         resources: "",
@@ -93,51 +96,44 @@ export default function CompanyDetails({
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
-    const [geolocation, setGeoLocation] = useState({longitude: "", latitude:""})
+    const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
 
 
     async function submitForm() {
         const formData = {
-            companyName: "",
-            industry: "",
-            cacCertificationAvailable: "",
-            companyType: "",
-            yearsPostIncorporation: "",
-            location: {
-                address: "",
-                state: "",
-                country: "",
-                lga: "",
-                longitude: "",
-                latitude: ""
-            },
-            contactInformation: {
-                email: "",
-                phoneNumber: "",
-                website: "",
-                faxNumber: ""
-            },
-            bvn: "",
-            cac: "",
-            numberOfSlots: "",
-            department: [
-                {
-                    roles: "",
-                    requiredQualifications: "",
-                    tasksAndOutcomes: ""
+            employer: {
+                companyName: "",
+                industry: "",
+                cacCertificationAvailable: "",
+                companyType: "",
+                yearsPostIncorporation: "",
+                location: {
+                    address: "",
+                    state: "",
+                    country: "",
+                    lga: "",
+                    longitude: "",
+                    latitude: ""
+                },
+                contactInformation: {
+                    email: "",
+                    phoneNumber: "",
+                    website: "",
+                    faxNumber: ""
                 }
-            ],
-            workHours: "",
-            workLocation: "",
-            additionalStipend: false,
-            stipendAmount: "",
-            opportunityForPD: "",
-            possibilityForRetaining: "",
-            possibilityOfExtendingDuration: "",
-            willCompleteDuration: "",
-            guidelines: "",
-            policies: "",
-            inclusion: ""
+            },
+            "department": formDetails.roles,
+            "numberOfSlot": formDetails.slots,
+            "requiredQualifications": formDetails.qualifications,
+            "tasksAndOutcomes": formDetails.tasks,
+            "workHours": formDetails.workHours,
+            "workLocation": formDetails.workLocation,
+            "additionalStipend": formDetails.stipend,
+            "stipendAmount": formDetails.amount,
+            "opportunityForPD": formDetails.opportunities,
+            "possibilityForRetaining": formDetails.employment,
+            "possibilityOfExtendingDuration": formDetails.extension,
+            "willCompleteDuration": true,
         }
     }
 
@@ -319,8 +315,11 @@ export default function CompanyDetails({
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">INTERNSHIP POSITIONS</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[5px] outline-none" type="number" placeholder="How many slots are available?" />
-                        <div className="flex flex-col gap-[5px]">
+                        <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="How many slots are available?" />
+                        <input onChange={handleFormChange} value={formDetails.roles} name="roles" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="Enter the name of the role" />
+                        <input onChange={handleFormChange} value={formDetails.tasks} name="tasks" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="Whata are the expected tasks to be handled in this role?" />
+                        <input onChange={handleFormChange} value={formDetails.qualifications} name="qualifications" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="number" placeholder="What are the qualifications for this role?" />
+                        {/* <div className="flex flex-col gap-[5px]">
                             <button onClick={addRole}>Add Role +</button>
                             {roles.map((item, index) => (
                                 <Fragment key={index}>
@@ -335,7 +334,7 @@ export default function CompanyDetails({
                                     </div>
                                 </Fragment>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
@@ -343,14 +342,14 @@ export default function CompanyDetails({
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">WORK ENVIRONMENT</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <select onChange={handleFormChange} name="workType" value={formDetails.workType} className="outline-none">
+                        <select onChange={handleFormChange} name="workType" value={formDetails.workType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {workType.map((item, index) => (
                                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                                     {item}
                                 </option>
                             ))}
                         </select>
-                        <select onChange={handleFormChange} name="workLocation" value={formDetails.workLocation} className="outline-none">
+                        <select onChange={handleFormChange} name="workLocation" value={formDetails.workLocation} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {workLocation.map((item, index) => (
                                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                                     {item}
@@ -358,9 +357,9 @@ export default function CompanyDetails({
                             ))}
                         </select>
                         <label htmlFor="resources">Please enter available resources to support the intern's work</label>
-                        <input onChange={handleFormChange} value={formDetails.resources} name="resources" className="pl-[5px] outline-none" type="text" placeholder="Enter resources separated by commas" />
+                        <input onChange={handleFormChange} value={formDetails.resources} name="resources" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter resources separated by commas" />
                         <label htmlFor="opportunities">Please enter available opportunities for intern's professional development</label>
-                        <input onChange={handleFormChange} value={formDetails.opportunities} name="opportunities" className="pl-[5px] outline-none" type="text" placeholder="Enter opportunities separated by commas" />
+                        <input onChange={handleFormChange} value={formDetails.opportunities} name="opportunities" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter opportunities separated by commas" />
                     </div>
                 </div>
 
@@ -370,7 +369,7 @@ export default function CompanyDetails({
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">DURATION AND STIPEND</h2>
                     <div className="flex flex-col gap-[5px]">
                         <input onChange={(e) => { handleFormChange(e) }} value={formDetails.duration} name="duration" className="pl-[5px] outline-none" type="number" placeholder="Please enter the internship duration in months" />
-                        <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["WILL ADDITIONAL STIPEND BE PAID?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {
@@ -395,7 +394,7 @@ export default function CompanyDetails({
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">MENTORSHIP AND SUPERVISION</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
+                        {/* <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
                         {mentors.list.map((item, index) => {
                             return (
                                 <Fragment key={index}>
@@ -408,14 +407,32 @@ export default function CompanyDetails({
                                     </div>
                                 </Fragment>
                             )
-                        })}
+                        })} */}
+                        <select onChange={(e) => handleFormChange(e)} name="mentor" value={formDetails.mentor} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+                            {["Select a mentor", "Charles", "Peter", "Michael"].map((item, index) => {
+
+                                if (index === 0) {
+                                    // The first item is the placeholder and should be disabled
+                                    return (
+                                        <option key={index} value="" disabled selected>
+                                            {item}
+                                        </option>
+                                    );
+                                }
+                                return (
+                                    <option key={item} value={index}>
+                                        {item}
+                                    </option>
+                                );
+                            })}
+                        </select>
                     </div>
                 </div>
 
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">EMPLOYMENT OPPORTUNITIES</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="employment" value={formDetails.employment} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="employment" value={formDetails.employment} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["IS EMPLOYMENT AVAILABLE AFTER INTERNSHIP?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {
@@ -434,7 +451,7 @@ export default function CompanyDetails({
                             })}
                         </select>
 
-                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["IS EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {
@@ -459,7 +476,7 @@ export default function CompanyDetails({
                 <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
                     <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLIANCE AND LEGAL</h2>
                     <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="guidelines" value={formDetails.guidelines} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="guidelines" value={formDetails.guidelines} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["DO YOU AGREE TO COMPLY WITH THE NDDC INTERNSHIP GUIDELINES?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {
@@ -477,7 +494,7 @@ export default function CompanyDetails({
                                 );
                             })}
                         </select>
-                        <select onChange={(e) => handleFormChange(e)} name="policies" value={formDetails.policies} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="policies" value={formDetails.policies} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["DO YOU AGREE TO NDDC INCLUSIVE WORK POLICIES?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {
@@ -495,7 +512,7 @@ export default function CompanyDetails({
                                 );
                             })}
                         </select>
-                        <select onChange={(e) => handleFormChange(e)} name="inclusion" value={formDetails.inclusion} className="outline-none">
+                        <select onChange={(e) => handleFormChange(e)} name="inclusion" value={formDetails.inclusion} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
                             {["DO YOU REQUIRE AGREEMENTS/CONTRACTS FOR ONBOARDING INTERNS?", "NO", "YES"].map((item, index) => {
 
                                 if (index === 0) {

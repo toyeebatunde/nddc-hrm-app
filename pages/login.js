@@ -1,18 +1,19 @@
-
-import Head from 'next/head'
-import ImageHolder from '../components/ImageHolder'
-import logoIcon from '../public/icons/logo-icon-gradient.svg'
-import payrailIcon from '../public/icons/payrail-logo-black.svg'
+// import Head from 'next/head'
+// import ImageHolder from '../components/ImageHolder'
+// import logoIcon from '../public/icons/logo-icon-gradient.svg'
+// import payrailIcon from '../public/icons/payrail-logo-black.svg'
+// import splash from '../public/icons/splash.svg'
+// import Cookies from 'js-cookie'
 import { useRef, useState, useEffect } from 'react'
-import splash from '../public/icons/splash.svg'
 import { useRouter } from 'next/router'
-import Cookies from 'js-cookie'
+import axios from 'axios'
 
-export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, changeForm, loginDetails, setLoginDetails, createCaution, changer }) {
+export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, createCaution, changer }) {
   const passwordField = useRef()
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
   useEffect(() => { }, [passwordDisplay])
-  // console.log(router)
 
   useEffect(() => {
     if (createCaution) {
@@ -24,14 +25,61 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
 
   }, [createCaution])
 
+  function changeForm(e) {
+    setLoginDetails((currentDetails) => {
+        return { ...currentDetails, [e.target.name]: e.target.value }
+    })
+}
+
+  async function userLogin(e) {
+    e.preventDefault()
+    setLoading(true)
+    
+    let userNumber = loginDetails.username;
+    if (userNumber.charAt(0) === '0') {
+      userNumber = userNumber.slice(1);
+    }
+    
+    debugger
+    // const deviceId = localStorage.getItem("deviceId")
+
+    try {
+      const isLogged = await axios.post("https://agencyapis.payrail.co/agents/login", {
+        "password": `${loginDetails.password}`,
+        "phoneNumber": `+234${userNumber}`
+      })
+      if (isLogged.status === 200) {
+        if(!isLogged.data.data.status) {
+          const newOtp = await axios.post("http://35.158.104.113:55/api/v1/auth/resend-otp", {
+            "phoneNumber": `+234${userNumber}`
+          })
+          router.push("/otp-verification")
+          return
+        }
+        
+        if(isLogged.data.data.needSetup) {
+          router.push("/success")
+          return
+        }
+        
+        localStorage.setItem("userNumber", `+234${userNumber}`)
+        localStorage.setItem("token", isLogged.data.token)
+        router.push("/dashboard/agency/post-internship-positions")
+        setLoading(false)
+        console.log("logged in: ", isLogged.data)
+      }
+    } catch (error) {
+      console.error("Signin error:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="w-full lg:w-[529px] h-full m-auto flex flex-col items-center p-[20px]">
 
       <div className='flex flex-col items-center px-[20px] m-auto w-full py-[5px] '>
         <section className='flex m-auto w-fit min-h-logo-height py-1 px-1 items-center'>
-          {/* <div className=' relative w-[44px] h-[53px]'>
-            <ImageHolder src="/icons/logo-icon-gradient.svg" />
-          </div> */}
           <div className=' relative w-[209px] h-[37px]'>
             <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
@@ -44,24 +92,24 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
             <section className='font-pushpennyMedium text-[20px] md:text-[30px] text-center'>
               Welcome back, Admin
             </section>
-            
+
             <section className='text-center mt-[30px] font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center'>
-              {createCaution? "Incorrect Password or Username, try again." : ""}
+              {createCaution ? "Incorrect Password or Username, try again." : ""}
             </section>
 
             <section className='w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
-              <input value={loginDetails.username} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Username' />
+              <input value={loginDetails.username} onChange={(e) => { changeForm(e) }} id='username' name='username' className='ml-10 border-0 bg-input-gray w-4/5 focus:border-none outline-none' type="text" placeholder='Registered Phone Number' />
             </section>
             <section className='w-[90%] md:w-[427px] mt-[20px] h-[57px] relative justify-between bg-[#f9f9f9] pr-6 border m-auto border-border-gray rounded-[28.5px] flex items-center'>
-              <input value={loginDetails.password} onChange={(e) => { changeForm(e, loginDetails, setLoginDetails) }} id='password' ref={passwordField} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={passwordDisplay.password} placeholder='Password' />
+              <input value={loginDetails.password} onChange={(e) => { changeForm(e) }} id='password' name='password' ref={passwordField} className='ml-10 w-4/6 z-10 focus:border-none outline-none bg-input-gray' type={passwordDisplay.password} placeholder='Password' />
               <button onClick={() => { showPassword(passwordField, setPasswordDisplay, passwordDisplay) }} className='bg-input-gray z-30 px-3 ml-auto cursor-pointer rounded-[10px]'>
                 {passwordDisplay.password == "password" ? "Show" : "Hide"}
               </button>
             </section>
           </section>
           <section className='my-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
-            <section className='font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={()=>{router.push("/reset")}} className='underline cursor-pointer sec-color'> Reset now </span></section>
-            <button disabled={isLoading} onClick={() => { login(loginDetails, changer) }} className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{isLoading ? "Logging in..." : "Login"}</button>
+            <section className='font-pushpennyBook text-[12px] leading-[15.62px]'>Forget password? <span onClick={() => { router.push("/reset") }} className='underline cursor-pointer sec-color'> Reset now </span></section>
+            <button disabled={loading || loginDetails.password == "" || loginDetails.username == ""} onClick={(e)=>{userLogin(e)}}  className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{loading ? "Logging in..." : "Login"}</button>
           </section>
         </div>
       </div>

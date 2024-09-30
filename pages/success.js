@@ -153,8 +153,8 @@ export default function CompanyDetails({
         state: formDetails.state,
         country: formDetails.country,
         lga: formDetails.lga,
-        longitude: "",
-        latitude: ""
+        longitude: 0,
+        latitude: 0
       },
       contactInformation: {
         email: formDetails.email,
@@ -162,6 +162,27 @@ export default function CompanyDetails({
         website: formDetails.website,
         faxNumber: formDetails.fax
       }
+    }
+
+    try {
+      const isLogged = await axios.post("https://agencyapis.payrail.co/agents/login", formInfo,
+      )
+      if (isLogged.status === 200) {
+        // localStorage.setItem("userNumber", `234${userNumber}`)
+        // localStorage.setItem("token", isLogged.data.token)
+        if (isLogged) {
+          router.push("/dashboard/agency/post-internship-positions")
+        } else {
+          // router.push("/onboarded")
+        }
+        // setLoading(false)
+        // console.log("logged in: ", isLogged.data)
+      }
+    } catch (error) {
+      console.error("Form error:", error)
+      setSubmitting(false)
+    } finally {
+      // setSubmitting(false)
     }
   }
 
@@ -292,9 +313,9 @@ export default function CompanyDetails({
 
 
   return (
-    <div className="w-[500px]">
-      <div style={{backgroundImage: "url(/icons/nddc-logo.jpeg)"}} className="relative borde mt-[5px] h-[50px] w-[250px] bg-center bg-cover">
-        
+    <div className="w-full borde">
+      <div style={{ backgroundImage: "url(/icons/nddc-logo.jpeg)" }} className="relative borde mt-[5px] h-[50px] w-[250px] bg-center bg-cover">
+
       </div>
       <form onSubmit={(e) => { sendForm(e) }} className="flex flex-col  items-center pb-[50px] mt-[20px]">
         <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
@@ -340,208 +361,6 @@ export default function CompanyDetails({
             )}
           </div>
         </div>
-
-        {/* Internship Positions Section */}
-        {/* <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className="border bg-brand-yellow px-[5px]">INTERNSHIP POSITIONS</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[5px] outline-none" type="number" placeholder="How many slots are available?" />
-                        <div className="flex flex-col gap-[5px]">
-                            <button onClick={addRole}>Add Role +</button>
-                            {roles.map((item, index) => (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="role" value={item.role} type="text" placeholder="Enter Role Name" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="tasks" value={item.tasks} type="text" placeholder="Enter Tasks separatd by commas" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="qualifications" value={item.qualifications} type="text" placeholder="Enter Qualifications separatd by commas" />
-
-                                        <div className="flex gap-[5px]">
-                                            <button className="border p-[5px]" onClick={() => setRoles(roles.filter((_, i) => i !== index))}>Remove Role</button>
-                                        </div>
-                                    </div>
-                                </Fragment>
-                            ))}
-                        </div>
-                    </div>
-                </div> */}
-
-        {/* Work Environment Section */}
-        {/* <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className="border bg-brand-yellow px-[5px]">WORK ENVIRONMENT</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={handleFormChange} name="workType" value={formDetails.workType} className="outline-none">
-                            {workType.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="workLocation" value={formDetails.workLocation} className="outline-none">
-                            {workLocation.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <label htmlFor="resources">Please enter available resources to support the intern's work</label>
-                        <input onChange={handleFormChange} value={formDetails.resources} name="resources" className="pl-[5px] outline-none" type="text" placeholder="Enter resources separated by commas" />
-                        <label htmlFor="opportunities">Please enter available opportunities for intern's professional development</label>
-                        <input onChange={handleFormChange} value={formDetails.opportunities} name="opportunities" className="pl-[5px] outline-none" type="text" placeholder="Enter opportunities separated by commas" />
-                    </div>
-                </div> */}
-
-        {/* Add more sections here (Duration and Stipend, Mentorship and Supervision, etc.) */}
-        {/* 
-                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className=" border bg-brand-yellow px-[5px]">DURATION AND STIPEND</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={(e) => { handleFormChange(e) }} value={formDetails.duration} name="duration" className="pl-[5px] outline-none" type="number" placeholder="Please enter the internship duration in months" />
-                        <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="outline-none">
-                            {["WILL ADDITIONAL STIPEND BE PAID?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <input onChange={(e) => { handleFormChange(e) }} value={formDetails.amount} name="amount" className={`${formDetails.stipend == "" || formDetails.stipend == "NO" ? "hidden" : ""} pl-[5px] outline-none`} type="text" placeholder="How much will you be paying" />
-                    </div>
-                </div>
-
-                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className=" border bg-brand-yellow px-[5px]">MENTORSHIP AND SUPERVISION</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
-                        {mentors.list.map((item, index) => {
-                            return (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="name" value={mentors.list[index].name} type="text" placeholder="Enter Nentor's name" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="contact" value={mentors.list[index].contact} type="text" placeholder="Enter Mentor's phone number" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="support" value={mentors.list[index].support} type="text" placeholder="Enter Mentor's support role" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="evaluation" value={mentors.list[index].evaluation} type="text" placeholder="Enter Mentor's evaluation criteria" />
-                                        <button onClick={(e) => { removeMentor(e, index) }}>Remove Mentor</button>
-                                    </div>
-                                </Fragment>
-                            )
-                        })}
-                    </div>
-                </div>
-
-                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className=" border bg-brand-yellow px-[5px]">EMPLOYMENT OPPORTUNITIES</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="employment" value={formDetails.employment} className="outline-none">
-                            {["IS EMPLOYMENT AVAILABLE AFTER INTERNSHIP?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-
-                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="outline-none">
-                            {["IS EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div>
-
-
-                <div className="flex flex-col w-[500px] mt-[50px] border p-[10px] gap-[5px]">
-                    <h2 className=" border bg-brand-yellow px-[5px]">COMPLIANCE AND LEGAL</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="guidelines" value={formDetails.guidelines} className="outline-none">
-                            {["DO YOU AGREE TO COMPLY WITH THE NDDC INTERNSHIP GUIDELINES?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <select onChange={(e) => handleFormChange(e)} name="policies" value={formDetails.policies} className="outline-none">
-                            {["DO YOU AGREE TO NDDC INCLUSIVE WORK POLICIES?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <select onChange={(e) => handleFormChange(e)} name="inclusion" value={formDetails.inclusion} className="outline-none">
-                            {["DO YOU REQUIRE AGREEMENTS/CONTRACTS FOR ONBOARDING INTERNS?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div> */}
-
         <button className="border px-[15px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">Submit</button>
 
 
