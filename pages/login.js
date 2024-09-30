@@ -57,7 +57,6 @@ export default function Home({
   }, [loginCaution]);
 
   async function userLogin(e) {
-    // debugger
     e.preventDefault();
     setLoading(true);
 
@@ -65,9 +64,6 @@ export default function Home({
     if (userNumber.charAt(0) === "0") {
       userNumber = userNumber.slice(1);
     }
-
-    // debugger
-    // const deviceId = localStorage.getItem("deviceId")
 
     try {
       const isLogged = await axios.post(
@@ -101,13 +97,11 @@ export default function Home({
           return;
         }
 
-        // localStorage.setItem("userNumber", `+234${userNumber}`)
-        // localStorage.setItem("token", isLogged.data.token)
-        // localStorage.setItem("userID", isLogged.data.data.id)
+        
         localStorage.setItem("userDetails", user);
         router.push("/dashboard/agency/post-internship-positions");
         setLoading(false);
-        // console.log("logged in: ", isLogged.data)
+       
       }
     } catch (error) {
       handleLoginCaution();
