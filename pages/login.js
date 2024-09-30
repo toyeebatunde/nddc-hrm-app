@@ -72,11 +72,14 @@ export default function Home({
           password: `${loginDetails.password}`,
           phoneNumber: `+234${userNumber}`,
         }
-      );
-      debugger
+      )
+      
       if (isLogged.status === 200) {
-        const { data } = isLogged.data;
-        const { user, token, employ } = data;
+        const { data, token } = isLogged.data;
+        const { user, employer } = data;
+
+        // const {user} = data.data
+        // debugger
 
         if (!user.status) {
           const newOtp = await axios.post(
@@ -92,13 +95,16 @@ export default function Home({
         if (user.needSetup) {
           localStorage.setItem("token", token);
           localStorage.setItem("userDetails", user);
-          localStorage.setItem("employ", employ);
+          localStorage.setItem("employ", employer);
           router.push("/success");
           return;
         }
 
+
         
         localStorage.setItem("userDetails", user);
+        localStorage.setItem("token", token);
+        localStorage.setItem("employ", employer);
         router.push("/dashboard/agency/post-internship-positions");
         setLoading(false);
        
