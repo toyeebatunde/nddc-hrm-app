@@ -1,9 +1,90 @@
 import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 export default function OtpPage() {
   const [otp, setOtp] = useState(['', '', '', '']);
   const inputs = [useRef(), useRef(), useRef(), useRef()];
   const [loading, setLoading] = useState(false)
+  const [timer, setTimer] = useState(true)
+  const [userNumber, setUserNumber] = useState("")
+
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  useEffect(() => {
+    const countdownDuration = 4 * 60 * 1000;
+    const storedEndTime = localStorage.getItem('endTime');
+
+    let endTime;
+    if (storedEndTime) {
+      // If there's an end time in localStorage, use it
+      endTime = new Date(storedEndTime).getTime();
+    } else {
+      // If no end time in localStorage, calculate it from now
+      endTime = new Date().getTime() + countdownDuration;
+      localStorage.setItem('endTime', new Date(endTime).toISOString());
+    }
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const timeRemaining = endTime - now;
+
+      if (timeRemaining > 0) {
+        setTimeLeft(Math.floor(timeRemaining / 1000)); // Convert to seconds
+      } else {
+        setTimeLeft(0);
+        localStorage.removeItem('endTime'); // Remove the endTime after the countdown ends
+      }
+    }
+
+    // Update the timer every second
+    const intervalId = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(intervalId); // Clean up on component unmount
+  }, [timer]);
+
+  useEffect(() => {
+    setUserNumber((currentValue) => {
+      const storedNumber = localStorage.getItem("phoneNumber");
+      return storedNumber !== null ? storedNumber : currentValue;
+    });
+  }, []);
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+  async function resendOtp() {
+  }
+
+  async function validateOtp() {
+    try {
+      // debugger
+      const verifyOtp = await axios.post(`http://35.158.104.113:55/api/v1/auth/verify-otp`, {
+        "otp": otp.join(''),
+        "userName": userNumber        
+      })
+
+
+      if (verifyOtp.status === 200) {
+        router.push("/login")
+        console.log("otp successful:", verifyOtp.data)
+      }
+    } catch (error) {
+      console.error("otp error:", error)
+      // setOtpSubmit(false)
+    } finally {
+      // setOtpSubmit(false)
+    }
+  }
+
+  async function resendOtp() {
+    setTimer(!timer)
+  }
+
+
+
 
   const handleChange = (element, index) => {
     if (isNaN(element.value)) return false;
@@ -16,6 +97,7 @@ export default function OtpPage() {
     }
     if (!element.nextSibling) {
       console.log(element.value)
+      // validateOtp()
     }
   };
 
@@ -27,7 +109,7 @@ export default function OtpPage() {
 
   async function handleSubmit() {
     setLoading(true)
-    setTimeout(()=>{
+    setTimeout(() => {
       setLoading(false)
     }, 3000)
 
@@ -73,11 +155,14 @@ export default function OtpPage() {
           })}
         </section>
 
-        <section className='text-center mt-[20px] font-pushpennyBook text-[14px]'>
-          Didn't receive the code? <span className='text-[#2DCD7C] cursor-pointer'>Resend OTP</span>
+        <section className='text-center flex flex-col mt-[20px] font-pushpennyBook text-[14px]'>
+          <button onClick={()=>{resendOtp()}} className={`${timeLeft == 0 ? "" : "hidden"}`}>
+            Didn't receive the code? <span className='text-[#2DCD7C] cursor-pointer'>Resend OTP</span>
+          </button>
+          <h2 className={`${timeLeft == 0 ? "hidden" : ""}`}>{"Time remaining: " + formatTime(timeLeft)}</h2>
         </section>
       </section>
-      <section className='mt-[30px] z-[10] m-auto w-[90%] md:w-[425px] flex items-center justify-center'>
+      <section className='mt-[30px] z-[10] m-auto flex-col w-[90%] md:w-[425px] flex items-center justify-center'>
         <button disabled={loading} onClick={handleSubmit} className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{loading ? "Verifying" : "Verify OTP"}</button>
       </section>
     </div>

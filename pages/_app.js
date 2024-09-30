@@ -214,7 +214,7 @@ export default function MyApp({ Component, pageProps }) {
       return
     }
     // console.log("closer")
-    setModals({ isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
+    setModals({...modals, isOpen: false, teamModal: false, rolesModal: false, action: false, editCharges: false, addSplit: false, editSetting: false, posModalAdd: false, posModalAssign: false, authModal: false, createCharges: false, imageView: false })
 
   }
 
@@ -418,6 +418,7 @@ export default function MyApp({ Component, pageProps }) {
 
 
   function showPassword(field, shower, showState) {
+    // debugger
     if (field.current.type === "password") {
       shower({ ...showState, [field.current.id]: "text" })
     } else if (field.current.type === "text") {

@@ -7,10 +7,12 @@ import { useRef, useState, useEffect } from 'react'
 import splash from '../public/icons/splash.svg'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
+import { validatePassword } from '../components/constants'
+import axios from 'axios'
 
 export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, changeForm, signupDetails, setSignupDetails, createCaution, changer }) {
   const passwordField = useRef()
-  const [loginDetails, setLoginDetails] = useState({ passwordOne: "", passwordTwo: "", number: "" })
+  const [loginDetails, setLoginDetails] = useState({ passwordOne: "", passwordTwo: "", number: "", code:"+234" })
   const [passwordCheck, setPasswordCheck] = useState("")
   const [submitLoading, setSubmitLoading] = useState(false)
 
@@ -48,34 +50,35 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
     }
 
     setSubmitLoading(true)
+    debugger
     try {
-      // debugger
-      const deviceId = uuidv4()
-      const signupResponse = await axios.post("https://agencyapis.payrail.co/agents/signup", {
-        "confirmPassword": loginDetails.passwordOne,
-        "password": loginDetails.passwordOne,
-        "email": deviceId,
-        "phoneNumber": `${loginDetails.code}${userNumber}`,
-        "userType": "ORGANIZATION",
-        "classification": "INDIVIDUAL"
+      // const deviceId = uuidv4()
+      const signupResponse = await axios.post("http://35.158.104.113:55/api/v1/auth/signup", {
+        confirmPassword: loginDetails.passwordOne,
+        password: loginDetails.passwordOne,
+        phoneNumber: `${loginDetails.code}${userNumber}`,
+        userType: "ORGANIZATION",
+        classification: "INDIVIDUAL",
+        email:"ekpa.ntan@gmail.com"
       });
 
 
       if (signupResponse.status === 200) {
+        console.log(signupResponse.data)
         const userLogin = {
           number: `${loginDetails.code}${userNumber}`,
           password: loginDetails.passwordOne
         }
-        const phoneNumber = `234${userNumber}`
+        const phoneNumber = `+234${userNumber}`
         // localStorage.setItem("deviceId", deviceId)
-        localStorage.setItem("userNumber", phoneNumber)
+        localStorage.setItem("phoneNumber", phoneNumber)
         localStorage.setItem("login", JSON.stringify(userLogin))
-        router.push("/verify-otp")
+        router.push("/otp-verification")
         console.log("Signup successful:", signupResponse.data)
       }
     } catch (error) {
       console.error("Signup error:", error)
-      setPasswordCheck(error.response.data.error)
+      setPasswordCheck("error")
     } finally {
       setSubmitLoading(false)
     }
@@ -137,7 +140,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
           <section className='mt-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between'>
             <section className='font-pushpennyBook text-[12px] leading-[15.62px]'>
               Have an account already? <span onClick={(e) => { signup(e) }} className='underline cursor-pointer sec-color'> Login instead </span></section>
-            <button disabled={submitLoading} className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{submitLoading ? "Signing you up..." : "Sign up"}</button>
+            <button disabled={submitLoading} onClick={(e) => { signup(e) }} className='bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]'>{submitLoading ? "Signing you up..." : "Sign up"}</button>
           </section>
         </div>
       </div>

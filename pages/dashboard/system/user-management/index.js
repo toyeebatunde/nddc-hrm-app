@@ -31,7 +31,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
     // const router = useRouter()
 
     useEffect(() => {
-        setLoading(true)
+        // setLoading(true)
         setActiveTab("Team")
         resetSearchParams()
         const decoded = jwt.decode(localStorage.getItem('token'))
@@ -134,7 +134,7 @@ export default function UserManagement({ modals, setModalState, editFormState, s
                                 },
                                 0
                             )
-                        }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18] lg:px-[2px]">
+                        }} className="flex font-pushpennyMedium font-500 text-[18px] leading-[23.44px] grow lg:w-[216px] h-[35px] rounded-[20px] items-center justify-center bg-[#2dcd7c] text-white lg:px-[2px]">
                             + Invite a team mate
                         </button>
                     </section>

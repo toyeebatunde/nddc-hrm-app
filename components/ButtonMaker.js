@@ -16,7 +16,7 @@ export default function UserButton({ type, text, onClick, small = false, bg = "b
     // console.log("disabled Status: ", disabled)
     if (type == "gradient") {
         return (
-            <button disabled={disabled} type={preventDefault} onClick={onClick} className='bg-gradient-to-r from-[#EF6B25] to-[#F6BC18] text-[18px] active:bg-white font-pushpennyMedium font-500 text-white w-full h-full font-[400] text-[#ffffff] rounded-[23px]'>
+            <button disabled={disabled} type={preventDefault} onClick={onClick} className='bg-[#2dcd7c] text-[18px] active:bg-white font-pushpennyMedium font-500 text-white w-full h-full font-[400] text-[#ffffff] rounded-[23px]'>
                 {text}
             </button>
         )

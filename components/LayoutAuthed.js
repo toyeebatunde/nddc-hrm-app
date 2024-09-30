@@ -35,7 +35,7 @@ export default function Dashboard({
     headers,
     currentData
 }) {
-    
+
     const [isFull, setIsFull] = useState()
     const [permissions, setPermissions] = useState()
     const [edgeFunction, setEdgeFunction] = useState(false)
@@ -137,8 +137,8 @@ export default function Dashboard({
                     <div></div><div></div><div></div><div></div>
                 </div>
             </div>
-            <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : isLoading ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
-            </div>
+            {/* <div id="modalLayer" onClick={(e) => { closeModal(e) }} className={`w-full h-full bg-[#000000] opacity-[0.5] ${modals.isOpen ? "flex" : isLoading ? "flex" : "hidden"} fixed justify-center  items-center top-0 z-[150]`}>
+            </div> */}
 
 
             <div onClick={openSideBar} className={`${token ? "fixed" : "hidden"} left-[10px] cursor-pointer lg:left-[50px] z-[158]`}>
@@ -160,20 +160,20 @@ export default function Dashboard({
             <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="borde h-[500px] overflow-y-auto sticky pl-[5px] top-[90px]">
                     <ul className=" flex flex-col w-[95%] borde h-fit overflow-y-auto pb-2">
-                        {newTabs.map((tab, index) => {                 
-                                // let newSubs = tab.subTexts.filter((sub, index) => {
-                                //     if (!sub.hasOwnProperty("permission")) {
-                                //         return sub
-                                //     }
-                                //     if (sub.hasOwnProperty("permission") && permissions?.includes(sub.permission[0])) {
-                                //         return sub
-                                //     }
-                                // })
-                                // if (newSubs.length === 0) {
-                                //     return
-                                // }
-                                // debugger
-                                return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                        {newTabs.map((tab, index) => {
+                            // let newSubs = tab.subTexts.filter((sub, index) => {
+                            //     if (!sub.hasOwnProperty("permission")) {
+                            //         return sub
+                            //     }
+                            //     if (sub.hasOwnProperty("permission") && permissions?.includes(sub.permission[0])) {
+                            //         return sub
+                            //     }
+                            // })
+                            // if (newSubs.length === 0) {
+                            //     return
+                            // }
+                            // debugger
+                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
 
                         })}
                     </ul>

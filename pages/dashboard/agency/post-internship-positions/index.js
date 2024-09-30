@@ -74,7 +74,7 @@ export default function CompanyDetails({
         roles: "",
         tasks: "",
         qualifications: "",
-        mentor:"",
+        mentor: "",
         workType: "",
         workLocation: "",
         resources: "",
@@ -101,46 +101,39 @@ export default function CompanyDetails({
 
     async function submitForm() {
         const formData = {
-            companyName: "",
-            industry: "",
-            cacCertificationAvailable: "",
-            companyType: "",
-            yearsPostIncorporation: "",
-            location: {
-                address: "",
-                state: "",
-                country: "",
-                lga: "",
-                longitude: "",
-                latitude: ""
-            },
-            contactInformation: {
-                email: "",
-                phoneNumber: "",
-                website: "",
-                faxNumber: ""
-            },
-            bvn: "",
-            cac: "",
-            numberOfSlots: "",
-            department: [
-                {
-                    roles: "",
-                    requiredQualifications: "",
-                    tasksAndOutcomes: ""
+            employer: {
+                companyName: "",
+                industry: "",
+                cacCertificationAvailable: "",
+                companyType: "",
+                yearsPostIncorporation: "",
+                location: {
+                    address: "",
+                    state: "",
+                    country: "",
+                    lga: "",
+                    longitude: "",
+                    latitude: ""
+                },
+                contactInformation: {
+                    email: "",
+                    phoneNumber: "",
+                    website: "",
+                    faxNumber: ""
                 }
-            ],
-            workHours: "",
-            workLocation: "",
-            additionalStipend: false,
-            stipendAmount: "",
-            opportunityForPD: "",
-            possibilityForRetaining: "",
-            possibilityOfExtendingDuration: "",
-            willCompleteDuration: "",
-            guidelines: "",
-            policies: "",
-            inclusion: ""
+            },
+            "department": formDetails.roles,
+            "numberOfSlot": formDetails.slots,
+            "requiredQualifications": formDetails.qualifications,
+            "tasksAndOutcomes": formDetails.tasks,
+            "workHours": formDetails.workHours,
+            "workLocation": formDetails.workLocation,
+            "additionalStipend": formDetails.stipend,
+            "stipendAmount": formDetails.amount,
+            "opportunityForPD": formDetails.opportunities,
+            "possibilityForRetaining": formDetails.employment,
+            "possibilityOfExtendingDuration": formDetails.extension,
+            "willCompleteDuration": true,
         }
     }
 

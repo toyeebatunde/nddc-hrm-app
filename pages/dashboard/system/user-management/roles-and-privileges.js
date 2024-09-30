@@ -127,25 +127,25 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
         resetPage()
     }, [])
 
-    useEffect(() => {
-        setLoading(true)
-        setActiveTab("Roles and Privileges")
-        resetSearchParams()
-        const decoded = jwt.decode(localStorage.getItem('token'))
-        // console.log(decoded)
-        const permissions = decoded?.permissions?.split(',')
-        // console.log(permissions)
-        setToken()
-        setActiveDashboard("UserManagement")
-        setActiveState("1")
-        if (data) {
-            setRolesData(data)
-            setLoading(false)
-        }
-        if (error) {
-            console.log(error)
-        }
-    }, [data])
+    // useEffect(() => {
+    //     setLoading(true)
+    //     setActiveTab("Roles and Privileges")
+    //     resetSearchParams()
+    //     const decoded = jwt.decode(localStorage.getItem('token'))
+    //     // console.log(decoded)
+    //     const permissions = decoded?.permissions?.split(',')
+    //     // console.log(permissions)
+    //     setToken()
+    //     setActiveDashboard("UserManagement")
+    //     setActiveState("1")
+    //     if (data) {
+    //         setRolesData(data)
+    //         setLoading(false)
+    //     }
+    //     if (error) {
+    //         console.log(error)
+    //     }
+    // }, [data])
 
 
     useEffect(() => {
@@ -183,7 +183,7 @@ export default function Roles({ modals, setModalState, setToken, setActiveDashbo
                             <ImageHolder src={searchIcon} />
                         </div>
                     </section>
-                    <button ref={getModalButtonRef} onClick={() => { setCreateRole(true) }} className="flex mt-[10px] mdxl:mt-0 font-pushpennyMedium font-500 text-[18px] leading-[23.44px] w-[354px] h-[35px] rounded-[20px] items-center justify-center bg-gradient-to-r text-[#ffffff] from-[#EF6B25] to-[#F6BC18]">
+                    <button ref={getModalButtonRef} onClick={() => { setCreateRole(true) }} className="flex mt-[10px] mdxl:mt-0 font-pushpennyMedium font-500 text-[18px] leading-[23.44px] w-[354px] h-[35px] rounded-[20px] items-center justify-center bg-[#2dcd7c] text-white">
                         + Create New Role
                     </button>
                 </section>

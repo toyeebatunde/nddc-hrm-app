@@ -49,3 +49,20 @@ const testAml = [
         status: "Success"
     }
 ]
+
+
+export function validatePassword(str) {
+    // Check if the string is up to 8 characters
+    if (str.length < 8) {
+      return false;
+    }
+  
+    // Regular expressions for validation
+    const hasUpperCase = /[A-Z]/.test(str);
+    const hasLowerCase = /[a-z]/.test(str);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(str);
+    const hasNumber = /\d/.test(str)
+  
+    // Check if all conditions are met
+    return hasUpperCase && hasLowerCase && hasSpecialChar && hasNumber
+  }
