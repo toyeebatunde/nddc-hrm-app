@@ -7,6 +7,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
+import AlertDialog from '../components/AlertDialogue'
 
 export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, createCaution, changer }) {
   const passwordField = useRef()
@@ -14,7 +15,12 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
   const [loginCaution, setLoginCaution] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loginDetails, setLoginDetails] = useState({ username: "", password: "" })
+  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
   useEffect(() => { }, [passwordDisplay])
+
+  function closeAlert () {
+    setDialogue({text: "", result: false, path: ""})    
+  }
 
   useEffect(() => {
     if (createCaution) {
@@ -63,7 +69,9 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         "phoneNumber": `+234${userNumber}`
       })
       if (isLogged.status === 200) {
-        if (!isLogged.data.data.status) {
+        const {user} = isLogged.data
+        const {token} = isLogged
+        if (!user.status) {
           const newOtp = await axios.post("http://35.158.104.113:55/api/v1/auth/resend-otp", {
             "phoneNumber": `+234${userNumber}`
           })
@@ -71,9 +79,9 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
           return
         }
 
-        if (isLogged.data.data.needSetup) {
-          localStorage.setItem("token", isLogged.data.token)
-          localStorage.setItem("userDetails", isLogged.data.data)
+        if (user.needSetup) {
+          localStorage.setItem("token", token)
+          localStorage.setItem("userDetails", user)
           router.push("/success")
           return
         }
@@ -81,7 +89,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         // localStorage.setItem("userNumber", `+234${userNumber}`)
         // localStorage.setItem("token", isLogged.data.token)
         // localStorage.setItem("userID", isLogged.data.data.id)
-        localStorage.setItem("userDetails", isLogged.data.data)
+        localStorage.setItem("userDetails", user)
         router.push("/dashboard/agency/post-internship-positions")
         setLoading(false)
         // console.log("logged in: ", isLogged.data)

@@ -9,30 +9,39 @@ import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import { validatePassword } from '../components/constants'
 import axios from 'axios'
+import AlertDialog from '../components/AlertDialogue'
 
 export default function Home({ showPassword, login, isLoading, token, passwordDisplay, setPasswordDisplay, changeForm, signupDetails, setSignupDetails, createCaution, changer }) {
   const passwordField = useRef()
   const [loginDetails, setLoginDetails] = useState({ passwordOne: "", passwordTwo: "", number: "", code:"+234" })
   const [passwordCheck, setPasswordCheck] = useState("")
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
 
   const router = useRouter()
   useEffect(() => { }, [passwordDisplay])
   // console.log(router)
+
+ 
 
   useEffect(() => {
     if (createCaution) {
       let timer = setTimeout(() => {
         changer()
       }, 2000)
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-
   }, [createCaution])
+
+  function closeAlert () {
+    setDialogue({text: "", result: false, path: ""})    
+  }
 
 
   async function signup(e) {
     e.preventDefault()
+    // debugger
+
 
     if (loginDetails.passwordOne !== loginDetails.passwordTwo) {
       setPasswordCheck("Passwords must be the same");
@@ -52,7 +61,6 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
     setSubmitLoading(true)
     // debugger
     try {
-      // const deviceId = uuidv4()
       const signupResponse = await axios.post("http://35.158.104.113:55/api/v1/auth/signup", { //http://localhost:8080/  http://35.158.104.113:55
         confirmPassword: loginDetails.passwordOne,
         password: loginDetails.passwordOne,
@@ -72,12 +80,13 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
         // localStorage.setItem("deviceId", deviceId)
         localStorage.setItem("phoneNumber", phoneNumber)
         localStorage.setItem("login", JSON.stringify(userLogin))
+        // setDialogue({...dialogue, result: true, text: "Signup Successful!", path:"/otp-verification"})
         router.push("/otp-verification")
-        console.log("Signup successful:", signupResponse.data)
+        // console.log("Signup successful:", signupResponse.data)
       }
     } catch (error) {
       console.error("Signup error:", error)
-      setPasswordCheck("error")
+      // setDialogue({...dialogue, result: false, text: "Something went wrong!", path:""})
     } finally {
       setSubmitLoading(false)
     }
@@ -140,6 +149,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
           </section>
         </div>
       </div>
+      {/* <AlertDialog props={dialogue} /> */}
     </div>
   )
 }

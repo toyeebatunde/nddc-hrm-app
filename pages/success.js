@@ -10,6 +10,7 @@ import Textfield from "../components/TextField";
 import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 import Image from "next/image";
+import AlertDialog from '../components/AlertDialogue'
 
 
 
@@ -90,53 +91,14 @@ export default function CompanyDetails({
   const [roles, setRoles] = useState([])
   const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
   const [submitting, setSubmitting] = useState(false)
+  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
 
 
-  async function submitForm() {
-    const formData = {
-      companyName: formDetails.companyName,
-      industry: formDetails.industry,
-      cacCertificationAvailable: "",
-      companyType: formDetails.companyType,
-      yearsPostIncorporation: formDetails.yearsPostIncorporation,
-      location: {
-        address: formDetails.address,
-        state: formDetails.state,
-        country: formDetails.country,
-        lga: formDetails.lga,
-        longitude: "",
-        latitude: ""
-      },
-      contactInformation: {
-        email: formDetails.email,
-        phoneNumber: formDetails.phone,
-        website: formDetails.website,
-        faxNumber: formDetails.fax
-      },
-      bvn: "",
-      cac: "",
-      numberOfSlots: "",
-      department: [
-        {
-          roles: "",
-          requiredQualifications: "",
-          tasksAndOutcomes: ""
-        }
-      ],
-      workHours: "",
-      workLocation: "",
-      additionalStipend: false,
-      stipendAmount: "",
-      opportunityForPD: "",
-      possibilityForRetaining: "",
-      possibilityOfExtendingDuration: "",
-      willCompleteDuration: "",
-      guidelines: "",
-      policies: "",
-      inclusion: ""
-    }
-
+  function closeAlert () {
+    setDialogue({text: "", result: false, path: ""})    
   }
+
+
 
   async function sendForm(e) {
     e.preventDefault()
@@ -230,11 +192,13 @@ export default function CompanyDetails({
         )
         if (isLogged.status === 200) {
           localStorage.setItem("companyDetails", isLogged.data)
-          router.push("/dashboard/agency/post-internship-positions")
+          setDialogue({...dialogue, result: true, text: "Form Submission Successful!", path:"/dashboard/agency/post-internship-positions"})
+          // router.push("/dashboard/agency/post-internship-positions")
         }
       } catch (error) {
         console.error("Form error:", error)
         setSubmitting(false)
+        setDialogue({...dialogue, result: false, text: "Something went wrong!", path:""})
       } finally {
         // setSubmitting(false)
       }
