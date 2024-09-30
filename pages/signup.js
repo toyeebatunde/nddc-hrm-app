@@ -101,9 +101,6 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
 
       <div className='flex flex-col items-center px-[20px] m-auto w-full py-[5px] '>
         <section className='flex m-auto w-fit min-h-logo-height py-1 px-1 items-center'>
-          {/* <div className=' relative w-[44px] h-[53px]'>
-            <ImageHolder src="/icons/logo-icon-gradient.svg" />
-          </div> */}
           <div className=' relative w-[209px] h-[37px]'>
             <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
@@ -113,7 +110,7 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
             <section className='w-[159px] h-[49px] rounded-[24.5px] flex items-center text-[los] justify-center bg-gradient-to-r text-[#ffffff] from-[#003B49] to-[#2DCD7C]'>Sign up</section>
           </section>
 
-          <h2 className="mt-[10px] text-center font-[600]">{passwordCheck}</h2>
+          <h2 className="mt-[10px] text-center text-[10px] w-[250px] text-[red] self-center font-[600]">{passwordCheck}</h2>
 
           <section className='flex flex-col'>
 
