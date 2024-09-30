@@ -73,17 +73,18 @@ export default function Home({ showPassword, login, isLoading, token, passwordDi
 
         if (isLogged.data.data.needSetup) {
           localStorage.setItem("token", isLogged.data.token)
+          localStorage.setItem("userDetails", isLogged.data.data)
           router.push("/success")
           return
         }
 
-        localStorage.setItem("userNumber", `+234${userNumber}`)
-        localStorage.setItem("token", isLogged.data.token)
-        localStorage.setItem("userID", isLogged.data.data.id)
-        localStorage.setItem("userDetails", isLogged.data)
+        // localStorage.setItem("userNumber", `+234${userNumber}`)
+        // localStorage.setItem("token", isLogged.data.token)
+        // localStorage.setItem("userID", isLogged.data.data.id)
+        localStorage.setItem("userDetails", isLogged.data.data)
         router.push("/dashboard/agency/post-internship-positions")
         setLoading(false)
-        console.log("logged in: ", isLogged.data)
+        // console.log("logged in: ", isLogged.data)
       }
     } catch (error) {
       handleLoginCaution()

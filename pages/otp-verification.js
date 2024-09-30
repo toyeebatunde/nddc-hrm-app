@@ -45,6 +45,11 @@ export default function OtpPage() {
   }, [timer]);
 
   useEffect(() => {
+    if(!localStorage.getItem("phoneNumber")) {
+      router.push("/signup")
+      return
+    }
+
     setUserNumber((currentValue) => {
       const storedNumber = localStorage.getItem("phoneNumber");
       return storedNumber !== null ? storedNumber : currentValue;

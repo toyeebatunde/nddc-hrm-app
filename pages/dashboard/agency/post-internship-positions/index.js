@@ -90,7 +90,7 @@ export default function CompanyDetails({
 
     async function submitForm(e) {
         e.preventDefault()
-        const id = JSON.parse(localStorage.getItem("userDetails")).parent
+        const id = JSON.parse(localStorage.getItem("userDetails")).employer.id
         const token = localStorage.getItem("token")
         // debugger
 
