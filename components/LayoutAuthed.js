@@ -53,18 +53,19 @@ export default function Dashboard({
 
     useEffect(() => {
         // const today = new Date()
-        // const exp = jwt.decode(localStorage.getItem("token"))?.exp
-        // // console.log("exp: ", exp)
-        // // debugger
-        // if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
-        //     const expValue = exp < (new Date().getTime() + 1) / 1000
-        //     // debugger
-        //     router.push("/")
-        //     logout()
-        //     return
-        // }
+        const exp = jwt.decode(localStorage.getItem("token"))?.exp
+        // console.log("exp: ", exp)
+        // debugger
+        if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
+            const expValue = exp < (new Date().getTime() + 1) / 1000
+            // debugger
+            // logout()
+            localStorage.clear()
+            router.push("/")
+            return
+        }
         // setPermissions((JSON.parse(localStorage.getItem("user")).permissions))
-        // setAuthed(true)
+        setAuthed(true)
 
         window.innerWidth < 1025 ? setIsFull(true) : setIsFull(false)
         function logWindow() {
@@ -111,11 +112,11 @@ export default function Dashboard({
         setEdgeFunction(edgeState)
     }
 
-    // if(!authed) {
-    //     return (
-    //         <div>Loading</div>
-    //     )
-    // }
+    if(!authed) {
+        return (
+            <div>Loading</div>
+        )
+    }
 
     function userLogout(){
         localStorage.clear()
