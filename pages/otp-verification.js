@@ -63,7 +63,7 @@ export default function OtpPage() {
   async function validateOtp() {
     try {
       // debugger
-      const verifyOtp = await axios.post(`http://localhost:8080/api/v1/auth/verify-otp`, {
+      const verifyOtp = await axios.post(`http://35.158.104.113:55/api/v1/auth/verify-otp`, {
         "otp": otp.join(''),
         "userName": userNumber        
       })

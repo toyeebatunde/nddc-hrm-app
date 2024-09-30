@@ -162,74 +162,71 @@ export default function CompanyDetails({
         phoneNumber: formDetails.phone,
         website: formDetails.website,
         faxNumber: formDetails.fax
-      }
+      },
+      authId: 10
     }
 
     debugger
 
-    let verified = false
+    let verified = true
 
-    if (formDetails.cacRegistered == "NO") {
-      try {
+    // if (formDetails.cacRegistered == "NO") {
+    //   try {
+    //     const bvnResponse = await axios.post("http://localhost:9090/kyc/verify-bvn",
+    //       {
+    //         bvn: formDetails.bvn,
+    //         userName: localStorage.getItem("phoneNumber")
+    //       },
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //           // "Content-Type": "application/json"
+    //         },
+    //         withCredentials: true
+    //       }
+    //     )
 
-        // const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
-        //   bvn: formDetails.bvn,
-        //   userName: localStorage.getItem("phoneNumber")
-        // }, {
-        //   headers: {
-        //     "Authorization": `Bearer ${token}`,
-        //     withCredentials: true,
-        //     "Content-Type": "Application/json"
-        //   }
-        // })
-        const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn",
-          {
-            bvn: formDetails.bvn,
-            userName: localStorage.getItem("phoneNumber")
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              // "Content-Type": "application/json"
-            },
-            withCredentials: true
-          }
-        )
+    //     if (bvnResponse.status == 200) {
+    //       verified = true
+    //     }
 
-        if (bvnResponse.status == 200) {
-          verified = true
-        }
+    //   } catch (error) {
+    //     verified = false
+    //     console.log(error)
+    //   }
+    // }
+    // if (formDetails.cacRegistered == "YES") {
+    //   try {
+    //     const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
+    //       bvn: formDetails.bvn,
+    //       userName: localStorage.getItem("phoneNumber")
+    //     }, {
+    //       headers: {
+    //         "Authorization": `Bearer ${token}`
+    //       }
+    //     })
 
-      } catch (error) {
-        verified = false
-        console.log(error)
-      }
-    }
-    if (formDetails.cacRegistered == "YES") {
-      try {
-        const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
-          bvn: formDetails.bvn,
-          userName: localStorage.getItem("phoneNumber")
-        }, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        })
+    //     if (bvnResponse.status == 200) {
+    //       verified = true
+    //     }
 
-        if (bvnResponse.status == 200) {
-          verified = true
-        }
-
-      } catch (error) {
-        verified = false
-        console.log(error)
-      }
-    }
+    //   } catch (error) {
+    //     verified = false
+    //     console.log(error)
+    //   }
+    // }
 
     if (verified) {
+      console.log("token: ", token)
       debugger
       try {
-        const isLogged = await axios.post("http://localhost:8080/api/employers", formInfo,
+        const isLogged = await axios.post("http://localhost:8080/api/employers", 
+          formInfo,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         )
         if (isLogged.status === 200) {
           localStorage.setItem("companyDetails", isLogged.data)
