@@ -117,6 +117,11 @@ export default function Dashboard({
     //     )
     // }
 
+    function userLogout(){
+        localStorage.clear()
+        router.push("/")
+    }
+
     return (
         <div className={`w-full h-screen border flex overflow-hidden justify-between`}>
             <div className={`bg-[#ffffff] ${modals.isOpen ? "flex" : "hidden"} left-[50%] ml-[-175px] lg:ml-[-327px] top-[70px]  rounded-[15px] lg:rounded-[48px] z-[200] fixed w-fit h-fit`}>
@@ -161,35 +166,20 @@ export default function Dashboard({
                 <div className="borde h-[500px] overflow-y-auto sticky pl-[5px] top-[90px]">
                     <ul className=" flex flex-col w-[95%] borde h-fit overflow-y-auto pb-2">
                         {newTabs.map((tab, index) => {
-                            // let newSubs = tab.subTexts.filter((sub, index) => {
-                            //     if (!sub.hasOwnProperty("permission")) {
-                            //         return sub
-                            //     }
-                            //     if (sub.hasOwnProperty("permission") && permissions?.includes(sub.permission[0])) {
-                            //         return sub
-                            //     }
-                            // })
-                            // if (newSubs.length === 0) {
-                            //     return
-                            // }
-                            // debugger
                             return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
 
                         })}
                     </ul>
 
                 </div>
-                {/* <div className="borde pl-[40px] flex w-full z-[260] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px] justify-around">
+                <div className="borde pl-[5px] flex w-full z-[260] items-center pb-[5px] bg-[#FAFBFC] relative left-0 bottom-[5px] h-[50px]  gap-[20px]">
                     <div className="w-[50px] h-[50px] border border-[#dddddd] rounded-[50%]"></div>
-                    <button onClick={logout} className="flex flex-col">
+                    <button onClick={()=>{userLogout()}} className="flex  h-fit borde text-[#2dcd7c]">
                         Logout
-                        <br />
-                        <div className="font-[400] text-[12px] leading-[15.62px] font-pushPennyBook text-brand-yellow">
-                            Change Password</div>
                     </button>
-                </div> */}
+                </div>
             </div>
-            <div className="grow  lg:w-[70%] overflow-auto lg:h-screen pb-[50px]">
+            <div className="grow overflow-auto lg:h-screen pb-[50px]">
                 {children}
             </div>
         </div>

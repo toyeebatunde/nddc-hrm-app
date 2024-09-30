@@ -139,10 +139,10 @@ export default function CompanyDetails({
   }
 
   async function sendForm(e) {
+    e.preventDefault()
     console.log("submitting")
     const token = localStorage.getItem("token")
     setSubmitting(true)
-    e.preventDefault()
     const formInfo = {
       companyName: formDetails.companyName,
       industry: formDetails.industry,
