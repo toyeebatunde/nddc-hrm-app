@@ -66,11 +66,11 @@ export default function Home({
     }
 
     setSubmitLoading(true);
-    debugger;
+    // debugger
     try {
       // const deviceId = uuidv4()
       const signupResponse = await axios.post(
-        "http://35.158.104.113:55/api/v1/auth/signup",
+        "https://nddc-api.payrail.co/api/v1/auth/signup",
         {
           //http://localhost:8080/  http://35.158.104.113:55
           confirmPassword: loginDetails.passwordOne,
@@ -122,9 +122,6 @@ export default function Home({
     <div className="w-full lg:w-[529px] m-auto h-full flex flex-col items-center p-[20px]">
       <div className="flex flex-col items-center px-[20px] m-auto w-full py-[5px] ">
         <section className="flex m-auto w-fit min-h-logo-height py-1 px-1 items-center">
-          {/* <div className=' relative w-[44px] h-[53px]'>
-            <ImageHolder src="/icons/logo-icon-gradient.svg" />
-          </div> */}
           <div className=" relative w-[209px] h-[37px]">
             <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
@@ -139,7 +136,9 @@ export default function Home({
             </section>
           </section>
 
-          <h2 className="mt-[10px] text-center font-[600]">{passwordCheck}</h2>
+          <h2 className="mt-[10px] text-center text-[10px] w-[250px] text-[red] self-center font-[600]">
+            {passwordCheck}
+          </h2>
 
           <section className="flex flex-col">
             <section className="text-center font-pushpennyBook text-[16px] leading-[15.62px] h-[20px] font-[700] w-3/5 self-center">
