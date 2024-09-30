@@ -101,6 +101,7 @@ export default function CompanyDetails({
 
 
   async function sendForm(e) {
+    const authId = JSON.parse(localStorage.getItem("employ")).authId
     e.preventDefault()
     console.log("submitting")
     const token = localStorage.getItem("token")
@@ -125,10 +126,10 @@ export default function CompanyDetails({
         website: formDetails.website,
         faxNumber: formDetails.fax
       },
-      authId: 10
+      authId: authId
     }
 
-    debugger
+    // debugger
 
     let verified = true
 
@@ -182,7 +183,7 @@ export default function CompanyDetails({
       // console.log("token: ", token)
       // debugger
       try {
-        const isLogged = await axios.post("http://localhost:8080/api/employers", 
+        const isLogged = await axios.post("https://nddc-api.payrail.co/api/employers", 
           formInfo,
           {
             headers: {

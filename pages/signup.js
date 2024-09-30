@@ -70,7 +70,6 @@ export default function Home({
     setSubmitLoading(true);
     // debugger
     try {
-      // const deviceId = uuidv4()
       const signupResponse = await axios.post(
         "https://nddc-api.payrail.co/api/v1/auth/signup",
         {
@@ -83,16 +82,9 @@ export default function Home({
         }
       );
 
-      if (signupResponse.status === 200) {
-        // console.log(signupResponse.data);
-        const userLogin = {
-          number: `${loginDetails.code}${userNumber}`,
-          password: loginDetails.passwordOne,
-        };
-        const phoneNumber = `+234${userNumber}`;
-        // localStorage.setItem("deviceId", deviceId)
-        localStorage.setItem("phoneNumber", phoneNumber);
-        // localStorage.setItem("login", JSON.stringify(userLogin));
+      if (signupResponse.status === 200) {        
+        const phoneNumber = `+234${userNumber}`
+        localStorage.setItem("phoneNumber", phoneNumber)
         router.push("/otp-verification");
         console.log("Signup successful:", signupResponse.data);
       }

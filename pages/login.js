@@ -65,9 +65,6 @@ export default function Home({
       userNumber = userNumber.slice(1);
     }
 
-    // debugger
-    // const deviceId = localStorage.getItem("deviceId")
-
     try {
       const isLogged = await axios.post(
         "https://nddc-api.payrail.co/api/v1/auth/login",
@@ -76,13 +73,14 @@ export default function Home({
           phoneNumber: `+234${userNumber}`,
         }
       );
+      debugger
       if (isLogged.status === 200) {
         const { data } = isLogged.data;
         const { user, token, employ } = data;
 
         if (!user.status) {
           const newOtp = await axios.post(
-            "http://35.158.104.113:55/api/v1/auth/resend-otp",
+            "https://nddc-api.payrail.co/api/v1/auth/resend-otp",
             {
               phoneNumber: `+234${userNumber}`,
             }
@@ -99,13 +97,11 @@ export default function Home({
           return;
         }
 
-        // localStorage.setItem("userNumber", `+234${userNumber}`)
-        // localStorage.setItem("token", isLogged.data.token)
-        // localStorage.setItem("userID", isLogged.data.data.id)
+        
         localStorage.setItem("userDetails", user);
         router.push("/dashboard/agency/post-internship-positions");
         setLoading(false);
-        // console.log("logged in: ", isLogged.data)
+       
       }
     } catch (error) {
       handleLoginCaution();
