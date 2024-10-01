@@ -101,7 +101,8 @@ export default function CompanyDetails({
 
 
   async function sendForm(e) {
-    const authId = JSON.parse(localStorage.getItem("employ")).authId
+    debugger
+    const authId = JSON.parse(localStorage.getItem("employer")).authId
     e.preventDefault()
     console.log("submitting")
     const token = localStorage.getItem("token")
@@ -181,7 +182,7 @@ export default function CompanyDetails({
 
     if (verified) {
       // console.log("token: ", token)
-      // debugger
+      debugger
       try {
         const isLogged = await axios.post("https://nddc-api.payrail.co/api/employers", 
           formInfo,
@@ -392,8 +393,9 @@ export default function CompanyDetails({
         <button className="border px-[15px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">Submit</button>
 
 
-
       </form>
+
+      <AlertDialog props={dialogue} />
     </div>
 
     //disabled={submitting} onClick={(e)=>{sendForm(e)}}
