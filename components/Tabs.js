@@ -319,7 +319,7 @@ export const newTabs = [
                 active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "/dashboard/agency/post-internship-positions", // pages/dashboard/agency/agent-management
+                link: "/dashboard/employee-management/post-internship-positions", // pages/dashboard/agency/agent-management
                 permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
             {
