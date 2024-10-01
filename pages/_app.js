@@ -426,7 +426,7 @@ export default function MyApp({ Component, pageProps }) {
     }
   }
 
-  if (router.pathname === "/" || router.pathname === "/change-password" || router.pathname === "/signup" || router.pathname === "/login"|| router.pathname === "/reset-password") {
+  if (router.pathname === "/" || router.pathname === "/change-password" || router.pathname === "/signup" || router.pathname === "/login"|| router.pathname === "/reset-password" || router.pathname === "/otp-verification" ) {
     return (
       <LoginLayout>
         <Component
