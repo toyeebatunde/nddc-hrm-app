@@ -102,9 +102,9 @@ export default function Home({
 
 
         
-        localStorage.setItem("userDetails", user);
+        localStorage.setItem("userDetails", JSON.stringify(user));
         localStorage.setItem("token", token);
-        localStorage.setItem("employ", employer);
+        localStorage.setItem("employer",JSON.stringify(employer));
         router.push("/dashboard/agency/post-internship-positions");
         setLoading(false);
        

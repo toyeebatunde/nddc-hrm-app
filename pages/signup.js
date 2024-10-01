@@ -211,7 +211,7 @@ export default function Home({
               Have an account already?{" "}
               <span
                 onClick={(e) => {
-                  signup(e);
+                  router.push("/login")
                 }}
                 className="underline cursor-pointer sec-color"
               >
