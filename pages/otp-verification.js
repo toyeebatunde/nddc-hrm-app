@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import AlertDialog from "../components/AlertDialogue";
 
 export default function OtpPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -50,8 +51,6 @@ export default function OtpPage() {
       return;
     }
 
-
-
     setUserNumber((currentValue) => {
       const storedNumber = localStorage.getItem("phoneNumber");
       return storedNumber !== null ? storedNumber : currentValue;
@@ -78,8 +77,8 @@ export default function OtpPage() {
       );
 
       if (verifyOtp.status === 200) {
-        localStorage.removeItem("phoneNumber")
-        router.push("/login")
+        localStorage.removeItem("phoneNumber");
+        router.push("/login");
         console.log("otp successful:", verifyOtp.data);
       }
     } catch (error) {
@@ -193,7 +192,7 @@ export default function OtpPage() {
           {loading ? "Verifying" : "Verify OTP"}
         </button>
       </section>
-      <AlertDialog props={dialogue} />
+      {/* <AlertDialog props={dialogue} /> */}
     </div>
   );
 }
