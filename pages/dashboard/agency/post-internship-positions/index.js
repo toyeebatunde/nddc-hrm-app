@@ -10,6 +10,7 @@ import { ngrok, testEnv } from "../../../../components/Endpoints";
 // import Textfield from "../../../../../components/TextField";
 // import jwt from "jsonwebtoken";
 import { Fragment } from "react";
+import AlertDialog from "../../../../components/AlertDialogue";
 
 const industries = [
   "Select an Industry",
@@ -82,10 +83,67 @@ export default function CompanyDetails({
     longitude: "",
     latitude: "",
   });
+  const [states, setStates] = useState(["SELECT STATE"]);
+  const [lgas, setLgas] = useState(["SELECT STATE FIRST"]);
+  const [dialogue, setDialogue] = useState({
+    text: "",
+    result: false,
+    path: "",
+    closeAlert: closeAlert,
+  });
+
+  function closeAlert() {
+    setDialogue({ text: "", result: false, path: "" });
+  }
+
+  function toSentenceCase(str) {
+    if (!str) return str; // Return if the string is empty
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
+  useEffect(() => {
+    async function fetchStates() {
+      const statesResponse = await axios.get(
+        "https://nga-states-lga.onrender.com/fetch"
+      );
+      const newStates = [...statesResponse.data].map((state) => {
+        state = state.toUpperCase();
+        return state;
+      });
+      newStates.unshift("SELECT STATE");
+      // const states = newStates
+      setStates(newStates);
+    }
+
+    fetchStates();
+  }, []);
+
+  useEffect(() => {
+    async function fetchLgas() {
+      const state = toSentenceCase(formDetails.state);
+      const lgasResponse = await axios.get(
+        `https://nga-states-lga.onrender.com/?state=${state}`
+      );
+      const newLgas = [...lgasResponse.data].map((lga) => {
+        lga = lga.toUpperCase();
+        return lga;
+      });
+      // newLgas.unshift("SELECT LGA")
+      // const states = newStates
+      setLgas(newLgas);
+    }
+
+    if (formDetails.state == "") {
+      // setLgas()
+      return;
+    }
+
+    fetchLgas();
+  }, [formDetails.state]);
 
   async function submitForm(e) {
     e.preventDefault();
-    const id = JSON.parse(localStorage.getItem("employ")).id;
+    const id = JSON.parse(localStorage.getItem("employer")).id;
     const token = localStorage.getItem("token");
 
     debugger;
@@ -101,7 +159,7 @@ export default function CompanyDetails({
       workLocation: {
         address: formDetails.workLocation,
         state: formDetails.state,
-        country: formDetails.country,
+        country: "Nigeria",
         lga: formDetails.lga,
         longitude: 0,
         latitude: 0,
@@ -115,9 +173,10 @@ export default function CompanyDetails({
       willCompleteDuration: formDetails.duration == "YES" ? true : false,
     };
 
-    debugger;
+    // debugger;
 
     try {
+      // throw new Error("New Error")
       const isLogged = await axios.post(
         `https://nddc-api.payrail.co/api/internship-positions/employer/${id}`,
         formData,
@@ -129,12 +188,23 @@ export default function CompanyDetails({
       );
       if (isLogged.status === 200) {
         console.log("done");
-        window.alert("Your form has been submitted successfully");
+        setDialogue({
+          ...dialogue,
+          result: true,
+          text: "Form Submission Successful!",
+          path: "#",
+        });
         // localStorage.setItem("companyDetails", isLogged.data)
         // router.push("/dashboard/agency/post-internship-positions")
       }
     } catch (error) {
-      window.alert("Something went wrong, try again");
+      // window.alert("Something went wrong, try again");
+      setDialogue({
+        ...dialogue,
+        result: false,
+        text: "Something went wrong!",
+        path: "",
+      });
       console.error("Form error:", error);
       // setSubmitting(false)
     } finally {
@@ -277,6 +347,7 @@ export default function CompanyDetails({
           </h2>
           <div className="flex flex-col gap-[5px]">
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.slots}
               name="slots"
@@ -285,6 +356,7 @@ export default function CompanyDetails({
               placeholder="How many slots are available?"
             />
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.roles}
               name="roles"
@@ -293,6 +365,7 @@ export default function CompanyDetails({
               placeholder="Enter the name of the role"
             />
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.tasks}
               name="tasks"
@@ -300,15 +373,38 @@ export default function CompanyDetails({
               type="text"
               placeholder="Enter expected tasks for this role"
             />
-            <input
-              onChange={handleFormChange}
+
+            <select
+              required
+              onChange={(e) => handleFormChange(e)}
               value={formDetails.qualifications}
               name="qualifications"
-              className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
-              type="text"
-              placeholder="Enter qualifications for this role"
-            />
+              className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+            >
+              {[
+                "SELECT MINIMUM EDUCATIONAL QUALIFICATION FOR THIS ROLE",
+                "Primary School",
+                "Secondary School",
+                "Technical College/Diploma",
+                `Bachelor's Degree`,
+              ].map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
+                  return (
+                    <option key={item} value="" disabled selected>
+                      {item}
+                    </option>
+                  );
+                }
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+            </select>
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.skills}
               name="skills"
@@ -316,22 +412,6 @@ export default function CompanyDetails({
               type="text"
               placeholder="Enter required skills separated by commas"
             />
-            {/* <div className="flex flex-col gap-[5px]">
-                            <button onClick={addRole}>Add Role +</button>
-                            {roles.map((item, index) => (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="role" value={item.role} type="text" placeholder="Enter Role Name" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="tasks" value={item.tasks} type="text" placeholder="Enter Tasks separatd by commas" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="qualifications" value={item.qualifications} type="text" placeholder="Enter Qualifications separatd by commas" />
-
-                                        <div className="flex gap-[5px]">
-                                            <button className="border p-[5px]" onClick={() => setRoles(roles.filter((_, i) => i !== index))}>Remove Role</button>
-                                        </div>
-                                    </div>
-                                </Fragment>
-                            ))}
-                        </div> */}
           </div>
         </div>
 
@@ -342,6 +422,7 @@ export default function CompanyDetails({
           </h2>
           <div className="flex flex-col gap-[5px]">
             <select
+              required
               onChange={handleFormChange}
               name="workType"
               value={formDetails.workType}
@@ -358,6 +439,7 @@ export default function CompanyDetails({
               ))}
             </select>
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.workLocation}
               name="workLocation"
@@ -365,15 +447,17 @@ export default function CompanyDetails({
               type="text"
               placeholder="Enter the work location address"
             />
-            <input
+            {/* <input
+              required
               onChange={handleFormChange}
               value={formDetails.country}
               name="country"
               className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
               type="text"
               placeholder="Enter the country name"
-            />
+            /> */}
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.state}
               name="state"
@@ -381,18 +465,65 @@ export default function CompanyDetails({
               type="text"
               placeholder="Enter the state name"
             />
-            <input
+            <select
+              required
+              onChange={(e) => handleFormChange(e)}
+              value={formDetails.state}
+              name="state"
+              className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+            >
+              {states.map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
+                  return (
+                    <option key={item} value="" disabled selected>
+                      {item}
+                    </option>
+                  );
+                }
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+            </select>
+            {/* <input
               onChange={handleFormChange}
               value={formDetails.lga}
               name="lga"
               className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
               type="text"
               placeholder="Enter the lga"
-            />
+            /> */}
+            <select
+              required
+              onChange={(e) => handleFormChange(e)}
+              value={formDetails.lga}
+              name="lga"
+              className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+            >
+              {lgas.map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
+                  return (
+                    <option key={item} value="" disabled selected>
+                      {item}
+                    </option>
+                  );
+                }
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+            </select>
             <label htmlFor="resources">
               What are the available resources to support the intern's work
             </label>
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.resources}
               name="resources"
@@ -405,6 +536,7 @@ export default function CompanyDetails({
               development
             </label>
             <input
+              required
               onChange={handleFormChange}
               value={formDetails.opportunities}
               name="opportunities"
@@ -423,6 +555,7 @@ export default function CompanyDetails({
           </h2>
           <div className="flex flex-col gap-[5px]">
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="duration"
               value={formDetails.duration}
@@ -447,6 +580,7 @@ export default function CompanyDetails({
               )}
             </select>
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="extension"
               value={formDetails.extension}
@@ -471,6 +605,7 @@ export default function CompanyDetails({
               )}
             </select>
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="stipend"
               value={formDetails.stipend}
@@ -495,6 +630,7 @@ export default function CompanyDetails({
               )}
             </select>
             <input
+              required
               onChange={(e) => {
                 handleFormChange(e);
               }}
@@ -504,36 +640,12 @@ export default function CompanyDetails({
                 formDetails.stipend == "" || formDetails.stipend == "NO"
                   ? "hidden"
                   : ""
-              } pl-[5px] outline-none`}
+              } pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]`}
               type="text"
               placeholder="How much will you be paying"
             />
           </div>
         </div>
-
-        {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">MENTORSHIP AND SUPERVISION</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="mentor" value={formDetails.mentor} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
-                            {["Select a mentor", "Charles", "Peter", "Michael"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={index} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={index}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div> */}
 
         <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
           <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
@@ -541,6 +653,7 @@ export default function CompanyDetails({
           </h2>
           <div className="flex flex-col gap-[5px]">
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="employment"
               value={formDetails.employment}
@@ -573,6 +686,7 @@ export default function CompanyDetails({
           </h2>
           <div className="flex flex-col gap-[5px]">
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="guidelines"
               value={formDetails.guidelines}
@@ -599,6 +713,7 @@ export default function CompanyDetails({
               })}
             </select>
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="policies"
               value={formDetails.policies}
@@ -625,6 +740,7 @@ export default function CompanyDetails({
               })}
             </select>
             <select
+              required
               onChange={(e) => handleFormChange(e)}
               name="inclusion"
               value={formDetails.inclusion}
@@ -657,6 +773,7 @@ export default function CompanyDetails({
           Submit
         </button>
       </form>
+      <AlertDialog props={dialogue} />
     </div>
   );
 }
