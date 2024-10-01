@@ -85,9 +85,10 @@ export default function CompanyDetails({
 
   async function submitForm(e) {
     e.preventDefault();
-    const id = JSON.parse(localStorage.getItem("employ")).id
+    const id = JSON.parse(localStorage.getItem("employ")).id;
     const token = localStorage.getItem("token");
-    // debugger
+
+    debugger;
 
     const roleSkills = formDetails.skills.split(",");
     const formData = {
