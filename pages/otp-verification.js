@@ -1,16 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import AlertDialog from "../components/AlertDialogue";
 
 export default function OtpPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const inputs = [useRef(), useRef(), useRef(), useRef()];
+  const inputs = [useRef(), useRef(), useRef(), useRef(), useRef()];
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(true);
   const [userNumber, setUserNumber] = useState("");
   const router = useRouter();
-
+  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
   const [timeLeft, setTimeLeft] = useState(0);
+
+  function closeAlert () {
+    setDialogue({text: "", result: false, path: ""})    
+  }
 
   useEffect(() => {
     const countdownDuration = 4 * 60 * 1000;
@@ -67,7 +72,10 @@ export default function OtpPage() {
   async function resendOtp() {}
 
   async function validateOtp() {
+    // debugger
+    setLoading(true)
     try {
+      // throw new Error("Error")
       // debugger
       const verifyOtp = await axios.post(
         `https://nddc-api.payrail.co/api/v1/auth/verify-otp`,
@@ -80,11 +88,13 @@ export default function OtpPage() {
       if (verifyOtp.status === 200) {
         localStorage.removeItem("phoneNumber")
         router.push("/login")
-        console.log("otp successful:", verifyOtp.data);
+        setLoading(false)
+        console.log("otp successful:", verifyOtp.data)
       }
     } catch (error) {
       console.error("otp error:", error);
-      // setOtpSubmit(false)
+      setDialogue({...dialogue, result: false, text: "Error validating OTP!", path:""})
+      setLoading(false)
     } finally {
       // setOtpSubmit(false)
     }
@@ -105,7 +115,7 @@ export default function OtpPage() {
     }
     if (!element.nextSibling) {
       console.log(element.value);
-      validateOtp();
+      
     }
   };
 
@@ -114,6 +124,18 @@ export default function OtpPage() {
       inputs[index - 1].current.focus();
     }
   };
+
+  function allNotEmpty(arr) {
+    return arr.every(element => element !== "");
+}
+
+  useEffect(()=>{
+    if(allNotEmpty(otp)) {
+      validateOtp();
+    }
+  },[otp])
+
+  
 
   async function handleSubmit() {
     setLoading(true);
