@@ -94,8 +94,8 @@ export default function Home({
 
         if (user.needSetup) {
           localStorage.setItem("token", token);
-          localStorage.setItem("userDetails", user);
-          localStorage.setItem("employ", employer);
+          localStorage.setItem("userDetails", JSON.stringify(user));
+          // localStorage.setItem("employ", employer);
           router.push("/success");
           return;
         }
@@ -105,7 +105,7 @@ export default function Home({
         localStorage.setItem("userDetails", JSON.stringify(user));
         localStorage.setItem("token", token);
         localStorage.setItem("employer",JSON.stringify(employer));
-        router.push("/dashboard/agency/post-internship-positions");
+        router.push("/dashboard/employee-management/post-internship-positions");
         setLoading(false);
        
       }

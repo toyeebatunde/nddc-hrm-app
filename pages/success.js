@@ -101,8 +101,10 @@ export default function CompanyDetails({
 
 
   async function sendForm(e) {
-    debugger
-    const authId = JSON.parse(localStorage.getItem("employer")).authId
+    // debugger
+    const authId = JSON.parse(localStorage.getItem("userDetails")).id
+    const userName = JSON.parse(localStorage.getItem("userDetails")).phoneNumber
+    // const token = localStorage.getItem("token")
     e.preventDefault()
     console.log("submitting")
     const token = localStorage.getItem("token")
@@ -132,57 +134,57 @@ export default function CompanyDetails({
 
     // debugger
 
-    let verified = true
+    let verified = false
 
-    // if (formDetails.cacRegistered == "NO") {
-    //   try {
-    //     const bvnResponse = await axios.post("http://localhost:9090/kyc/verify-bvn",
-    //       {
-    //         bvn: formDetails.bvn,
-    //         userName: localStorage.getItem("phoneNumber")
-    //       },
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //           // "Content-Type": "application/json"
-    //         },
-    //         withCredentials: true
-    //       }
-    //     )
+    if (formDetails.cacRegistered == "NO") {
+      try {
+        const bvnResponse = await axios.post("https://nddc-api.payrail.co/kyc/verify-bvn",
+          {
+            bvn: formDetails.bvn,
+            userName: userName
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true
+          }
+        )
 
-    //     if (bvnResponse.status == 200) {
-    //       verified = true
-    //     }
+        if (bvnResponse.status == 200) {
+          verified = true
+        }
 
-    //   } catch (error) {
-    //     verified = false
-    //     console.log(error)
-    //   }
-    // }
-    // if (formDetails.cacRegistered == "YES") {
-    //   try {
-    //     const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
-    //       bvn: formDetails.bvn,
-    //       userName: localStorage.getItem("phoneNumber")
-    //     }, {
-    //       headers: {
-    //         "Authorization": `Bearer ${token}`
-    //       }
-    //     })
+      } catch (error) {
+        verified = false
+        setDialogue({...dialogue, result: false, text: "BVN VERIFICATION FAILED", path:""})
+      }
+    }
+    if (formDetails.cacRegistered == "YES") {
+      verified = true
+      // try {
+      //   const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
+      //     bvn: formDetails.bvn,
+      //     userName: localStorage.getItem("phoneNumber")
+      //   }, {
+      //     headers: {
+      //       "Authorization": `Bearer ${token}`
+      //     }
+      //   })
 
-    //     if (bvnResponse.status == 200) {
-    //       verified = true
-    //     }
+      //   if (bvnResponse.status == 200) {
+      //     verified = true
+      //   }
 
-    //   } catch (error) {
-    //     verified = false
-    //     console.log(error)
-    //   }
-    // }
+      // } catch (error) {
+      //   verified = false
+      //   console.log(error)
+      // }
+    }
 
     if (verified) {
       // console.log("token: ", token)
-      debugger
+      // debugger
       try {
         const isLogged = await axios.post("https://nddc-api.payrail.co/api/employers", 
           formInfo,
@@ -193,8 +195,8 @@ export default function CompanyDetails({
           }
         )
         if (isLogged.status === 200) {
-          localStorage.setItem("companyDetails", isLogged.data)
-          setDialogue({...dialogue, result: true, text: "Form Submission Successful!", path:"/dashboard/agency/post-internship-positions"})
+          localStorage.setItem("employer", JSON.stringify(isLogged.data))
+          setDialogue({...dialogue, result: true, text: "Form Submission Successful!", path:"/dashboard/employee-management/post-internship-positions"})
           // router.push("/dashboard/agency/post-internship-positions")
         }
       } catch (error) {
