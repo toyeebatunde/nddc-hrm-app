@@ -311,7 +311,7 @@ export const newTabs = [
                 active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "/dashboard/agency/agent-management/agents", // pages/dashboard/agency/agent-management
+                link: "/dashboard/employee-management/onboarding-and-recruitment", // pages/dashboard/agency/agent-management
                 permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
             {
@@ -327,7 +327,7 @@ export const newTabs = [
                 active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "2",
-                link: "#", // pages/dashboard/agency/agent-management
+                link: "/dashboard/employee-management/staff", // pages/dashboard/agency/agent-management
                 permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
         ]

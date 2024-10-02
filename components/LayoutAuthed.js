@@ -163,11 +163,11 @@ export default function Dashboard({
             </div>
 
 
-            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "fixed" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] min-w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="borde h-[500px] overflow-y-auto sticky pl-[5px] top-[90px]">
                     <ul className=" flex flex-col w-[95%] borde h-fit overflow-y-auto pb-2">
                         {newTabs.map((tab, index) => {
-                            return <SideTabs key={index} dataSet={tab.data} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
+                            return <SideTabs key={index} dataSet={index} text={tab.text} subTexts={tab.subTexts} height={`hover:h-`} full={`h-`} activeDashboard={activeDashboard} setActiveDashboard={setActiveDashboard} switchBoard={switchBoard} switchActive={switchActive} activeState={activeState} closeSideBar={closeSideBar} />
 
                         })}
                     </ul>
@@ -180,7 +180,7 @@ export default function Dashboard({
                     </button>
                 </div>
             </div>
-            <div className="grow overflow-auto lg:h-screen pb-[50px]">
+            <div className="grow overflow-auto overflow-x-hidden lg:h-screen pb-[50px]">
                 {children}
             </div>
         </div>
