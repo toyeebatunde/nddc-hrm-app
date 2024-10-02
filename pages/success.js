@@ -161,25 +161,26 @@ export default function CompanyDetails({
       }
     }
     if (formDetails.cacRegistered == "YES") {
-      verified = true
-      // try {
-      //   const bvnResponse = await axios.post("http://localhost:8080/kyc/verify-bvn", {
-      //     bvn: formDetails.bvn,
-      //     userName: localStorage.getItem("phoneNumber")
-      //   }, {
-      //     headers: {
-      //       "Authorization": `Bearer ${token}`
-      //     }
-      //   })
+      // verified = true
+      try {
+        const cacResponse = await axios.post("https://nddc-api.payrail.co/kyc/verify-cac", {
+          companyName: formDetails.companyName,
+          userName: userName,
+          rcNumber: formDetails.cac
+        }, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
 
-      //   if (bvnResponse.status == 200) {
-      //     verified = true
-      //   }
+        if (cacResponse.status == 200) {
+          verified = true
+        }
 
-      // } catch (error) {
-      //   verified = false
-      //   console.log(error)
-      // }
+      } catch (error) {
+        verified = false
+        setDialogue({...dialogue, result: false, text: "CAC VERIFICATION FAILED. PLEASE CHECK THAT YOUR COMPANY NAME AND RC NUMBER ARE ENTERED CORRECTLY", path:""})
+      }
     }
 
     if (verified) {
