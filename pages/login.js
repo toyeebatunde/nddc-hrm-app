@@ -60,6 +60,7 @@ export default function Home({
   async function userLogin(e) {
     e.preventDefault();
     setLoading(true);
+    // debugger
 
     let userNumber = loginDetails.username;
     if (userNumber.charAt(0) === "0") {
@@ -68,7 +69,7 @@ export default function Home({
 
     try {
       const isLogged = await axios.post(
-        `${base}login`,
+        `${base}api/v1/auth/login`,
         {
           password: `${loginDetails.password}`,
           phoneNumber: `+234${userNumber}`,
@@ -106,7 +107,7 @@ export default function Home({
         localStorage.setItem("userDetails", JSON.stringify(user));
         localStorage.setItem("token", token);
         localStorage.setItem("employer",JSON.stringify(employer));
-        router.push("/dashboard/employee-management/post-internship-positions");
+        router.push("/dashboard/employee-management/onboarding-and-recruitment");
         setLoading(false);
        
       }
