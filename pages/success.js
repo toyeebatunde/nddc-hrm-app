@@ -131,34 +131,34 @@ export default function CompanyDetails({
     // debugger
     if (!str) return str;
     if (str == "Akwa Ibom") {
-        str = str.split(" ").join("")
+      str = str.split(" ").join("")
     }
     if (str == "Cross River") {
-        str = "Cross%20River"
+      str = "Cross%20River"
     }
     return str
-}
+  }
 
-useEffect(() => {
-  async function fetchLgas() {
+  useEffect(() => {
+    async function fetchLgas() {
       const state = toSentenceCase(formDetails.state)
       const lgasResponse = await axios.get(`https://nga-states-lga.onrender.com/?state=${state}`)
       const newLgas = [...lgasResponse.data].map((lga) => {
-          lga = lga.toUpperCase()
-          return lga
+        lga = lga.toUpperCase()
+        return lga
       })
       newLgas.unshift("SELECT LGA")
       // const states = newStates
       setLgas(newLgas)
-  }
+    }
 
-  if (formDetails.state == "") {
+    if (formDetails.state == "") {
       // setLgas()
       return
-  }
+    }
 
-  fetchLgas()
-}, [formDetails.state])
+    fetchLgas()
+  }, [formDetails.state])
 
 
 
@@ -429,11 +429,11 @@ useEffect(() => {
 
 
   return (
-    <div className="w-full borde">
+    <div className="w-full flex flex-col">
       <div style={{ backgroundImage: "url(/icons/nddc-logo.jpeg)" }} className="relative borde mt-[5px] h-[50px] w-[250px] bg-center bg-cover">
       </div>
       <form onSubmit={(e) => { sendForm(e) }} className="flex flex-col  items-center pb-[50px] mt-[20px]">
-        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
           <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLETE VERIFICATION TO PROCEED</h2>
           <div className="flex flex-col gap-[20px]">
             <input required onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[10px] rounded-[10px]  outline-none border border-[lightgreen] py-[5px] " type="text" placeholder="Enter Company Name" />
@@ -447,13 +447,12 @@ useEffect(() => {
                 </option>
               ))}
             </select>
-            {/* <input required onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter State" /> */}
             <select
               required
               onChange={handleFormChange}
               value={formDetails.state}
               name="state"
-              className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+              className="pl-[5px] outline-none text py-[5px] -[10px]  border border-[lightgreen] py-[5px] rounded-[10px]"
             >
               {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map(
                 (item, index) => {
@@ -473,32 +472,32 @@ useEffect(() => {
                 }
               )}
             </select>
-            {/* <input required onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Lga" /> */}
+
             <select
-                            required
-                            onChange={handleFormChange}
-                            value={formDetails.lga}
-                            name="lga"
-                            className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
-                        >
-                            {lgas.map(
-                                (item, index) => {
-                                    if (index === 0) {
-                                        // The first item is the placeholder and should be disabled
-                                        return (
-                                            <option key={item} value="" disabled selected>
-                                                {item}
-                                            </option>
-                                        );
-                                    }
-                                    return (
-                                        <option key={item} value={item}>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                            )}
-                        </select>
+              required
+              onChange={handleFormChange}
+              value={formDetails.lga}
+              name="lga"
+              className="pl-[5px] outline-none text py-[5px] -[10px]  border border-[lightgreen] py-[5px] rounded-[10px]"
+            >
+              {lgas.map(
+                (item, index) => {
+                  if (index === 0) {
+                    // The first item is the placeholder and should be disabled
+                    return (
+                      <option key={item} value="" disabled selected>
+                        {item}
+                      </option>
+                    );
+                  }
+                  return (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  );
+                }
+              )}
+            </select>
             <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Website" />
             <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Fax Number" />
             <select required onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
