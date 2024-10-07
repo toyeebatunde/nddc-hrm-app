@@ -11,7 +11,7 @@ import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
 import jwt from "jsonwebtoken";
 import { Fragment } from "react";
-
+import UserButton from "../../../../../components/ButtonMaker";
 
 
 
@@ -51,23 +51,24 @@ export default function OpenRoles({
     entryValue,
     setActiveTab,
     resetSearchParams,
-    initialCustomerForm, resetDay
+    initialCustomerForm, resetDay, pageSelector, searchField,
+    search
 }) {
 
     const initialFormDetails = {
         companyName: "",
         location: "",
-        state:"",
-        country:"",
-        lga:"",
+        state: "",
+        country: "",
+        lga: "",
         companyType: "",
         industry: "",
         cacRegistered: "",
-        yearsPostIncorporation:"",
+        yearsPostIncorporation: "",
         email: "",
         phone: "",
-        website:"",
-        fax:"",
+        website: "",
+        fax: "",
         bvn: "",
         cac: "",
         slots: "",
@@ -88,13 +89,14 @@ export default function OpenRoles({
 
 
     const [userDetails, setUserDetails] = useState({})
+    const [searchedField, setSearchedField] = useState()
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
-    const { data: agents, error: agentsError } = useSWR(`${base}api/internship-positions/employer/${userDetails.id}`, fetching)
+    const { data: positions, error: positionsError } = useSWR(`${base}api/internship-positions/employer/${userDetails.id}`, fetching)
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
-    const [geolocation, setGeoLocation] = useState({longitude: "", latitude:""})
+    const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
 
     useEffect(() => {
         setActiveTab("Open Positions")
@@ -105,108 +107,12 @@ export default function OpenRoles({
         setUserDetails(JSON.parse(localStorage.getItem("userDetails")))
     }, [])
 
-
-
-    async function submitForm() {
-        const formData = {
-            companyName: "",
-            industry: "",
-            cacCertificationAvailable: "",
-            companyType: "",
-            yearsPostIncorporation: "",
-            location: {
-                address: "",
-                state: "",
-                country: "",
-                lga: "",
-                longitude: "",
-                latitude: ""
-            },
-            contactInformation: {
-                email: "",
-                phoneNumber: "",
-                website: "",
-                faxNumber: ""
-            },
-            bvn: "",
-            cac: "",
-            numberOfSlots: "",
-            department: [
-                {
-                    roles: "",
-                    requiredQualifications: "",
-                    tasksAndOutcomes: ""
-                }
-            ],
-            workHours: "",
-            workLocation: "",
-            additionalStipend: false,
-            stipendAmount: "",
-            opportunityForPD: "",
-            possibilityForRetaining: "",
-            possibilityOfExtendingDuration: "",
-            willCompleteDuration: "",
-            guidelines: "",
-            policies: "",
-            inclusion: ""
+    useEffect(() => {
+        if (positions) {
+            console.log("positions: ", positions)
         }
-    }
+    }, [positions])
 
-
-
-    function onMentorInputChange(e, position) {
-        e.preventDefault()
-        setMentors((currentMentors) => {
-            const newMentors = { ...currentMentors }
-            newMentors.list[position] = { ...newMentors.list[position], [e.target.name]: e.target.value }
-            return newMentors
-        })
-    }
-
-    function onRoleInputChange(e, position) {
-        e.preventDefault()
-        setRoles((currentRoles) => {
-            const newRoles = [...currentRoles]
-            newRoles[position] = { ...newRoles[position], [e.target.name]: e.target.value }
-            return newRoles
-        })
-    }
-
-    function addRole(e) {
-        e.preventDefault()
-        setRoles((currentRoles) => [
-            ...currentRoles,
-            {
-                role: "",
-                qualifications: "",
-                tasks: "",
-            }
-        ])
-    }
-
-    function addMentor(e) {
-        e.preventDefault()
-        setMentors((currentMentors) => ({
-            ...currentMentors,
-            list: [
-                ...currentMentors.list,
-                {
-                    name: "",
-                    contact: "",
-                    support: "",
-                    evaluation: ""
-                }
-            ]
-        }))
-    }
-
-    function removeMentor(e, position) {
-        e.preventDefault()
-        setMentors((currentMentors) => ({
-            ...currentMentors,
-            list: currentMentors.list.filter((_, index) => index !== position)
-        }))
-    }
 
     function handleFormChange(e) {
         const { name, value } = e.target
@@ -245,7 +151,7 @@ export default function OpenRoles({
         resetDay()
     }, [])
 
-   
+
 
 
 
@@ -276,252 +182,217 @@ export default function OpenRoles({
 
     return (
         <div className="w-full">
-            <form className="flex flex-col items-center pb-[50px]" onSubmit={submitForm}>
-                {/* <div className="flex flex-col w-[500px] mt-[30px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] border bg-brand-yellow px-[5px]">COMPANY DETAILS</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Name" />
-                        <input onChange={handleFormChange} value={formDetails.email} name="email" className="pl-[5px] outline-none" type="email" placeholder="Enter Company Email" />
-                        <input onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[5px] outline-none" type="tel" placeholder="Enter Company Phone Number" />
-                        <input onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Address" />
-                        <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Website" />
-                        <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[5px] outline-none" type="text" placeholder="Enter Company Fax Number" />
-                        <select onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="outline-none">
-                            {companyTypes.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="industry" value={formDetails.industry} className="outline-none">
-                            {industries.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="outline-none">
-                            {["ARE YOU REGISTERED WITH CAC", "NO", "YES"].map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        {formDetails.cacRegistered === "YES" && (
-                            <input onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none" type="text" placeholder="Enter Your CAC Number" />
-                        )}
-                        {formDetails.cacRegistered === "YES" && (
-                            <input onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none" type="text" placeholder="Enter number of years post incorporation" />
-                        )}
-                        {formDetails.cacRegistered === "NO" && (
-                            <input onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
-                        )}
-                    </div>
-                </div> */}
+            <section className={`py-2 w-full mt-[20px]`}>
+                <section className={`min-h-[674px] w-full ${agentEdit.editView ? "hidden" : ""}  pt-4 pl-[5px]`}>
+                    <TableContainer pageSelector={pageSelector} entryValue={entryValue}>
 
-                {/* Internship Positions Section */}
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">INTERNSHIP POSITIONS</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={handleFormChange} value={formDetails.slots} name="slots" className="pl-[5px] outline-none" type="number" placeholder="How many slots are available?" />
-                        <div className="flex flex-col gap-[5px]">
-                            <button onClick={addRole}>Add Role +</button>
-                            {roles.map((item, index) => (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="role" value={item.role} type="text" placeholder="Enter Role Name" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="tasks" value={item.tasks} type="text" placeholder="Enter Tasks separatd by commas" />
-                                        <input onChange={(e) => onRoleInputChange(e, index)} className="pl-[5px] outline-none" name="qualifications" value={item.qualifications} type="text" placeholder="Enter Qualifications separatd by commas" />
+                        <table className=" w-full">
+                            <thead>
+                                <tr className="">
+                                    <th className="font-400 borde  w-[90px] text-start  text-[12px] leading-[15.62px] font-pushpennyBook">ROLE ID</th>
+                                    <th className="font-400 bordr  ml-[10px]   w-[120px] text-start text-[12px] leading-[15.62px] font-pushpennyBook">ROLE NAME</th>
+                                    <th className="font-400  boder w-[100px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">OPEN SLOTS</th>
+                                    <th className="font-400 boder  w-[100px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">STIPEND</th>
+                                    <th className="font-400 brder  w-[120px] text-[12px] text-start leading-[15.62px] font-pushpennyBook">EXTENSION</th>
+                                    <th className="font-400 order  w-[80px] break-words text-[12px] text-start leading-[15.62px] font-pushpennyBook">RETENTION</th>
+                                    <th className="font-400 borer  w-[173px] text-[12px] leading-[15.62px] text-start font-pushpennyBook">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody className="mt-6 ">
+                                {searchField == "" ?
+                                    (search ? filteredData : positions)?.map((position, index) => {
+                                        return (
+                                            <tr key={index} className="relative border-b border-[#2dcd7c] h-[50px]">
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{position.id}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.department}</td>
+                                                <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.numberOfSlot}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.additionalStipend || "n/a"}</td>
+                                                
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfExtendingDuration || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfRetaining || "n/a"}</td>
+                                                <td className="font-pushpennyBook gap-[5px] borde w-[175px] flex  items-start">
+                                                    <div className="borde mt-[5px] w-[80px] h-[36px]">
+                                                        <UserButton onClick={() => {
+                                                            // setView(true)
+                                                            
+                                                        }} type="edit" />
+                                                    </div>
+                                                    <div className="w-[88px] mt-[5px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            // localStorage.setItem('id', agent.id)
+                                                            // setLoading(true)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    }) :
+                                    searchBarData?.data.map((agent, index) => {
+                                        return (
+                                            <tr key={index} className=" justify-between h-[50px]">
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{agent.agentIdentifier}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.userName}</td>
+                                                <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.agentType}</td>
+                                                <td className="font-pushpennyBook   w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
 
-                                        <div className="flex gap-[5px]">
-                                            <button className="border p-[5px]" onClick={() => setRoles(roles.filter((_, i) => i !== index))}>Remove Role</button>
-                                        </div>
-                                    </div>
-                                </Fragment>
-                            ))}
-                        </div>
-                    </div>
-                </div> */}
+                                                    {agent.firstName} <br></br>
+                                                    {agent.lastName}
 
-                {/* Work Environment Section */}
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">WORK ENVIRONMENT</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={handleFormChange} name="workType" value={formDetails.workType} className="outline-none">
-                            {workType.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <select onChange={handleFormChange} name="workLocation" value={formDetails.workLocation} className="outline-none">
-                            {workLocation.map((item, index) => (
-                                <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
-                        <label htmlFor="resources">Please enter available resources to support the intern's work</label>
-                        <input onChange={handleFormChange} value={formDetails.resources} name="resources" className="pl-[5px] outline-none" type="text" placeholder="Enter resources separated by commas" />
-                        <label htmlFor="opportunities">Please enter available opportunities for intern's professional development</label>
-                        <input onChange={handleFormChange} value={formDetails.opportunities} name="opportunities" className="pl-[5px] outline-none" type="text" placeholder="Enter opportunities separated by commas" />
-                    </div>
-                </div> */}
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.phoneNumber}</td>
+                                                <td className="font-pushpennyBook  w-[80px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.needSetup ? "DEACTIVATED" : "ACTIVATED"}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.status}
+                                                    </h2>
 
-                {/* Add more sections here (Duration and Stipend, Mentorship and Supervision, etc.) */}
-
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">DURATION AND STIPEND</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <input onChange={(e) => { handleFormChange(e) }} value={formDetails.duration} name="duration" className="pl-[5px] outline-none" type="number" placeholder="Please enter the internship duration in months" />
-                        <select onChange={(e) => handleFormChange(e)} name="stipend" value={formDetails.stipend} className="outline-none">
-                            {["WILL ADDITIONAL STIPEND BE PAID?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
+                                                </td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{dateFormatter(agent.dateCreated)}</td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{agent.lastLoginDate ? dateFormatter(agent.lastLoginDate) : "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[100px] font-400 text-[14px] leading-[14px] text-[#6E7883]">
+                                                    <h2>
+                                                        {agent.state}
+                                                    </h2>
+                                                    <h2>
+                                                        {agent.lga}
+                                                    </h2>
+                                                </td>
+                                                <td className="font-pushpennyBook gap-[5px] w-[175px] flex  items-start">
+                                                    <div className="w-[80px] h-[36px]">
+                                                        <UserButton onClick={() => {
+                                                            setView(true)
+                                                            editInfo(
+                                                                agent.agentIdentifier,
+                                                                agent.userName,
+                                                                agent.firstName,
+                                                                agent.lastName,
+                                                                agent.email,
+                                                                agent.phoneNumber,
+                                                                agent.address,
+                                                                agent.gender,
+                                                                agent.city,
+                                                                agent.state,
+                                                                agent.lga,
+                                                                agent.agentType,
+                                                                agent.classification,
+                                                                agent.bankInstitutionCode,
+                                                                agent.bankAccountNumber,
+                                                                agent.id
+                                                            )
+                                                        }} type="edit" />
+                                                    </div>
+                                                    <div className="w-[88px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            localStorage.setItem('id', agent.id)
+                                                            setLoading(true)
+                                                            router.push(`/dashboard/agency/agent-management/agents/agent`)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
                                 }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <input onChange={(e) => { handleFormChange(e) }} value={formDetails.amount} name="amount" className={`${formDetails.stipend == "" || formDetails.stipend == "NO" ? "hidden" : ""} pl-[5px] outline-none`} type="text" placeholder="How much will you be paying" />
+                            </tbody>
+                        </table>
+
+                    </TableContainer>
+                </section>
+
+                {/* <section className={`${agentEdit.editView ? "flex" : "hidden"} flex-col gap-[10px]`}>
+                    <div className="w-full rounded-[48px] h-[80px] lg:h-[61px] flex flex-col lg:flex-row justify-around items-center bg-[#F9F9F9] pl-[30px] pr-[13px] ">
+                        <h2 className="font-pushpennyBook text-[18px] font-[400] leading-[14px]">Edit Agent Details</h2>
                     </div>
-                </div> */}
-
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">MENTORSHIP AND SUPERVISION</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <button onClick={(e) => { addMentor(e) }}>Add Mentor +</button>
-                        {mentors.list.map((item, index) => {
-                            return (
-                                <Fragment key={index}>
-                                    <div className="flex flex-col gap-[10px] mt-[20px]">
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="name" value={mentors.list[index].name} type="text" placeholder="Enter Nentor's name" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="contact" value={mentors.list[index].contact} type="text" placeholder="Enter Mentor's phone number" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="support" value={mentors.list[index].support} type="text" placeholder="Enter Mentor's support role" />
-                                        <input onChange={(e) => { onMentorInputChange(e, index) }} className={`pl-[5px] outline-none`} name="evaluation" value={mentors.list[index].evaluation} type="text" placeholder="Enter Mentor's evaluation criteria" />
-                                        <button onClick={(e) => { removeMentor(e, index) }}>Remove Mentor</button>
-                                    </div>
-                                </Fragment>
-                            )
-                        })}
-                    </div>
-                </div> */}
-
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">EMPLOYMENT OPPORTUNITIES</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="employment" value={formDetails.employment} className="outline-none">
-                            {["IS EMPLOYMENT AVAILABLE AFTER INTERNSHIP?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-
-                        <select onChange={(e) => handleFormChange(e)} name="extension" value={formDetails.extension} className="outline-none">
-                            {["IS EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div> */}
+                    <form className=" flex flex-col lg:flex-row w-full gap-[20px] lg:gap-[9%] overflow-x-auto bg-[#FBF4EB] py-4 rounded-[10px]">
+                        <section className="w-full lg:w-[45%] flex flex-col gap-[20px]">
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield type={createView ? "text" : "readonly"} formEdit={formEdit} title="Agent ID" value={agentEdit.editForm.agentId} name="agentId" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Username" value={agentEdit.editForm.userName} name="userName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield important={true} formEdit={formEdit} title="First Name" value={agentEdit.editForm.firstName} name="firstName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Last Name" value={agentEdit.editForm.lastName} name="lastName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Middle Name" value={agentEdit.editForm.middleName} name="middleName" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} charType="date" title="Date of birth" value={agentEdit.editForm.dob} name="dob" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Email address" value={agentEdit.editForm.email} name="email" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Phone Number" value={agentEdit.editForm.phone} name="phone" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="Address" value={agentEdit.editForm.address} name="address" bg="bg-[white]" />
+                            </div>
+                            <div className="w-full h-[57px] rounded-[28px]">
+                                <Textfield formEdit={formEdit} title="City" value={agentEdit.editForm.city} name="city" bg="bg-[white]" />
+                            </div>
 
 
-                {/* <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-[500px] mt-[10px] border p-[10px] gap-[5px]">
-                    <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLIANCE AND LEGAL</h2>
-                    <div className="flex flex-col gap-[5px]">
-                        <select onChange={(e) => handleFormChange(e)} name="guidelines" value={formDetails.guidelines} className="outline-none">
-                            {["DO YOU AGREE TO COMPLY WITH THE NDDC INTERNSHIP GUIDELINES?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <select onChange={(e) => handleFormChange(e)} name="policies" value={formDetails.policies} className="outline-none">
-                            {["DO YOU AGREE TO NDDC INCLUSIVE WORK POLICIES?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <select onChange={(e) => handleFormChange(e)} name="inclusion" value={formDetails.inclusion} className="outline-none">
-                            {["DO YOU REQUIRE AGREEMENTS/CONTRACTS FOR ONBOARDING INTERNS?", "NO", "YES"].map((item, index) => {
-
-                                if (index === 0) {
-                                    // The first item is the placeholder and should be disabled
-                                    return (
-                                        <option key={item} value="" disabled selected>
-                                            {item}
-                                        </option>
-                                    );
-                                }
-                                return (
-                                    <option key={item} value={item}>
-                                        {item}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                </div> */}
 
 
-            </form>
+                        </section>
+                        <section className="w-full lg:w-[45%] flex flex-col gap-[20px] lg:justify-between">
+                            <section className="flex gap-[15px] flex-col">
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="State" value={agentEdit.editForm.state} name="state" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="LGA" value={agentEdit.editForm.lga} name="lga" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a country", "Nigeria"]} formEdit={formEdit} title="Country" value={agentEdit.editForm.country} name="country" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a type", "SUPER_AGENT", "AGENT", "FARMER"]} formEdit={formEdit} title="Agent Type" value={agentEdit.editForm.agentType} name="agentType" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a gender", "Male", "Female"]} formEdit={formEdit} title="Gender" value={agentEdit.editForm.gender} name="gender" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={["Choose a class", "INDIVIDUAL", "BUSINESS"]} formEdit={formEdit} title="Agent Classification" value={agentEdit.editForm.agentClass} name="agentClass" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield type="select" selectOptions={banksData.names} formEdit={formEdit} title="Bank" value={agentEdit.editForm.bank} name="bank" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="Account Number" value={agentEdit.editForm.accountNumber} name="accountNumber" bg="bg-[white]" />
+                                </div>
+                                <div className="w-full h-[57px] rounded-[28px]">
+                                    <Textfield formEdit={formEdit} title="BVN" value={agentEdit.editForm.bvn} name="bvn" bg="bg-[white]" />
+                                </div>
+
+
+                            </section>
+                            <div className="w-full flex flex-col gap-[20px] lg:gap-0 md:flex-row md:justify-around h-fit rounded-[28px]">
+                                <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                    <UserButton type="" text="Cancel" bg="bg-[#DDDDDD]" onClick={(e) => {
+                                        e.preventDefault()
+                                        changeCreateView(false)
+                                        setView(false)
+                                        setCustomerEdit({ ...agentEdit, editView: false, editForm: initialCustomerForm })
+                                    }} />
+                                </div>
+                                <div className="w-full md:w-[164px] h-[46px] rounded-inherit">
+                                    <UserButton submit={"submit"} onClick={editAgent} type="gradient" text="Save" />
+                                </div>
+                            </div>
+                        </section>
+                    </form>
+                </section> */}
+            </section>
         </div>
     )
 }

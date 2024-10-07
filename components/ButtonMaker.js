@@ -30,7 +30,7 @@ export default function UserButton({ type, text, onClick, small = false, bg = "b
     }
     if (type == "edit") {
         return (
-            <button disabled={disabled} type={preventDefault} onClick={onClick} className={`w-full h-full flex justify-center gap-[10%] px-[10px] items-center text-white rounded-[24px] ${disabled ? "bg-[#6E7883]" : "bg-black"} active:bg-white flex`}>
+            <button disabled={disabled} type={preventDefault} onClick={onClick} className={`w-full h-full flex justify-center gap-[10%] px-[10px] items-center text-white rounded-[24px] ${disabled ? "bg-[#6E7883]" : "bg-[#2dcd7c]"} active:bg-white flex`}>
                 <h2 className={`font-[400] font-pushPenny ${text == "Approve" ? "text-[17px]" : "text-[18px]"} `}>{text || "Edit"}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src='/icons/arrow.svg' />
@@ -60,7 +60,7 @@ export default function UserButton({ type, text, onClick, small = false, bg = "b
     }
     if (type == "view") {
         return (
-            <button disabled={disabled} type={preventDefault} onClick={onClick} className={`w-full h-full flex justify-center gap-[10%] px-[10px] active:bg-white items-center text-white rounded-[24px] ${disabled ? "bg-[#6E7883]" : "bg-black active:bg-white"} flex`}>
+            <button disabled={disabled} type={preventDefault} onClick={onClick} className={`w-full h-full flex justify-center gap-[10%] px-[10px] active:bg-white items-center text-white rounded-[24px] ${disabled ? "bg-[#6E7883]" : "bg-[#2dcd7c] active:bg-white"} flex`}>
                 <h2 className="font-[400] font-pushPenny text-[18px]">{text}</h2>
                 <div className="w-[20px] h-[20px] relative">
                     <ImageHolder src={alterImg || '/icons/view.svg'} />

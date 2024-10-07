@@ -32,7 +32,7 @@ export default function TableContainer({ children, pageSelector, entryValue, col
     return (
         <div className="w-full gap-[20px] overflow-auto">
             <div className="w-full overflow-auto">
-                <div className={`w-[1115px] px-[5px] xl:w-full pt-[20px] ${color} border border-[#DDDDDD] rounded-[10px] pt-[10px] min-h-[674px]`}>
+                <div className={`w-[1115px] px-[5px] xl:w-full pt-[20px]  border border-[#2dcd7c] rounded-[10px] pt-[10px] min-h-[674px]`}>
                     {children}
                 </div>
 

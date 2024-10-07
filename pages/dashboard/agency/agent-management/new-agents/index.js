@@ -20,7 +20,7 @@ export default function Agents({
     setLoading, searchField,
     resetSearchParams,
     setView, day, resetDay, createView,
-    changeCreateView
+    changeCreateView,
 }) {
     const initialCustomerForm = {
         agentId: "",
