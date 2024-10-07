@@ -81,7 +81,7 @@ export default function Home({
         const { user, employer } = data;
 
         // const {user} = data.data
-        debugger
+        // debugger
 
         if (!user.status) {
           localStorage.setItem("phoneNumber", `+234${userNumber}`)
@@ -107,7 +107,7 @@ export default function Home({
         localStorage.setItem("userDetails", JSON.stringify(user));
         localStorage.setItem("token", token);
         localStorage.setItem("employer",JSON.stringify(employer));
-        router.push("/dashboard/employee-management/onboarding-and-recruitment");
+        router.push("/dashboard/employee-management/onboarding-and-recruitment/open-positions");
         setLoading(false);
        
       }
