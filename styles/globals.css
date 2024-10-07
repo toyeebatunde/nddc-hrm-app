@@ -492,3 +492,13 @@ input[type=file]::file-selector-button {
 /* input[type=file]::file-selector-button:hover {
   background: #0d45a5;
 } */
+
+.form-modal::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.form-modal {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
