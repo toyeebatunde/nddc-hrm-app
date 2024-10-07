@@ -1,14 +1,14 @@
 
-import MetricLayoutTemplate from "../../../../components/MetricLayoutTemplate";
+import MetricLayoutTemplate from "../../../../../components/MetricLayoutTemplate";
 // import ImageHolder from "../../../../components/ImageHolder";
 // import UserButton from "../../../../../components/ButtonMaker";
 import { useEffect, useState, useRef } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv } from "../../../../components/Endpoints";
-import TableContainer from "../../../../components/TableContainer";
-import Textfield from "../../../../components/TextField";
+import { ngrok, testEnv } from "../../../../../components/Endpoints";
+import TableContainer from "../../../../../components/TableContainer";
+import Textfield from "../../../../../components/TextField";
 import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 
@@ -94,6 +94,15 @@ export default function CompanyDetails({
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
     const [geolocation, setGeoLocation] = useState({longitude: "", latitude:""})
+
+    useEffect(() => {
+        setActiveTab("Open Positions")
+        // setLoading(false)
+        setToken()
+        setActiveDashboard("Recruitment/Onboarding")
+        setActiveState("0")
+    }, [])
+
 
 
     async function submitForm() {
@@ -234,14 +243,7 @@ export default function CompanyDetails({
         resetDay()
     }, [])
 
-    useEffect(() => {
-        setActiveTab("Users")
-        // setLoading(false)
-        setToken()
-        setActiveDashboard("Recruitment/Onboarding")
-        setActiveState("0")
-    }, [])
-
+   
 
 
 

@@ -52,14 +52,9 @@ export default function Dashboard({
 
 
     useEffect(() => {
-        // const today = new Date()
         const exp = jwt.decode(localStorage.getItem("token"))?.exp
-        // console.log("exp: ", exp)
-        // debugger
         if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
             const expValue = exp < (new Date().getTime() + 1) / 1000
-            // debugger
-            // logout()
             localStorage.clear()
             router.push("/")
             return

@@ -8,17 +8,8 @@ const nextConfig = {
   },
   trailingSlash: true,
   env: {
-    base: "https://admapis-staging.payrail.co/"
+    base: "https://employer-api.nddc.gov.ng/"
   }
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: '/system',
-  //       destination: '/system/usermanagement',
-  //       permanent: true,
-  //     },
-  //   ]
-  // },
 }
 
 export default nextConfig

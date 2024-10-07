@@ -32,11 +32,15 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
     const agencyTabs = [
         {
             name: "Users",
-            url: "/dashboard/agency/agent-management/agents"
+            url: "/dashboard/employee-management/onboarding-and-recruitment/"
         },
         {
             name: "Applicants",
-            url: "/dashboard/agency/agent-management/new-agents"
+            url: "/dashboard/employee-management/onboarding-and-recruitment/applicants"
+        },
+        {
+            name: "Open Positions",
+            url: "/dashboard/employee-management/onboarding-and-recruitment/open-positions"
         },
         // {
         //     name: "KYC Pending approvals",
@@ -131,9 +135,9 @@ export default function MetricLayoutTemplate({ children, modals, activeAgency, v
 
 
                 </section>
-                <section className={`borde  h-[44px] ${activeAgency == "AgentManagement" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex" : activeAgency == "TicketManagement" ? "flex" : activeAgency == "Loans" ? "flex" : "hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+                <section className={`borde  h-[44px] ${activeAgency == "Recruitment/Onboarding" ? "flex" : activeAgency == "Transactions" ? "flex" : activeAgency == "POSTerminals" ? "flex" : activeAgency == "TicketManagement" ? "flex" : activeAgency == "Loans" ? "flex" : "hidden"} flex-col w-full px-4 relative mt-5 ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                     <div className="flex w-full z-[40] absolute h-full top-[1px] approvals-tab justify-start relative">
-                        {activeAgency == "AgentManagement" ? agencyTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
+                        {activeAgency == "Recruitment/Onboarding" ? agencyTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
                             : activeAgency == "Transactions" ? transactionTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
                                 : activeAgency == "TicketManagement" ? ticketTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)
                                     : activeAgency == "Loans" ? loanTabs.map((tab, index) => <div key={index}><ButtonTab tabKey={index} name={tab.name} url={tab.url} activeTab={activeTab} link={true} setTab={setActiveTab} /></div>)

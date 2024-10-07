@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import AlertDialog from "../components/AlertDialogue";
+import base from "../components/Endpoints";
 
 export default function OtpPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -78,7 +79,7 @@ export default function OtpPage() {
       // throw new Error("Error")
       // debugger
       const verifyOtp = await axios.post(
-        `https://nddc-api.payrail.co/api/v1/auth/verify-otp`,
+        `${base}api/v1/auth/verify-otp`,
         {
           otp: otp.join(""),
           userName: userNumber,

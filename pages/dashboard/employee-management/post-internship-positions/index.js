@@ -11,6 +11,7 @@ import { ngrok, testEnv } from "../../../../components/Endpoints";
 // import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 import AlertDialog from '../../../../components/AlertDialogue'
+import base from "../../../../components/Endpoints";
 
 const industries = [
     "Select an Industry",
@@ -82,9 +83,10 @@ export default function CompanyDetails({
         longitude: "",
         latitude: "",
     });
-    const [states, setStates] = useState(["SELECT STATE"])
-    const [lgas, setLgas] = useState(["SELECT STATE FIRST"])
+    const [states, setStates] = useState([["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"]])
+    const [lgas, setLgas] = useState(["CHOOSE A STATE TO SELECT LGA"])
     const [dialogue, setDialogue] = useState({ text: "", result: false, path: "", closeAlert: closeAlert })
+    const [submitting, setSubmitting] = useState(false)
 
 
     function closeAlert() {
@@ -92,24 +94,31 @@ export default function CompanyDetails({
     }
 
     function toSentenceCase(str) {
-        if (!str) return str; // Return if the string is empty
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        // debugger
+        if (!str) return str;
+        if (str == "Akwa Ibom") {
+            str = str.split(" ").join("")
+        }
+        if (str == "Cross River") {
+            str = "Cross%20River"
+        }
+        return str
     }
 
-    useEffect(() => {
-        async function fetchStates() {
-            const statesResponse = await axios.get("https://nga-states-lga.onrender.com/fetch")
-            const newStates = [...statesResponse.data].map((state) => {
-                state = state.toUpperCase()
-                return state
-            })
-            newStates.unshift("SELECT STATE")
-            // const states = newStates
-            setStates(newStates)
-        }
+    // useEffect(() => {
+    //     async function fetchStates() {
+    //         const statesResponse = await axios.get("https://nga-states-lga.onrender.com/fetch")
+    //         const newStates = [...statesResponse.data].map((state) => {
+    //             state = state.toUpperCase()
+    //             return state
+    //         })
+    //         newStates.unshift("SELECT STATE")
+    //         // const states = newStates
+    //         setStates(newStates)
+    //     }
 
-        fetchStates()
-    }, [])
+    //     fetchStates()
+    // }, [])
 
     useEffect(() => {
         async function fetchLgas() {
@@ -133,10 +142,16 @@ export default function CompanyDetails({
     }, [formDetails.state])
 
     async function submitForm(e) {
+        setSubmitting(true)
         e.preventDefault();
         const id = JSON.parse(localStorage.getItem("employer")).id
         const token = localStorage.getItem("token");
         // debugger
+        if (formDetails.policies != "YES" || formDetails.guidelines != "YES" || formDetails.inclusion != "YES") {
+            setSubmitting(false)
+            setDialogue({ ...dialogue, result: false, text: "You must agree to the NDDC employment policies and guidlines to proceed", path: "" })
+            return
+        }
 
         const roleSkills = formDetails.skills.split(",");
         const formData = {
@@ -168,7 +183,7 @@ export default function CompanyDetails({
         try {
             //   throw new Error("New Error")
             const isLogged = await axios.post(
-                `https://nddc-api.payrail.co/api/internship-positions/employer/${id}`,
+                `${base}api/internship-positions/employer/${id}`,
                 formData,
                 {
                     headers: {
@@ -180,6 +195,8 @@ export default function CompanyDetails({
             if (isLogged.status === 200) {
                 console.log("done");
                 setDialogue({ ...dialogue, result: true, text: "Form Submission Successful!", path: "#" })
+                setSubmitting(false)
+                setFormDetails(initialFormDetails)
                 // localStorage.setItem("companyDetails", isLogged.data)
                 // router.push("/dashboard/agency/post-internship-positions")
             }
@@ -187,9 +204,9 @@ export default function CompanyDetails({
             // window.alert("Something went wrong, try again");
             setDialogue({ ...dialogue, result: false, text: "Something went wrong!", path: "" })
             console.error("Form error:", error);
-            // setSubmitting(false)
+            setSubmitting(false)
         } finally {
-            // setSubmitting(false)
+            setSubmitting(false)
         }
     }
 
@@ -282,7 +299,7 @@ export default function CompanyDetails({
         // setActiveTab("Post Internship Positions");
         // setLoading(false)
         setToken();
-        setActiveDashboard("Post Internship Positions")
+        setActiveDashboard("PostInternshipPositions")
         setActiveState("0")
     }, []);
 
@@ -343,16 +360,16 @@ export default function CompanyDetails({
                             name="roles"
                             className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
                             type="text"
-                            placeholder="Enter the name of the role"
+                            placeholder="Enter role title"
                         />
-                        <input
+                        <textarea
                             required
                             onChange={handleFormChange}
                             value={formDetails.tasks}
                             name="tasks"
-                            className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                            className="pl-[10px] h-[100px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
                             type="text"
-                            placeholder="Enter expected tasks for this role"
+                            placeholder="Enter role description"
                         />
 
                         <select
@@ -433,7 +450,7 @@ export default function CompanyDetails({
               type="text"
               placeholder="Enter the country name"
             /> */}
-                        <input
+                        {/* <input
                             required
                             onChange={handleFormChange}
                             value={formDetails.state}
@@ -441,7 +458,7 @@ export default function CompanyDetails({
                             className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
                             type="text"
                             placeholder="Enter the state name"
-                        />
+                        /> */}
                         <select
                             required
                             onChange={(e) => handleFormChange(e)}
@@ -449,7 +466,7 @@ export default function CompanyDetails({
                             name="state"
                             className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
                         >
-                            {states.map(
+                            {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map(
                                 (item, index) => {
                                     if (index === 0) {
                                         // The first item is the placeholder and should be disabled
@@ -619,7 +636,7 @@ export default function CompanyDetails({
                                 value={formDetails.amount}
                                 name="amount"
                                 className={`pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]`}
-                                type="text"
+                                type="number"
                                 placeholder="How much will you be paying"
                             />
                         )}
@@ -748,8 +765,16 @@ export default function CompanyDetails({
                     </div>
                 </div>
 
-                <button className="border px-[15px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">
-                    Submit
+                <button disabled={submitting} className="border w-[120px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">
+
+                    {!submitting && (
+                        <h2>Submit</h2>
+                    )}
+                    {submitting && (
+                        <Box component={"h2"} sx={{ color: "white" }}>
+                            <CircularProgress size="20px" color="inherit" />
+                        </Box>
+                    )}
                 </button>
             </form>
             <AlertDialog props={dialogue} />

@@ -7,6 +7,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import base from "../components/Endpoints";
 
 export default function Home({
   showPassword,
@@ -67,7 +68,7 @@ export default function Home({
 
     try {
       const isLogged = await axios.post(
-        "https://nddc-api.payrail.co/api/v1/auth/login",
+        `${base}login`,
         {
           password: `${loginDetails.password}`,
           phoneNumber: `+234${userNumber}`,
@@ -79,23 +80,23 @@ export default function Home({
         const { user, employer } = data;
 
         // const {user} = data.data
-        // debugger
+        debugger
 
         if (!user.status) {
+          localStorage.setItem("phoneNumber", `+234${userNumber}`)
           const newOtp = await axios.post(
-            "https://nddc-api.payrail.co/api/v1/auth/resend-otp",
+            `${base}api/v1/auth/resend-otp`,
             {
               phoneNumber: `+234${userNumber}`,
             }
-          );
+          )
           router.push("/otp-verification");
-          return;
+          return
         }
 
         if (user.needSetup) {
           localStorage.setItem("token", token);
           localStorage.setItem("userDetails", JSON.stringify(user));
-          // localStorage.setItem("employ", employer);
           router.push("/success");
           return;
         }
