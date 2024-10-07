@@ -12,6 +12,7 @@ import Textfield from "../../../../../components/TextField";
 import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 import UserButton from "../../../../../components/ButtonMaker";
+import { Box, Modal, CircularProgress } from "@mui/material";
 
 
 
@@ -56,25 +57,17 @@ export default function OpenRoles({
 }) {
 
     const initialFormDetails = {
-        companyName: "",
-        location: "",
-        state: "",
-        country: "",
-        lga: "",
-        companyType: "",
-        industry: "",
-        cacRegistered: "",
-        yearsPostIncorporation: "",
-        email: "",
-        phone: "",
-        website: "",
-        fax: "",
-        bvn: "",
-        cac: "",
         slots: "",
+        roles: "",
         tasks: "",
+        qualifications: "",
+        skills: "",
+        mentor: "",
         workType: "",
         workLocation: "",
+        country: "",
+        state: "",
+        lga: "",
         resources: "",
         opportunities: "",
         duration: "",
@@ -84,8 +77,8 @@ export default function OpenRoles({
         extension: "",
         guidelines: "",
         policies: "",
-        inclusion: ""
-    }
+        inclusion: "",
+    };
 
 
     const [userDetails, setUserDetails] = useState({})
@@ -97,6 +90,9 @@ export default function OpenRoles({
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
     const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
+    const [editModal, setEditModal] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
+    const [lgas, setLgas] = useState(["CHOOSE A STATE TO SELECT LGA"])
 
     useEffect(() => {
         setActiveTab("Open Positions")
@@ -106,6 +102,27 @@ export default function OpenRoles({
         setActiveState("0")
         setUserDetails(JSON.parse(localStorage.getItem("userDetails")))
     }, [])
+
+    // useEffect(() => {
+    //     async function fetchLgas() {
+    //         const state = toSentenceCase(formDetails.state)
+    //         const lgasResponse = await axios.get(`https://nga-states-lga.onrender.com/?state=${state}`)
+    //         const newLgas = [...lgasResponse.data].map((lga) => {
+    //             lga = lga.toUpperCase()
+    //             return lga
+    //         })
+    //         newLgas.unshift("SELECT LGA")
+    //         // const states = newStates
+    //         setLgas(newLgas)
+    //     }
+
+    //     if (formDetails.state == "") {
+    //         // setLgas()
+    //         return
+    //     }
+
+    //     fetchLgas()
+    // }, [formDetails.state])
 
     useEffect(() => {
         if (positions) {
@@ -207,14 +224,14 @@ export default function OpenRoles({
                                                 <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.department}</td>
                                                 <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.numberOfSlot}</td>
                                                 <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.additionalStipend || "n/a"}</td>
-                                                
+
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfExtendingDuration || "n/a"}</td>
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfRetaining || "n/a"}</td>
                                                 <td className="font-pushpennyBook gap-[5px] borde w-[175px] flex  items-start">
                                                     <div className="borde mt-[5px] w-[80px] h-[36px]">
                                                         <UserButton onClick={() => {
                                                             // setView(true)
-                                                            
+
                                                         }} type="edit" />
                                                     </div>
                                                     <div className="w-[88px] mt-[5px] h-[36px]">
@@ -393,6 +410,429 @@ export default function OpenRoles({
                     </form>
                 </section> */}
             </section>
+            <Modal
+                open={editModal}
+                onClose={close}
+            >
+                <Box component={"div"} className="w-fit absolute translate-x-[-50%] top-[100px] left-[50%]">
+                    <form
+                        className="flex borde flex-col items-center pb-[50px]"
+                        onSubmit={submitForm}
+                    >
+                        {/* Internship Positions Section */}
+                        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                            <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
+                                INTERNSHIP POSITIONS
+                            </h2>
+                            <div className="flex flex-col gap-[5px]">
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.slots}
+                                    name="slots"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="number"
+                                    placeholder="How many slots are available?"
+                                />
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.roles}
+                                    name="roles"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter role title"
+                                />
+                                <textarea
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.tasks}
+                                    name="tasks"
+                                    className="pl-[10px] h-[100px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter role description"
+                                />
+
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    value={formDetails.qualifications}
+                                    name="qualifications"
+                                    className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["SELECT MINIMUM EDUCATIONAL QUALIFICATION FOR THIS ROLE", "Primary School", "Secondary School", "Technical College/Diploma", `Bachelor's Degree`].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                // The first item is the placeholder and should be disabled
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.skills}
+                                    name="skills"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter required skills separated by commas"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Work Environment Section */}
+                        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                            <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
+                                WORK ENVIRONMENT
+                            </h2>
+                            <div className="flex flex-col gap-[5px]">
+                                <select
+                                    required
+                                    onChange={handleFormChange}
+                                    name="workType"
+                                    value={formDetails.workType}
+                                    className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {workType.map((item, index) => (
+                                        <option
+                                            key={item}
+                                            value={index === 0 ? "" : item}
+                                            disabled={index === 0}
+                                        >
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.workLocation}
+                                    name="workLocation"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter the work location address"
+                                />
+                                
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    value={formDetails.state}
+                                    name="state"
+                                    className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    value={formDetails.lga}
+                                    name="lga"
+                                    className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {lgas.map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                <label htmlFor="resources">
+                                    What are the available resources to support the intern's work
+                                </label>
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.resources}
+                                    name="resources"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter resources separated by commas"
+                                />
+                                <label htmlFor="opportunities">
+                                    What are the available opportunities for intern's professional
+                                    development
+                                </label>
+                                <input
+                                    required
+                                    onChange={handleFormChange}
+                                    value={formDetails.opportunities}
+                                    name="opportunities"
+                                    className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
+                                    type="text"
+                                    placeholder="Enter opportunities separated by commas"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Add more sections here (Duration and Stipend, Mentorship and Supervision, etc.) */}
+
+                        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                            <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
+                                DURATION AND STIPEND
+                            </h2>
+                            <div className="flex flex-col gap-[5px]">
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="duration"
+                                    value={formDetails.duration}
+                                    className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["DO YOU CONFIRM THIS A 12 MONTH INTERNSHIP?", "NO", "YES"].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                // The first item is the placeholder and should be disabled
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="extension"
+                                    value={formDetails.extension}
+                                    className="pl-[5px] outline-none border text-[10px] font-[600] md:text-[13px] border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["IS AN EXTENSION AVAILABLE AFTER DURATION?", "NO", "YES"].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                // The first item is the placeholder and should be disabled
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="stipend"
+                                    value={formDetails.stipend}
+                                    className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["WILL AN ADDITIONAL STIPEND BE PAID?", "NO", "YES"].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                // The first item is the placeholder and should be disabled
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                                {formDetails.stipend === "YES" && (
+                                    <input
+                                        required
+                                        onChange={(e) => {
+                                            handleFormChange(e);
+                                        }}
+                                        value={formDetails.amount}
+                                        name="amount"
+                                        className={`pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]`}
+                                        type="number"
+                                        placeholder="How much will you be paying"
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                            <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
+                                EMPLOYMENT OPPORTUNITIES
+                            </h2>
+                            <div className="flex flex-col gap-[5px]">
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="employment"
+                                    value={formDetails.employment}
+                                    className="pl-[5px] text-[10px] font-[600] md:text-[13px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {["IS EMPLOYMENT AVAILABLE AFTER INTERNSHIP?", "NO", "YES"].map(
+                                        (item, index) => {
+                                            if (index === 0) {
+                                                // The first item is the placeholder and should be disabled
+                                                return (
+                                                    <option key={item} value="" disabled selected>
+                                                        {item}
+                                                    </option>
+                                                );
+                                            }
+                                            return (
+                                                <option key={item} value={item}>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col rounded-[10px] border-[#2dcd7c] w-full md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
+                            <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">
+                                COMPLIANCE AND LEGAL
+                            </h2>
+                            <div className="flex flex-col gap-[5px]">
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="guidelines"
+                                    value={formDetails.guidelines}
+                                    className="pl-[5px] text-[10px] font-[600] md:text-[13px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {[
+                                        "DO YOU AGREE TO COMPLY WITH THE NDDC INTERNSHIP GUIDELINES?",
+                                        "NO",
+                                        "YES",
+                                    ].map((item, index) => {
+                                        if (index === 0) {
+                                            // The first item is the placeholder and should be disabled
+                                            return (
+                                                <option key={item} value="" disabled selected>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                        return (
+                                            <option key={item} value={item}>
+                                                {item}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="policies"
+                                    value={formDetails.policies}
+                                    className="pl-[5px] text-[10px] font-[600] md:text-[13px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {[
+                                        "DO YOU AGREE TO NDDC INCLUSIVE WORK POLICIES?",
+                                        "NO",
+                                        "YES",
+                                    ].map((item, index) => {
+                                        if (index === 0) {
+                                            // The first item is the placeholder and should be disabled
+                                            return (
+                                                <option key={item} value="" disabled selected>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                        return (
+                                            <option key={item} value={item}>
+                                                {item}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    required
+                                    onChange={(e) => handleFormChange(e)}
+                                    name="inclusion"
+                                    value={formDetails.inclusion}
+                                    className="pl-[5px] text-[10px] font-[600] md:text-[13px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]"
+                                >
+                                    {[
+                                        "DO YOU REQUIRE AGREEMENTS/CONTRACTS FOR ONBOARDING INTERNS?",
+                                        "NO",
+                                        "YES",
+                                    ].map((item, index) => {
+                                        if (index === 0) {
+                                            // The first item is the placeholder and should be disabled
+                                            return (
+                                                <option key={item} value="" disabled selected>
+                                                    {item}
+                                                </option>
+                                            );
+                                        }
+                                        return (
+                                            <option key={item} value={item}>
+                                                {item}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
+
+                        <button disabled={submitting} className="border w-[120px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">
+
+                            {!submitting && (
+                                <h2>Submit</h2>
+                            )}
+                            {submitting && (
+                                <Box component={"h2"} sx={{ color: "white" }}>
+                                    <CircularProgress size="20px" color="inherit" />
+                                </Box>
+                            )}
+                        </button>
+                    </form>
+                </Box>
+            </Modal>
         </div>
     )
 }

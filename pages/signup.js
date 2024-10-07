@@ -82,7 +82,7 @@ export default function Home({
           classification: "INDIVIDUAL",
         }
       );
-      debugger
+      // debugger
 
       if (signupResponse.status === 200) {        
         const phoneNumber = `+234${userNumber}`

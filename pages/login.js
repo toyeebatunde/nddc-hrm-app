@@ -122,7 +122,7 @@ export default function Home({
   return (
     <div className="w-full lg:w-[529px] h-full m-auto flex flex-col items-center p-[20px]">
       <div className="flex flex-col items-center px-[20px] m-auto w-full py-[5px] ">
-        <section className="flex m-auto w-fit min-h-logo-height py-1 px-1 items-center">
+        <section onClick={()=>{router.push("/")}} className="flex cursor-pointer m-auto w-fit min-h-logo-height py-1 px-1 items-center">
           <div className=" relative w-[209px] h-[37px]">
             <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
@@ -190,7 +190,7 @@ export default function Home({
               Forget password?{" "}
               <span
                 onClick={() => {
-                  router.push("/reset");
+                  router.push("/reset-password");
                 }}
                 className="underline cursor-pointer sec-color"
               >
