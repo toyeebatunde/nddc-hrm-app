@@ -130,11 +130,10 @@ async function deleteApi(e, endpoint, token, modalCloser, loadState, modal, trig
     })
 }
 
-// https://aa63-102-219-152-17.eu.ngrok.io 
-//  axios.post("http://admapis-staging.payrail.co/v1/auth/login", {
 
 const ngrok = "https://a34f-102-89-33-46.eu.ngrok.io/"
-// const testEnv = "https://agencyadm-api.payrail.co/"
 const testEnv = "https://admapis-staging.payrail.co/"
-// https://agencyadm-api.payrail.co/
+const base = "https://employer-api.nddc.gov.ng/"
+
+export default base
 export { editApi, ngrok, testEnv, deleteApi, patchApi, postApi, createApi }

@@ -1,6 +1,6 @@
 
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
@@ -11,6 +11,8 @@ import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 import Image from "next/image";
 import AlertDialog from '../components/AlertDialogue'
+import { CircularProgress, Box } from "@mui/material";
+import base from "../components/Endpoints";
 
 
 
@@ -18,9 +20,26 @@ import AlertDialog from '../components/AlertDialogue'
 
 const industries = [
   "Select an Industry",
-  "Technology",
   "Agriculture",
-  "Finance",
+  "Automotive",
+  "Banking & Financial Services",
+  "Construction",
+  "Consumer Goods",
+  "Education",
+  "Energy & Utilities",
+  "Entertainment & Media",
+  "Healthcare & Pharmaceuticals",
+  "Hospitality",
+  "Information Technology",
+  "Insurance",
+  "Manufacturing",
+  "Non-Profit",
+  "Professional Services",
+  "Real Estate",
+  "Retail & E-commerce",
+  "Telecommunications",
+  "Transportation & Logistics",
+  "Travel & Tourism"
 ]
 
 const workLocation = [
@@ -91,24 +110,82 @@ export default function CompanyDetails({
   const [roles, setRoles] = useState([])
   const [geolocation, setGeoLocation] = useState({ longitude: "", latitude: "" })
   const [submitting, setSubmitting] = useState(false)
-  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
+  const [isLoading, setIsLoading] = useState(true)
+  const [dialogue, setDialogue] = useState({ text: "", result: false, path: "", closeAlert: closeAlert })
+  const [lgas, setLgas] = useState(["CHOOSE A STATE TO SELECT LGA"])
+  const router = useRouter()
+
+  useLayoutEffect(() => {
+    const exp = jwt.decode(localStorage.getItem("token"))?.exp
+    if (exp < (new Date().getTime() + 1) / 1000 || !exp) {
+      const expValue = exp < (new Date().getTime() + 1) / 1000
+      localStorage.clear()
+      router.push("/")
+      return
+    }
+    setIsLoading(false)
+  }, [])
 
 
-  function closeAlert () {
-    setDialogue({text: "", result: false, path: ""})    
+  function toSentenceCase(str) {
+    // debugger
+    if (!str) return str;
+    if (str == "Akwa Ibom") {
+        str = str.split(" ").join("")
+    }
+    if (str == "Cross River") {
+        str = "Cross%20River"
+    }
+    return str
+}
+
+useEffect(() => {
+  async function fetchLgas() {
+      const state = toSentenceCase(formDetails.state)
+      const lgasResponse = await axios.get(`https://nga-states-lga.onrender.com/?state=${state}`)
+      const newLgas = [...lgasResponse.data].map((lga) => {
+          lga = lga.toUpperCase()
+          return lga
+      })
+      newLgas.unshift("SELECT LGA")
+      // const states = newStates
+      setLgas(newLgas)
+  }
+
+  if (formDetails.state == "") {
+      // setLgas()
+      return
+  }
+
+  fetchLgas()
+}, [formDetails.state])
+
+
+
+
+
+
+
+
+  function closeAlert() {
+    setDialogue({ text: "", result: false, path: "" })
+  }
+
+  function holdPlay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
 
 
   async function sendForm(e) {
-    // debugger
     const authId = JSON.parse(localStorage.getItem("userDetails")).id
     const userName = JSON.parse(localStorage.getItem("userDetails")).phoneNumber
     // const token = localStorage.getItem("token")
     e.preventDefault()
-    console.log("submitting")
-    const token = localStorage.getItem("token")
     setSubmitting(true)
+    // await holdPlay(5000)
+    debugger
+    const token = localStorage.getItem("token")
     const formInfo = {
       companyName: formDetails.companyName,
       industry: formDetails.industry,
@@ -138,7 +215,7 @@ export default function CompanyDetails({
 
     if (formDetails.cacRegistered == "NO") {
       try {
-        const bvnResponse = await axios.post("https://nddc-api.payrail.co/kyc/verify-bvn",
+        const bvnResponse = await axios.post(`${base}kyc/verify-bvn`,
           {
             bvn: formDetails.bvn,
             userName: userName
@@ -157,13 +234,14 @@ export default function CompanyDetails({
 
       } catch (error) {
         verified = false
-        setDialogue({...dialogue, result: false, text: "BVN VERIFICATION FAILED", path:""})
+        setSubmitting(false)
+        setDialogue({ ...dialogue, result: false, text: "BVN VERIFICATION FAILED", path: "" })
       }
     }
     if (formDetails.cacRegistered == "YES") {
       // verified = true
       try {
-        const cacResponse = await axios.post("https://nddc-api.payrail.co/kyc/verify-cac", {
+        const cacResponse = await axios.post(`${base}kyc/verify-cac`, {
           companyName: formDetails.companyName,
           userName: userName,
           rcNumber: formDetails.cac
@@ -179,7 +257,8 @@ export default function CompanyDetails({
 
       } catch (error) {
         verified = false
-        setDialogue({...dialogue, result: false, text: "CAC VERIFICATION FAILED. PLEASE CHECK THAT YOUR COMPANY NAME AND RC NUMBER ARE ENTERED CORRECTLY", path:""})
+        setSubmitting(false)
+        setDialogue({ ...dialogue, result: false, text: "CAC VERIFICATION FAILED. PLEASE CHECK THAT YOUR COMPANY NAME AND RC NUMBER ARE ENTERED CORRECTLY", path: "" })
       }
     }
 
@@ -187,7 +266,7 @@ export default function CompanyDetails({
       // console.log("token: ", token)
       // debugger
       try {
-        const isLogged = await axios.post("https://nddc-api.payrail.co/api/employers", 
+        const isLogged = await axios.post(`${base}api/employers`,
           formInfo,
           {
             headers: {
@@ -197,17 +276,18 @@ export default function CompanyDetails({
         )
         if (isLogged.status === 200) {
           localStorage.setItem("employer", JSON.stringify(isLogged.data))
-          setDialogue({...dialogue, result: true, text: "Form Submission Successful!", path:"/dashboard/employee-management/post-internship-positions"})
+          setDialogue({ ...dialogue, result: true, text: "Form Submission Successful!", path: "/dashboard/employee-management/post-internship-positions" })
           // router.push("/dashboard/agency/post-internship-positions")
         }
       } catch (error) {
         console.error("Form error:", error)
         setSubmitting(false)
-        setDialogue({...dialogue, result: false, text: "Something went wrong!", path:""})
+        setDialogue({ ...dialogue, result: false, text: "Something went wrong!", path: "" })
       } finally {
-        // setSubmitting(false)
+        setSubmitting(false)
       }
     } else {
+      setSubmitting(false)
       console.log("unverified")
     }
   }
@@ -336,6 +416,16 @@ export default function CompanyDetails({
     return date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "  " + date.getHours() + ":" + date.getMinutes()
   }
 
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Box component={"h2"} sx={{ color: "black" }}>
+          <CircularProgress size="20px" color="inherit" />
+        </Box>
+      </div>
+    )
+  }
+
 
 
   return (
@@ -357,8 +447,58 @@ export default function CompanyDetails({
                 </option>
               ))}
             </select>
-            <input required onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter State" />
-            <input required onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Lga" />
+            {/* <input required onChange={handleFormChange} value={formDetails.state} name="state" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter State" /> */}
+            <select
+              required
+              onChange={handleFormChange}
+              value={formDetails.state}
+              name="state"
+              className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+            >
+              {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map(
+                (item, index) => {
+                  if (index === 0) {
+                    // The first item is the placeholder and should be disabled
+                    return (
+                      <option key={item} value="" disabled selected>
+                        {item}
+                      </option>
+                    );
+                  }
+                  return (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  );
+                }
+              )}
+            </select>
+            {/* <input required onChange={handleFormChange} value={formDetails.lga} name="lga" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Lga" /> */}
+            <select
+                            required
+                            onChange={handleFormChange}
+                            value={formDetails.lga}
+                            name="lga"
+                            className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                        >
+                            {lgas.map(
+                                (item, index) => {
+                                    if (index === 0) {
+                                        // The first item is the placeholder and should be disabled
+                                        return (
+                                            <option key={item} value="" disabled selected>
+                                                {item}
+                                            </option>
+                                        );
+                                    }
+                                    return (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    );
+                                }
+                            )}
+                        </select>
             <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Website" />
             <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Fax Number" />
             <select required onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
@@ -393,7 +533,17 @@ export default function CompanyDetails({
             )}
           </div>
         </div>
-        <button className="border px-[15px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">Submit</button>
+        <button disabled={submitting} className="border w-[120px] py-[5px] rounded-[7px] mt-[15px] bg-[#2dcd7c] active:bg-[#cfe1f0] text-white font-[600] text-[20px]">
+
+          {!submitting && (
+            <h2>Submit</h2>
+          )}
+          {submitting && (
+            <Box component={"h2"} sx={{ color: "white" }}>
+              <CircularProgress size="20px" color="inherit" />
+            </Box>
+          )}
+        </button>
 
 
       </form>

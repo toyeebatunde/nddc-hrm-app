@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { validatePassword } from "../components/constants";
 import axios from "axios";
+import base from "../components/Endpoints";
 
 export default function Home({
   showPassword,
@@ -71,7 +72,7 @@ export default function Home({
     // debugger
     try {
       const signupResponse = await axios.post(
-        "https://nddc-api.payrail.co/api/v1/auth/signup",
+        `${base}api/v1/auth/signup`,
         {
           //http://localhost:8080/  http://35.158.104.113:55
           confirmPassword: loginDetails.passwordOne,
@@ -81,6 +82,7 @@ export default function Home({
           classification: "INDIVIDUAL",
         }
       );
+      debugger
 
       if (signupResponse.status === 200) {        
         const phoneNumber = `+234${userNumber}`
@@ -89,8 +91,9 @@ export default function Home({
         console.log("Signup successful:", signupResponse.data);
       }
     } catch (error) {
-      console.error("Signup error:", error);
-      setPasswordCheck("error");
+      // debugger
+      console.error("Signup error:", error.response.data.data.error)
+      setPasswordCheck(error.response.data.data.error|| "A Signup error occurred");
     } finally {
       setSubmitLoading(false);
     }
