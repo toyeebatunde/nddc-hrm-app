@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv } from "../../../../../components/Endpoints";
+import base, { ngrok, testEnv } from "../../../../../components/Endpoints";
 import TableContainer from "../../../../../components/TableContainer";
 import Textfield from "../../../../../components/TextField";
 import jwt from "jsonwebtoken";
@@ -44,7 +44,7 @@ const companyTypes = [
     "GOVERNMENT AGENCY"
 ]
 
-export default function CompanyDetails({
+export default function OpenRoles({
     setToken,
     setActiveDashboard,
     setActiveState,
@@ -87,9 +87,10 @@ export default function CompanyDetails({
     }
 
 
+    const [userDetails, setUserDetails] = useState({})
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
     const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
-    const { data: agents, error: agentsError } = useSWR(`${testEnv}v1/external/agent/all?pageNo=${entryValue.page}&pageSize=${entryValue.size}`, fetching)
+    const { data: agents, error: agentsError } = useSWR(`${base}api/internship-positions/employer/${userDetails.id}`, fetching)
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
@@ -101,6 +102,7 @@ export default function CompanyDetails({
         setToken()
         setActiveDashboard("Recruitment/Onboarding")
         setActiveState("0")
+        setUserDetails(JSON.parse(localStorage.getItem("userDetails")))
     }, [])
 
 
@@ -524,4 +526,4 @@ export default function CompanyDetails({
     )
 }
 
-CompanyDetails.Layout = MetricLayoutTemplate
+OpenRoles.Layout = MetricLayoutTemplate

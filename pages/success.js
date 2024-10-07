@@ -184,7 +184,7 @@ useEffect(() => {
     e.preventDefault()
     setSubmitting(true)
     // await holdPlay(5000)
-    debugger
+    // debugger
     const token = localStorage.getItem("token")
     const formInfo = {
       companyName: formDetails.companyName,
