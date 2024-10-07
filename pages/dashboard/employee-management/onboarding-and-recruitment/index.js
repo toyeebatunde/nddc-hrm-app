@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import useSWR, { mutate } from 'swr'
 import axios from 'axios'
 import { useRouter } from "next/router";
-import { ngrok, testEnv } from "../../../../components/Endpoints";
+import base, { ngrok, testEnv } from "../../../../components/Endpoints";
 import TableContainer from "../../../../components/TableContainer";
 import Textfield from "../../../../components/TextField";
 import jwt from "jsonwebtoken";
