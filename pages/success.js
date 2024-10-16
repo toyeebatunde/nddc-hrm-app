@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import { Fragment } from "react";
 import Image from "next/image";
 import AlertDialog from '../components/AlertDialogue'
-import { CircularProgress, Box } from "@mui/material";
+import { CircularProgress, Box, FormControl, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, styled, TextField } from "@mui/material";
 import base from "../components/Endpoints";
 
 
@@ -62,6 +62,46 @@ const companyTypes = [
   "NGO",
   "GOVERNMENT AGENCY"
 ]
+
+const CssTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: '#2dcd7c'
+  },
+  // '& .MuiInput-underline:after': {
+  //   borderBottomColor: '#B2BAC2',
+  // },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#2dcd7c',
+    },
+    '&:hover fieldset': {
+      borderColor: '#2dcd7c',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#2dcd7c',
+    },
+  },
+})
+
+const SelectField = styled(Select)({
+  '& label.Mui-focused': {
+    color: '#2dcd7c'
+  },
+  // '& .MuiInput-underline:after': {
+  //   borderBottomColor: '#B2BAC2',
+  // },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#2dcd7c',
+    },
+    '&:hover fieldset': {
+      borderColor: '#2dcd7c',
+    },
+    '&.Mui-focused': {
+      borderColor: '#2dcd7c',
+    },
+  },
+});
 
 export default function CompanyDetails({
   setToken,
@@ -178,13 +218,13 @@ export default function CompanyDetails({
 
 
   async function sendForm(e) {
+    debugger
     const authId = JSON.parse(localStorage.getItem("userDetails")).id
     const userName = JSON.parse(localStorage.getItem("userDetails")).phoneNumber
     // const token = localStorage.getItem("token")
     e.preventDefault()
     setSubmitting(true)
     // await holdPlay(5000)
-    // debugger
     const token = localStorage.getItem("token")
     const formInfo = {
       companyName: formDetails.companyName,
@@ -436,18 +476,118 @@ export default function CompanyDetails({
         <div className="flex flex-col rounded-[10px] border-[#2dcd7c] md:w-[500px] mt-[10px] border p-[10px] gap-[5px]">
           <h2 className="rounded-t-[10px] borde bg-[#2dcd7c] font-[600] text-[20px] text-white px-[10px] text-center">COMPLETE VERIFICATION TO PROCEED</h2>
           <div className="flex flex-col gap-[20px]">
-            <input required onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[10px] rounded-[10px]  outline-none border border-[lightgreen] py-[5px] " type="text" placeholder="Enter Company Name" />
-            <input onChange={handleFormChange} value={formDetails.email} name="email" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="email" placeholder="Enter Company Email" />
-            <input required onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="tel" placeholder="Enter Company Phone Number" />
-            <input required onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Address" />
-            <select required onChange={handleFormChange} name="country" value={formDetails.country} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            {/* <input required onChange={handleFormChange} value={formDetails.companyName} name="companyName" className="pl-[10px] rounded-[10px]  outline-none border border-[lightgreen] py-[5px] " type="text" placeholder="Enter Company Name" /> */}
+            {/* <input onChange={handleFormChange} value={formDetails.email} name="email" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="email" placeholder="Enter Company Email" /> */}
+            {/* <input required onChange={handleFormChange} value={formDetails.phone} name="phone" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="tel" placeholder="Enter Company Phone Number" /> */}
+            <CssTextField
+              required
+              label={"Enter company name"}
+              placeholder={"Enter company name "}
+              multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="companyName"
+              value={formDetails.companyName}
+            />
+            <CssTextField
+              required
+              label={"Enter Company Email"}
+              placeholder={"Enter Company Email"}
+              multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="email"
+              value={formDetails.email}
+            />
+            <CssTextField
+              required
+              label={"Enter Company Phone Number"}
+              placeholder="Enter Company Phone Number"
+              multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="phone"
+              value={formDetails.phone}
+            />
+            <CssTextField
+              required
+              label={"Enter Company Address"}
+              placeholder="Enter Company Address"
+              multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="location"
+              value={formDetails.location}
+            />
+            {/* <input required onChange={handleFormChange} value={formDetails.location} name="location" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Address" /> */}
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"Choose country"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={formDetails.country}
+                label={"Choose country"}
+                size="small"
+                name="country"
+                onChange={handleFormChange}
+              >
+                {["CHOOSE COUNTRY", "Nigeria"].map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+
+            </FormControl>
+            {/* <select required onChange={handleFormChange} name="country" value={formDetails.country} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {["Choose a Country", "Nigeria"].map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
-            </select>
-            <select
+            </select> */}
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"Choose State"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                // id="demo-select-small"
+                value={formDetails.state}
+                label={"Choose State"}
+                size="small"
+                name="state"
+                onChange={handleFormChange}
+              // multiline
+              >
+                {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+            </FormControl>
+            {/* <select
               required
               onChange={handleFormChange}
               value={formDetails.state}
@@ -457,7 +597,6 @@ export default function CompanyDetails({
               {["SELECT STATE", "Abia", "Akwa Ibom", "Bayelsa", "Cross River", "Delta", "Edo", "Imo", "Ondo", "Rivers"].map(
                 (item, index) => {
                   if (index === 0) {
-                    // The first item is the placeholder and should be disabled
                     return (
                       <option key={item} value="" disabled selected>
                         {item}
@@ -471,9 +610,36 @@ export default function CompanyDetails({
                   );
                 }
               )}
-            </select>
+            </select> */}
 
-            <select
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"SELECT LGA"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                label={"SELECT LGA"}
+                size="small"
+                value={formDetails.lga}
+                name="lga"
+                onChange={handleFormChange}
+              >
+                {lgas.map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+            </FormControl>
+
+            {/* <select
               required
               onChange={handleFormChange}
               value={formDetails.lga}
@@ -483,7 +649,6 @@ export default function CompanyDetails({
               {lgas.map(
                 (item, index) => {
                   if (index === 0) {
-                    // The first item is the placeholder and should be disabled
                     return (
                       <option key={item} value="" disabled selected>
                         {item}
@@ -497,38 +662,173 @@ export default function CompanyDetails({
                   );
                 }
               )}
-            </select>
-            <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Website" />
-            <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Fax Number" />
-            <select required onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            </select> */}
+            <CssTextField
+            required
+              label={"Company Website"}
+              // placeholder="Enter Company Website"
+              // multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="website"
+              value={formDetails.website}
+            />
+            {/* <input onChange={handleFormChange} value={formDetails.website} name="website" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Website" /> */}
+            <CssTextField
+              label={"Company Fax Number"}
+              // placeholder="Enter Company Website"
+              // multiline
+              className="w-full outline-none mt-[10px]"
+              size="small"
+              onChange={handleFormChange}
+              name="fax"
+              value={formDetails.fax}
+            />
+            {/* <input onChange={handleFormChange} value={formDetails.fax} name="fax" className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]" type="text" placeholder="Enter Company Fax Number" /> */}
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"Select Company Type"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                label={"Choose company type"}
+                size="small"
+                value={formDetails.companyType}
+                name="companyType"
+                onChange={handleFormChange}
+              >
+                {companyTypes.map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+            </FormControl>
+            {/* <select required onChange={handleFormChange} name="companyType" value={formDetails.companyType} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {companyTypes.map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
-            </select>
-            <select required onChange={handleFormChange} name="industry" value={formDetails.industry} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            </select> */}
+
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"Select Industry"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                label={"Choose Industry"}
+                size="small"
+                value={formDetails.industry}
+                name="industry"
+                onChange={handleFormChange}
+              >
+                {industries.map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+            </FormControl>
+
+            {/* <select required onChange={handleFormChange} name="industry" value={formDetails.industry} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {industries.map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
-            </select>
-            <select required onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
+            </select> */}
+
+            <FormControl required fullWidth>
+              <InputLabel id="demo-simple-select-label">{"Are you registered with CAC"}</InputLabel>
+              <SelectField
+                labelId="demo-select-small-label"
+                label={"Are you registered with CAC"}
+                size="small"
+                value={formDetails.cacRegistered}
+                name="cacRegistered"
+                onChange={handleFormChange}
+              >
+                {["ARE YOU REGISTERED WITH CAC", "NO", "YES"].map((state, index) => {
+                  if (index === 0) {
+                    return (
+                      <MenuItem key={index} value="" disabled selected>
+                        {state}
+                      </MenuItem>
+                    );
+                  }
+                  return (
+                    <MenuItem className="menu-item" key={index} value={state}>
+                      {state}
+                    </MenuItem>
+                  )
+                })}
+              </SelectField>
+            </FormControl>
+            {/* <select required onChange={handleFormChange} name="cacRegistered" value={formDetails.cacRegistered} className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]">
               {["ARE YOU REGISTERED WITH CAC", "NO", "YES"].map((item, index) => (
                 <option key={item} value={index === 0 ? "" : item} disabled={index === 0}>
                   {item}
                 </option>
               ))}
-            </select>
+            </select> */}
             {formDetails.cacRegistered === "YES" && (
-              <input required onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter Your CAC Number" />
+              <CssTextField
+              required
+                label={"Enter your CAC Number"}
+                // placeholder="Enter Company Website"
+                // multiline
+                className="w-full outline-none mt-[10px]"
+                size="small"
+                onChange={handleFormChange}
+                name="cac"
+                value={formDetails.cac}
+              />
+              // <input required onChange={handleFormChange} value={formDetails.cac} name="cac" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter Your CAC Number" />
             )}
             {formDetails.cacRegistered === "YES" && (
-              <input required onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter number of years post incorporation" />
+              <CssTextField
+              required
+                label={"Enter number of years post incorporation"}
+                // placeholder="Enter Company Website"
+                // multiline
+                className="w-full outline-none mt-[10px]"
+                size="small"
+                onChange={handleFormChange}
+                name="yearsPostIncorporation"
+                value={formDetails.yearsPostIncorporation}
+              />
+              // <input required onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter number of years post incorporation" />
             )}
             {formDetails.cacRegistered === "NO" && (
-              <input required onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
+              <CssTextField
+              required
+                label={"Enter Your BVN"}
+                // placeholder="Enter Company Website"
+                // multiline
+                className="w-full outline-none mt-[10px]"
+                size="small"
+                onChange={handleFormChange}
+                name="bvn"
+                value={formDetails.bvn}
+              />
+              // <input required onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
             )}
           </div>
         </div>
@@ -549,7 +849,5 @@ export default function CompanyDetails({
 
       <AlertDialog props={dialogue} />
     </div>
-
-    //disabled={submitting} onClick={(e)=>{sendForm(e)}}
   )
 }

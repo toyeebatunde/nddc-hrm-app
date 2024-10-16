@@ -134,6 +134,7 @@ async function deleteApi(e, endpoint, token, modalCloser, loadState, modal, trig
 const ngrok = "https://a34f-102-89-33-46.eu.ngrok.io/"
 const testEnv = "https://admapis-staging.payrail.co/"
 const base = "https://employer-api.nddc.gov.ng/"
+const assessmentEndpoint = "https://assessment-api.nddc.gov.ng/"
 
 export default base
-export { editApi, ngrok, testEnv, deleteApi, patchApi, postApi, createApi }
+export { editApi, ngrok, testEnv, deleteApi, patchApi, postApi, createApi, assessmentEndpoint }

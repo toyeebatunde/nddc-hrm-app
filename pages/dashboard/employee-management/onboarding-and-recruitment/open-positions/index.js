@@ -83,10 +83,12 @@ export default function OpenRoles({
 
 
     const [userDetails, setUserDetails] = useState({})
+    const [employerDetails, setEmployerDetails] = useState({})
     const [searchedField, setSearchedField] = useState()
     const [agentEdit, setCustomerEdit] = useState({ editView: false, editForm: initialCustomerForm })
-    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log(error))
-    const { data: positions, error: positionsError } = useSWR(`${base}api/internship-positions/employer/${userDetails.id}`, fetching)
+    const fetching = (url) => axios.get(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then(res => res.data).catch(error => console.log("fetching positions Error: ", error))
+    // const { data: positions, error: positionsError } = useSWR(`${base}api/internship-positions/employer/${userDetails.id}`, fetching)
+    const [positions, setPositions] = useState([])
     const [formDetails, setFormDetails] = useState(initialFormDetails)
     const [mentors, setMentors] = useState({ num: 0, list: [] })
     const [roles, setRoles] = useState([])
@@ -103,7 +105,36 @@ export default function OpenRoles({
         setActiveDashboard("Recruitment/Onboarding")
         setActiveState("0")
         setUserDetails(JSON.parse(localStorage.getItem("userDetails")))
+        setEmployerDetails(JSON.parse(localStorage.getItem("employer")))
+        async function fetchPositions() {
+            try {
+                const response = await axios.get(`${base}api/internship-positions/employer/${JSON.parse(localStorage.getItem("employer")).id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                )
+
+                if(response.status == 200) {
+                    setPositions(response.data)
+                }
+            } catch (error) {
+                console.log("fetching positions error: ", error)
+            }
+        }
+
+        fetchPositions()
     }, [])
+
+
+    // useEffect(()=>{
+    //     if(userDetails.hasOwnProperty("id")) {
+    //         mutate(`${base}api/internship-positions/employer/${userDetails.id}`)
+    //     }
+    // },[userDetails])
+
+
 
     useEffect(() => {
         async function fetchLgas() {
@@ -145,24 +176,24 @@ export default function OpenRoles({
         const thisRole = positions[role]
         setFormDetails({
             ...formDetails,
-            slots:thisRole.numberOfSlot,
-            roles:thisRole.department,
+            slots: thisRole.numberOfSlot,
+            roles: thisRole.department,
             tasks: thisRole.tasksAndOutcomes,
-            qualifications:thisRole.requiredQualifications,
-            skills:thisRole.requiredSkills.join(","),
-            workLocation:thisRole.workLocation.address,
-            state:thisRole.workLocation.state,
-            lga:thisRole.workLocation.lga,
-            country:thisRole.workLocation.country,
-            stipend:thisRole.additionalStipend ? "YES" : "NO",
+            qualifications: thisRole.requiredQualifications,
+            skills: thisRole.requiredSkills.join(","),
+            workLocation: thisRole.workLocation.address,
+            state: thisRole.workLocation.state,
+            lga: thisRole.workLocation.lga,
+            country: thisRole.workLocation.country,
+            stipend: thisRole.additionalStipend ? "YES" : "NO",
             amount: thisRole.stipendAmount,
-            extension:thisRole.possibilityOfExtendingDuration ? "YES" : "NO",
-            employment:thisRole.possibilityForRetaining ? "YES" : "NO",
+            extension: thisRole.possibilityOfExtendingDuration ? "YES" : "NO",
+            employment: thisRole.possibilityForRetaining ? "YES" : "NO",
             duration: thisRole.willCompleteDuration ? "YES" : "NO",
-            opportunities:thisRole.opportunityForPD,
+            opportunities: thisRole.opportunityForPD,
             workType: thisRole.workHours
 
-            
+
 
         })
         setEditModal(true)
@@ -172,11 +203,11 @@ export default function OpenRoles({
 
     }
 
-    useEffect(() => {
-        if (positions) {
-            console.log("positions: ", positions)
-        }
-    }, [positions])
+    // useEffect(() => {
+    //     if (positions) {
+    //         console.log("positions: ", positions)
+    //     }
+    // }, [positions])
 
     function submitForm(e) {
         e.preventDefault()
@@ -273,7 +304,7 @@ export default function OpenRoles({
                                                 <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{position.id}</td>
                                                 <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.department}</td>
                                                 <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.numberOfSlot}</td>
-                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{"N"+position.stipendAmount || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{"N" + position.stipendAmount || "n/a"}</td>
 
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfExtendingDuration || "n/a"}</td>
                                                 <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfRetaining || "n/a"}</td>
@@ -298,29 +329,29 @@ export default function OpenRoles({
                                     searchBarData?.data.map((position, index) => {
                                         return (
                                             <tr key={index} className="relative border-b border-[#2dcd7c] h-[50px]">
-                                            <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{position.id}</td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.department}</td>
-                                            <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.numberOfSlot}</td>
-                                            <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{"N"+position.stipendAmount || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[95px]  font-400 text-[14px] leading-[18px] text-start text-[#6E7883]">{position.id}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.department}</td>
+                                                <td className="font-pushpennyBook  w-[100px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.numberOfSlot}</td>
+                                                <td className="font-pushpennyBook  w-[120px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{"N" + position.stipendAmount || "n/a"}</td>
 
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfExtendingDuration || "n/a"}</td>
-                                            <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfRetaining || "n/a"}</td>
-                                            <td className="font-pushpennyBook gap-[5px] borde w-[175px] flex  items-start">
-                                                <div className="borde mt-[5px] w-[80px] h-[36px]">
-                                                    <UserButton onClick={() => {
-                                                        // setView(true)
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfExtendingDuration || "n/a"}</td>
+                                                <td className="font-pushpennyBook  w-[75px]  font-400 text-[14px] leading-[14px] text-[#6E7883]">{position.possibilityOfRetaining || "n/a"}</td>
+                                                <td className="font-pushpennyBook gap-[5px] borde w-[175px] flex  items-start">
+                                                    <div className="borde mt-[5px] w-[80px] h-[36px]">
+                                                        <UserButton onClick={() => {
+                                                            // setView(true)
 
-                                                    }} type="edit" />
-                                                </div>
-                                                <div className="w-[88px] mt-[5px] h-[36px]">
-                                                    <UserButton type="view" text="View" onClick={() => {
-                                                        // localStorage.setItem('id', agent.id)
-                                                        // setLoading(true)
-                                                    }}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                        }} type="edit" />
+                                                    </div>
+                                                    <div className="w-[88px] mt-[5px] h-[36px]">
+                                                        <UserButton type="view" text="View" onClick={() => {
+                                                            // localStorage.setItem('id', agent.id)
+                                                            // setLoading(true)
+                                                        }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         )
                                     })
                                 }
@@ -442,7 +473,7 @@ export default function OpenRoles({
                                     type="text"
                                     placeholder="Enter the work location address"
                                 />
-                                
+
                                 <select
                                     required
                                     onChange={(e) => handleFormChange(e)}
