@@ -13,13 +13,14 @@ import { Fragment } from "react";
 import AlertDialog from '../../../../components/AlertDialogue'
 import base from "../../../../components/Endpoints";
 import { Box, CircularProgress } from "@mui/material";
+import { industries } from "../../../../components/constants";
 
-const industries = [
-    "Select an Industry",
-    "Technology",
-    "Agriculture",
-    "Finance",
-];
+// const industries = [
+//     "Select an Industry",
+//     "Technology",
+//     "Agriculture",
+//     "Finance",
+// ];
 
 const workLocation = [
     "Select a location of work",
@@ -50,7 +51,9 @@ export default function CompanyDetails({
 }) {
     const initialFormDetails = {
         slots: "",
+        department: "",
         roles: "",
+        roleDesc: "",
         tasks: "",
         qualifications: "",
         skills: "",
@@ -156,7 +159,9 @@ export default function CompanyDetails({
 
         const roleSkills = formDetails.skills.split(",");
         const formData = {
-            department: formDetails.roles,
+            department: formDetails.department,
+            roleTitle: formDetails.roles,
+            roleDesc:formDetails.tasks,
             numberOfSlot: formDetails.slots,
             requiredQualifications: formDetails.qualifications,
             requiredSkills: roleSkills,
@@ -179,7 +184,7 @@ export default function CompanyDetails({
             willCompleteDuration: formDetails.duration == "YES" ? true : false,
         };
 
-        // debugger;
+        // debugger
 
         try {
             //   throw new Error("New Error")
@@ -363,6 +368,31 @@ export default function CompanyDetails({
                             type="text"
                             placeholder="Enter role title"
                         />
+                        <select
+                            required
+                            onChange={(e) => handleFormChange(e)}
+                            value={formDetails.department}
+                            name="department"
+                            className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
+                        >
+                            {industries.map(
+                                (item, index) => {
+                                    if (index === 0) {
+                                        // The first item is the placeholder and should be disabled
+                                        return (
+                                            <option key={item} value="" disabled selected>
+                                                {item}
+                                            </option>
+                                        );
+                                    }
+                                    return (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    );
+                                }
+                            )}
+                        </select>
                         <textarea
                             required
                             onChange={handleFormChange}
@@ -442,24 +472,8 @@ export default function CompanyDetails({
                             type="text"
                             placeholder="Enter the work location address"
                         />
-                        {/* <input
-              required
-              onChange={handleFormChange}
-              value={formDetails.country}
-              name="country"
-              className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
-              type="text"
-              placeholder="Enter the country name"
-            /> */}
-                        {/* <input
-                            required
-                            onChange={handleFormChange}
-                            value={formDetails.state}
-                            name="state"
-                            className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
-                            type="text"
-                            placeholder="Enter the state name"
-                        /> */}
+
+
                         <select
                             required
                             onChange={(e) => handleFormChange(e)}
@@ -485,14 +499,6 @@ export default function CompanyDetails({
                                 }
                             )}
                         </select>
-                        {/* <input
-              onChange={handleFormChange}
-              value={formDetails.lga}
-              name="lga"
-              className="pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]"
-              type="text"
-              placeholder="Enter the lga"
-            /> */}
                         <select
                             required
                             onChange={(e) => handleFormChange(e)}

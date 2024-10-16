@@ -50,6 +50,30 @@ const testAml = [
     }
 ]
 
+export const industries = [
+    "Select a department",
+    "Agriculture",
+    "Automotive",
+    "Banking & Financial Services",
+    "Construction",
+    "Consumer Goods",
+    "Education",
+    "Energy & Utilities",
+    "Entertainment & Media",
+    "Healthcare & Pharmaceuticals",
+    "Hospitality",
+    "Information Technology",
+    "Insurance",
+    "Manufacturing",
+    "Non-Profit",
+    "Professional Services",
+    "Real Estate",
+    "Retail & E-commerce",
+    "Telecommunications",
+    "Transportation & Logistics",
+    "Travel & Tourism"
+  ]
+
 
 export function validatePassword(str) {
     // Check if the string is up to 8 characters
