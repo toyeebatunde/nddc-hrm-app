@@ -103,7 +103,7 @@ export default function OpenRoles({
         // setLoading(false)
         setToken()
         setActiveDashboard("Recruitment/Onboarding")
-        setActiveState("0")
+        setActiveState("1")
         setUserDetails(JSON.parse(localStorage.getItem("userDetails")))
         setEmployerDetails(JSON.parse(localStorage.getItem("employer")))
         async function fetchPositions() {
@@ -343,13 +343,13 @@ export default function OpenRoles({
 
                                                         }} type="edit" />
                                                     </div>
-                                                    <div className="w-[88px] mt-[5px] h-[36px]">
+                                                    {/* <div className="w-[88px] mt-[5px] h-[36px]">
                                                         <UserButton type="view" text="View" onClick={() => {
                                                             // localStorage.setItem('id', agent.id)
                                                             // setLoading(true)
                                                         }}
                                                         />
-                                                    </div>
+                                                    </div> */}
                                                 </td>
                                             </tr>
                                         )

@@ -268,6 +268,7 @@ export default function ViewAssessments() {
                     </select>
                 </div>
             </div>
+            
             {currentAssessmentQuestions.length > 0 && (
                 <form onSubmit={submitAssessment} className="mt-[100px] pb-[20px] rounded-[5px] p-[5px] borde w-fit flex flex-col gap-[15px] items-center">
                     {currentAssessmentQuestions.map((question, index) => {

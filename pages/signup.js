@@ -8,7 +8,8 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { validatePassword } from "../components/constants";
 import axios from "axios";
-import base from "../components/Endpoints";
+import base from "../components/Endpoints"
+import { Box, CircularProgress } from "@mui/material";
 
 export default function Home({
   showPassword,
@@ -34,10 +35,10 @@ export default function Home({
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const router = useRouter();
-  useEffect(() => {}, [passwordDisplay]);
+  useEffect(() => { }, [passwordDisplay]);
   // console.log(router)
 
- 
+
 
   useEffect(() => {
     if (createCaution) {
@@ -50,19 +51,19 @@ export default function Home({
 
   async function signup(e) {
     e.preventDefault();
-
+    
     if (loginDetails.passwordOne !== loginDetails.passwordTwo) {
       setPasswordCheck("Passwords must be the same");
       return;
     }
-
+    
     if (!validatePassword(loginDetails.passwordOne)) {
       setPasswordCheck(
         "Password must be up to 8 characters and contain at least 1 uppercase letter, 1 lowercase letter, 1 special character and 1 number"
       );
       return;
     }
-
+    
     let userNumber = loginDetails.number;
     if (userNumber.charAt(0) === "0") {
       userNumber = userNumber.slice(1);
@@ -84,7 +85,7 @@ export default function Home({
       );
       // debugger
 
-      if (signupResponse.status === 200) {        
+      if (signupResponse.status === 200) {
         const phoneNumber = `+234${userNumber}`
         localStorage.setItem("phoneNumber", phoneNumber)
         router.push("/otp-verification");
@@ -93,7 +94,7 @@ export default function Home({
     } catch (error) {
       // debugger
       console.error("Signup error:", error.response.data.data.error)
-      setPasswordCheck(error.response.data.data.error|| "A Signup error occurred");
+      setPasswordCheck(error.response.data.data.error || "A Signup error occurred");
     } finally {
       setSubmitLoading(false);
     }
@@ -229,7 +230,14 @@ export default function Home({
               }}
               className="bg-gradient-to-r from-[#003B49] to-[#2DCD7C] active:bg-white active:text-[#2DCD7C] w-[126px] h-[46px] font-[400] text-[#ffffff] rounded-[23px]"
             >
-              {submitLoading ? "Signing you up..." : "Sign up"}
+              {!submitLoading && (
+                <h2>Submit</h2>
+              )}
+              {submitLoading && (
+                <Box component={"h2"} sx={{ color: "white" }}>
+                  <CircularProgress size="20px" color="inherit" />
+                </Box>
+              )}
             </button>
           </section>
         </div>

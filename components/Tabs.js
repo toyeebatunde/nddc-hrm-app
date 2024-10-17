@@ -303,6 +303,20 @@ export const tabs = [
 
 export const newTabs = [
     {
+        text: "Analytics",
+        data: "1",
+        subTexts: [
+            {
+                text: "Role Stats",
+                active: '/icons/agent-management.svg',
+                inactive: '/icons/agent-management-inactive.svg',
+                data: "1",
+                link: "/dashboard/analytics/role-stats", // pages/dashboard/agency/agent-management
+                permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
+            }
+        ]
+    },
+    {
         text: "Employee Management",
         data: "2",
         subTexts: [
@@ -475,7 +489,7 @@ export const newTabs = [
                 permission: ["VIEW_AGENT_MANAGEMENT", "EDIT_AGENT_MANAGEMENT"]
             },
             {
-                text: "Training feedback and evaluation",
+                text: "Training and Evaluation",
                 active: '/icons/agent-management.svg',
                 inactive: '/icons/agent-management-inactive.svg',
                 data: "6",
