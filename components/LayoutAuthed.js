@@ -40,7 +40,7 @@ export default function Dashboard({
     const [permissions, setPermissions] = useState()
     const [edgeFunction, setEdgeFunction] = useState(false)
     const bodyRef = useRef()
-    const sideBarMargin = isFull ? "-ml-[255px]" : "ml-[0]"
+    const sideBarMargin = isFull ? "-ml-[255px]" : "ml-[7px]"
     const router = useRouter()
     const [authed, setAuthed] = useState(false)
 
@@ -158,7 +158,7 @@ export default function Dashboard({
             </div>
 
 
-            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] min-w-[255px] bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
+            <div onMouseLeave={closeSideBar} className={`flex z-[157] ${token ? "" : "hidden"} ${sideBarMargin} borde pt-[150px] justify-between transition-all linear h-screen duration-[0.3s] min-w-[260px] borde bg-[#FAFBFC] flex-col fixed lg:relative top-0  ${modals.isOpen ? "blur-sm" : "blur-none"}`}>
                 <div className="borde h-[500px] overflow-y-auto sticky pl-[5px] top-[90px]">
                     <ul className=" flex flex-col w-[95%] borde h-fit overflow-y-auto pb-2">
                         {newTabs.map((tab, index) => {

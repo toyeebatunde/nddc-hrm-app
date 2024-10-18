@@ -18,6 +18,7 @@ export default function OtpPage() {
     closeAlert: closeAlert,
   });
   const [timeLeft, setTimeLeft] = useState(0);
+  
 
   function closeAlert() {
     setDialogue({ text: "", result: false, path: "" });
@@ -90,10 +91,11 @@ export default function OtpPage() {
       );
 
       if (verifyOtp.status === 200) {
-        localStorage.removeItem("phoneNumber");
-        router.push("/login");
-        setLoading(false);
-        console.log("otp successful:", verifyOtp.data);
+        localStorage.removeItem("phoneNumber")
+        setDialogue({ ...dialogue, result: true, text: "Otp validated Successfully!", path: "/login" })
+        // router.push("/login")
+        setLoading(false)
+        console.log("otp successful:", verifyOtp.data)
       }
     } catch (error) {
       console.error("otp error:", error);

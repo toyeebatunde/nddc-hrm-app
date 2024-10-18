@@ -8,6 +8,7 @@ import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import base from "../components/Endpoints";
+import Link from "next/link";
 
 export default function Home({
   showPassword,
@@ -27,7 +28,7 @@ export default function Home({
     username: "",
     password: "",
   });
-  useEffect(() => {}, [passwordDisplay]);
+  useEffect(() => { }, [passwordDisplay]);
 
   useEffect(() => {
     if (createCaution) {
@@ -75,7 +76,7 @@ export default function Home({
           phoneNumber: `+234${userNumber}`,
         }
       )
-      
+
       if (isLogged.status === 200) {
         const { data, token } = isLogged.data;
         const { user, employer } = data;
@@ -103,13 +104,13 @@ export default function Home({
         }
 
 
-        
+
         localStorage.setItem("userDetails", JSON.stringify(user));
         localStorage.setItem("token", token);
-        localStorage.setItem("employer",JSON.stringify(employer));
+        localStorage.setItem("employer", JSON.stringify(employer));
         router.push("/dashboard/employee-management/onboarding-and-recruitment/open-positions");
         setLoading(false);
-       
+
       }
     } catch (error) {
       handleLoginCaution();
@@ -122,7 +123,7 @@ export default function Home({
   return (
     <div className="w-full lg:w-[529px] h-full m-auto flex flex-col items-center p-[20px]">
       <div className="flex flex-col items-center px-[20px] m-auto w-full py-[5px] ">
-        <section onClick={()=>{router.push("/")}} className="flex cursor-pointer m-auto w-fit min-h-logo-height py-1 px-1 items-center">
+        <section onClick={() => { router.push("/") }} className="flex cursor-pointer m-auto w-fit min-h-logo-height py-1 px-1 items-center">
           <div className=" relative w-[209px] h-[37px]">
             <img src="/images/logo-transparent.png" alt="NDDC logo" />
           </div>
@@ -138,7 +139,19 @@ export default function Home({
           </section>
           <section className="flex flex-col">
             <section className="font-pushpennyMedium text-[20px] md:text-[30px] text-center">
-              Welcome back
+              Welcome back <br></br>
+              <section className="font-pushpennyBook text-[12px] leading-[15.62px]">
+                Don't have an account?{" "}
+                <span
+                  onClick={() => {
+                    router.push("/signup");
+                  }}
+                  className="underline cursor-pointer sec-color"
+                >
+                  {" "}
+                  Signup{" "}
+                </span>
+              </section>
             </section>
 
             <section className="text-center mt-[30px] font-pushpennyBook text-[10px] text-[red] self-center leading-[15.62px] h-[20px] font-[700] w-3/5">
@@ -187,7 +200,7 @@ export default function Home({
           </section>
           <section className="my-[30px] gap-[20px] lg:gap-0 m-auto w-[90%] md:w-[425px] flex items-center justify-between">
             <section className="font-pushpennyBook text-[12px] leading-[15.62px]">
-              Forget password?{" "}
+              Forgot password?{" "}
               <span
                 onClick={() => {
                   router.push("/reset-password");
