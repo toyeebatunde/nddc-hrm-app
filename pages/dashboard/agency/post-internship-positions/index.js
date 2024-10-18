@@ -10,7 +10,7 @@ import { ngrok, testEnv } from "../../../../components/Endpoints";
 // import Textfield from "../../../../../components/TextField";
 // import jwt from "jsonwebtoken";
 import { Fragment } from "react";
-import AlertDialog from '../../../../components/AlertDialogue'
+import AlertDialog from "../../../../components/AlertDialogue";
 
 const industries = [
   "Select an Industry",
@@ -83,61 +83,70 @@ export default function CompanyDetails({
     longitude: "",
     latitude: "",
   });
-  const [states, setStates] = useState(["SELECT STATE"])
-  const [lgas, setLgas] = useState(["SELECT STATE FIRST"])
-  const [dialogue, setDialogue] = useState({ text: "", result: false, path: "", closeAlert: closeAlert })
-
+  const [states, setStates] = useState(["SELECT STATE"]);
+  const [lgas, setLgas] = useState(["SELECT STATE FIRST"]);
+  const [dialogue, setDialogue] = useState({
+    text: "",
+    result: false,
+    path: "",
+    closeAlert: closeAlert,
+  });
 
   function closeAlert() {
-    setDialogue({ text: "", result: false, path: "" })
+    setDialogue({ text: "", result: false, path: "" });
   }
 
   function toSentenceCase(str) {
     if (!str) return str; // Return if the string is empty
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+  }
 
   useEffect(() => {
     async function fetchStates() {
-      const statesResponse = await axios.get("https://nga-states-lga.onrender.com/fetch")
-      const newStates = [...statesResponse.data].map((state)=>{
-        state = state.toUpperCase()
-        return state
-      })
-      newStates.unshift("SELECT STATE")
+      const statesResponse = await axios.get(
+        "https://nga-states-lga.onrender.com/fetch"
+      );
+      const newStates = [...statesResponse.data].map((state) => {
+        state = state.toUpperCase();
+        return state;
+      });
+      newStates.unshift("SELECT STATE");
       // const states = newStates
-      setStates(newStates)
+      setStates(newStates);
     }
 
-    fetchStates()
-  }, [])
+    fetchStates();
+  }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     async function fetchLgas() {
-      const state = toSentenceCase(formDetails.state)
-      const lgasResponse = await axios.get(`https://nga-states-lga.onrender.com/?state=${state}`)
-      const newLgas = [...lgasResponse.data].map((lga)=>{
-        lga = lga.toUpperCase()
-        return lga
-      })
+      const state = toSentenceCase(formDetails.state);
+      const lgasResponse = await axios.get(
+        `https://nga-states-lga.onrender.com/?state=${state}`
+      );
+      const newLgas = [...lgasResponse.data].map((lga) => {
+        lga = lga.toUpperCase();
+        return lga;
+      });
       // newLgas.unshift("SELECT LGA")
       // const states = newStates
-      setLgas(newLgas)
+      setLgas(newLgas);
     }
 
-    if(formDetails.state == "") {
+    if (formDetails.state == "") {
       // setLgas()
-      return
+      return;
     }
 
-    fetchLgas()
-  },[formDetails.state])
+    fetchLgas();
+  }, [formDetails.state]);
 
   async function submitForm(e) {
     e.preventDefault();
-    const id = JSON.parse(localStorage.getItem("employer")).id
+    const id = JSON.parse(localStorage.getItem("employer")).id;
     const token = localStorage.getItem("token");
-    // debugger
+
+    debugger;
 
     const roleSkills = formDetails.skills.split(",");
     const formData = {
@@ -179,13 +188,23 @@ export default function CompanyDetails({
       );
       if (isLogged.status === 200) {
         console.log("done");
-        setDialogue({ ...dialogue, result: true, text: "Form Submission Successful!", path: "#" })
+        setDialogue({
+          ...dialogue,
+          result: true,
+          text: "Form Submission Successful!",
+          path: "#",
+        });
         // localStorage.setItem("companyDetails", isLogged.data)
         // router.push("/dashboard/agency/post-internship-positions")
       }
     } catch (error) {
       // window.alert("Something went wrong, try again");
-      setDialogue({ ...dialogue, result: false, text: "Something went wrong!", path: "" })
+      setDialogue({
+        ...dialogue,
+        result: false,
+        text: "Something went wrong!",
+        path: "",
+      });
       console.error("Form error:", error);
       // setSubmitting(false)
     } finally {
@@ -362,23 +381,27 @@ export default function CompanyDetails({
               name="qualifications"
               className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
             >
-              {["SELECT MINIMUM EDUCATIONAL QUALIFICATION FOR THIS ROLE", "Primary School", "Secondary School", "Technical College/Diploma", `Bachelor's Degree`].map(
-                (item, index) => {
-                  if (index === 0) {
-                    // The first item is the placeholder and should be disabled
-                    return (
-                      <option key={item} value="" disabled selected>
-                        {item}
-                      </option>
-                    );
-                  }
+              {[
+                "SELECT MINIMUM EDUCATIONAL QUALIFICATION FOR THIS ROLE",
+                "Primary School",
+                "Secondary School",
+                "Technical College/Diploma",
+                `Bachelor's Degree`,
+              ].map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
                   return (
-                    <option key={item} value={item}>
+                    <option key={item} value="" disabled selected>
                       {item}
                     </option>
                   );
                 }
-              )}
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
             </select>
             <input
               required
@@ -449,23 +472,21 @@ export default function CompanyDetails({
               name="state"
               className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
             >
-              {states.map(
-                (item, index) => {
-                  if (index === 0) {
-                    // The first item is the placeholder and should be disabled
-                    return (
-                      <option key={item} value="" disabled selected>
-                        {item}
-                      </option>
-                    );
-                  }
+              {states.map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
                   return (
-                    <option key={item} value={item}>
+                    <option key={item} value="" disabled selected>
                       {item}
                     </option>
                   );
                 }
-              )}
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
             </select>
             {/* <input
               onChange={handleFormChange}
@@ -482,23 +503,21 @@ export default function CompanyDetails({
               name="lga"
               className="pl-[5px] outline-none text-[10px] font-[600] md:text-[13px] border border-[lightgreen] py-[5px] rounded-[10px]"
             >
-              {lgas.map(
-                (item, index) => {
-                  if (index === 0) {
-                    // The first item is the placeholder and should be disabled
-                    return (
-                      <option key={item} value="" disabled selected>
-                        {item}
-                      </option>
-                    );
-                  }
+              {lgas.map((item, index) => {
+                if (index === 0) {
+                  // The first item is the placeholder and should be disabled
                   return (
-                    <option key={item} value={item}>
+                    <option key={item} value="" disabled selected>
                       {item}
                     </option>
                   );
                 }
-              )}
+                return (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
             </select>
             <label htmlFor="resources">
               What are the available resources to support the intern's work
@@ -617,10 +636,11 @@ export default function CompanyDetails({
               }}
               value={formDetails.amount}
               name="amount"
-              className={`${formDetails.stipend == "" || formDetails.stipend == "NO"
-                ? "hidden"
-                : ""
-                } pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]`}
+              className={`${
+                formDetails.stipend == "" || formDetails.stipend == "NO"
+                  ? "hidden"
+                  : ""
+              } pl-[10px] rounded-[10px] outline-none border border-[lightgreen] py-[5px]`}
               type="text"
               placeholder="How much will you be paying"
             />

@@ -11,12 +11,17 @@ export default function OtpPage() {
   const [timer, setTimer] = useState(true);
   const [userNumber, setUserNumber] = useState("");
   const router = useRouter();
-  const [dialogue, setDialogue] = useState({text: "", result: false, path: "", closeAlert: closeAlert})
+  const [dialogue, setDialogue] = useState({
+    text: "",
+    result: false,
+    path: "",
+    closeAlert: closeAlert,
+  });
   const [timeLeft, setTimeLeft] = useState(0);
   
 
-  function closeAlert () {
-    setDialogue({text: "", result: false, path: ""})    
+  function closeAlert() {
+    setDialogue({ text: "", result: false, path: "" });
   }
 
   useEffect(() => {
@@ -57,8 +62,6 @@ export default function OtpPage() {
       return;
     }
 
-
-
     setUserNumber((currentValue) => {
       const storedNumber = localStorage.getItem("phoneNumber");
       return storedNumber !== null ? storedNumber : currentValue;
@@ -75,7 +78,7 @@ export default function OtpPage() {
 
   async function validateOtp() {
     // debugger
-    setLoading(true)
+    setLoading(true);
     try {
       // throw new Error("Error")
       // debugger
@@ -96,8 +99,13 @@ export default function OtpPage() {
       }
     } catch (error) {
       console.error("otp error:", error);
-      setDialogue({...dialogue, result: false, text: "Error validating OTP!", path:""})
-      setLoading(false)
+      setDialogue({
+        ...dialogue,
+        result: false,
+        text: "Error validating OTP!",
+        path: "",
+      });
+      setLoading(false);
     } finally {
       // setOtpSubmit(false)
     }
@@ -118,7 +126,6 @@ export default function OtpPage() {
     }
     if (!element.nextSibling) {
       console.log(element.value);
-      
     }
   };
 
@@ -129,16 +136,14 @@ export default function OtpPage() {
   };
 
   function allNotEmpty(arr) {
-    return arr.every(element => element !== "");
-}
+    return arr.every((element) => element !== "");
+  }
 
-  useEffect(()=>{
-    if(allNotEmpty(otp)) {
+  useEffect(() => {
+    if (allNotEmpty(otp)) {
       validateOtp();
     }
-  },[otp])
-
-  
+  }, [otp]);
 
   async function handleSubmit() {
     setLoading(true);
@@ -218,7 +223,7 @@ export default function OtpPage() {
           {loading ? "Verifying" : "Verify OTP"}
         </button>
       </section>
-      <AlertDialog props={dialogue} />
+      {/* <AlertDialog props={dialogue} /> */}
     </div>
   );
 }
