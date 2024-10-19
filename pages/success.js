@@ -252,31 +252,9 @@ export default function CompanyDetails({
     // debugger
 
     let verified = false
-
     if (formDetails.cacRegistered == "NO") {
-      try {
-        const bvnResponse = await axios.post(`${base}kyc/verify-bvn`,
-          {
-            bvn: formDetails.bvn,
-            userName: userName
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true
-          }
-        )
-
-        if (bvnResponse.status == 200) {
-          verified = true
-        }
-
-      } catch (error) {
-        verified = false
-        setSubmitting(false)
-        setDialogue({ ...dialogue, result: false, text: "BVN VERIFICATION FAILED", path: "" })
-      }
+      setDialogue({ ...dialogue, result: false, text: "YOU MUST HAVE A CAC REGISTERED COMPANY/ORGANISATION TO PROCEED!", path: "" })
+      return
     }
     if (formDetails.cacRegistered == "YES") {
       // verified = true
@@ -664,7 +642,7 @@ export default function CompanyDetails({
               )}
             </select> */}
             <CssTextField
-            required
+              required
               label={"Company Website"}
               // placeholder="Enter Company Website"
               // multiline
@@ -790,7 +768,7 @@ export default function CompanyDetails({
             </select> */}
             {formDetails.cacRegistered === "YES" && (
               <CssTextField
-              required
+                required
                 label={"Enter your CAC Number"}
                 // placeholder="Enter Company Website"
                 // multiline
@@ -804,7 +782,7 @@ export default function CompanyDetails({
             )}
             {formDetails.cacRegistered === "YES" && (
               <CssTextField
-              required
+                required
                 label={"Enter number of years post incorporation"}
                 // placeholder="Enter Company Website"
                 // multiline
@@ -815,20 +793,6 @@ export default function CompanyDetails({
                 value={formDetails.yearsPostIncorporation}
               />
               // <input required onChange={handleFormChange} value={formDetails.yearsPostIncorporation} name="yearsPostIncorporation" className="pl-[5px] outline-none border border-[lightgreen] py-[5px] rounded-[10px]" type="text" placeholder="Enter number of years post incorporation" />
-            )}
-            {formDetails.cacRegistered === "NO" && (
-              <CssTextField
-              required
-                label={"Enter Your BVN"}
-                // placeholder="Enter Company Website"
-                // multiline
-                className="w-full outline-none mt-[10px]"
-                size="small"
-                onChange={handleFormChange}
-                name="bvn"
-                value={formDetails.bvn}
-              />
-              // <input required onChange={handleFormChange} value={formDetails.bvn} name="bvn" className="pl-[5px] outline-none" type="text" placeholder="Enter Your BVN" />
             )}
           </div>
         </div>
