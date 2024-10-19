@@ -45,8 +45,8 @@ export default function Home() {
                   Learn More
                 </a>
               </div>
-              <div className="md:w-1/2 text-right" data-aos="fade-left">
-                <img src="/images/hero-1.jpg" alt="Youth Internship" className="hero-img rounded-[20px] shadow-xl w-[80%]" />
+              <div style={{backgroundImage:"url(/images/home-banner.png)"}} className="md:w-1/2 h-[350px] text-right bg-center bg-cover" data-aos="fade-left">
+                {/* <img src="/images/home-banner.png" alt="Youth Internship" className="hero-img rounded-[20px] shadow-xl w-[80%]" /> */}
               </div>
             </div>
           </div>
