@@ -1,9 +1,4 @@
-// import Head from 'next/head'
-// import ImageHolder from '../components/ImageHolder'
-// import logoIcon from '../public/icons/logo-icon-gradient.svg'
-// import payrailIcon from '../public/icons/payrail-logo-black.svg'
-// import splash from '../public/icons/splash.svg'
-// import Cookies from 'js-cookie'
+
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -28,16 +23,16 @@ export default function Home({
     username: "",
     password: "",
   });
-  useEffect(() => { }, [passwordDisplay]);
+  // useEffect(() => { }, [passwordDisplay]);
 
-  useEffect(() => {
-    if (createCaution) {
-      let timer = setTimeout(() => {
-        changer();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [createCaution]);
+  // useEffect(() => {
+  //   if (createCaution) {
+  //     let timer = setTimeout(() => {
+  //       changer();
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [createCaution]);
 
   function changeForm(e) {
     setLoginDetails((currentDetails) => {
