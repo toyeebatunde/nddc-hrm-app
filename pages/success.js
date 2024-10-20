@@ -19,27 +19,18 @@ import base from "../components/Endpoints";
 
 
 const industries = [
-  "Select an Industry",
+  "Select a department",
+  "Technology",
   "Agriculture",
   "Automotive",
-  "Banking & Financial Services",
-  "Construction",
-  "Consumer Goods",
-  "Education",
-  "Energy & Utilities",
-  "Entertainment & Media",
-  "Healthcare & Pharmaceuticals",
+  "Craftmanship",
+  "Entertainment",
+  "Finance",
   "Hospitality",
-  "Information Technology",
-  "Insurance",
-  "Manufacturing",
-  "Non-Profit",
-  "Professional Services",
-  "Real Estate",
-  "Retail & E-commerce",
-  "Telecommunications",
-  "Transportation & Logistics",
-  "Travel & Tourism"
+  "Maritime,Medical",
+  "Sports",
+  "Teaching",
+  "Technical Skills"
 ]
 
 const workLocation = [

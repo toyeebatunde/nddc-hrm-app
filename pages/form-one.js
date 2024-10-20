@@ -15,10 +15,18 @@ import { Fragment } from "react";
 
 
 const industries = [
-    "Select an Industry",
+    "Select a department",
     "Technology",
     "Agriculture",
+    "Automotive",
+    "Craftmanship",
+    "Entertainment",
     "Finance",
+    "Hospitality",
+    "Maritime,Medical",
+    "Sports",
+    "Teaching",
+    "Technical Skills"
 ]
 
 const workLocation = [
